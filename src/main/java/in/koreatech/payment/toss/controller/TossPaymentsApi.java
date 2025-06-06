@@ -16,7 +16,7 @@ import jakarta.validation.Valid;
 
 @RequestMapping("/toss/payments")
 @Tag(name = "(Normal) Toss: 토스 페이먼츠", description = "토스 페이먼츠 API를 관리한다.")
-public interface TossApi {
+public interface TossPaymentsApi {
 
     @ApiResponses(
         value = {

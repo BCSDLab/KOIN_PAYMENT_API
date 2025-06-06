@@ -14,7 +14,7 @@ import lombok.RequiredArgsConstructor;
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/toss/payments")
-public class TossController implements TossApi {
+public class TossPaymentsPaymentsController implements TossPaymentsApi {
 
     private final TossService tossService;
 
