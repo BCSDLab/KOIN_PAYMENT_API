@@ -11,6 +11,7 @@ import lombok.Getter;
 public class TemporaryPayment {
 
     private static final Long CACHE_EXPIRE_SECOND = 60 * 10L;
+    private static final String ORDER_ID_PATTERN = "^[a-zA-Z0-9-_]{6,64}$";
 
     @Id
     private String orderId;
@@ -21,6 +22,7 @@ public class TemporaryPayment {
     private Long expiryTime;
 
     public TemporaryPayment(String orderId, Integer amount) {
+        validateOrderIdPattern(orderId);
         this.orderId = orderId;
         this.amount = amount;
         this.expiryTime = CACHE_EXPIRE_SECOND;
@@ -28,5 +30,11 @@ public class TemporaryPayment {
 
     public static TemporaryPayment of(String orderId, Integer amount) {
         return new TemporaryPayment(orderId, amount);
+    }
+
+    private void validateOrderIdPattern(String orderId) {
+        if (!orderId.matches(ORDER_ID_PATTERN)) {
+            throw new IllegalArgumentException("orderId는 영문 대소문자, 숫자, 특수문자 '-', '_'로 이루어진 6자 이상 64자 이하의 문자열이어야 합니다.");
+        }
     }
 }

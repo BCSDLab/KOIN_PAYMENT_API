@@ -6,5 +6,5 @@ import in.koreatech.payment.toss.model.redis.TemporaryPayment;
 
 public interface TemporaryPaymentRedisRepository extends Repository<TemporaryPayment, String> {
 
-    TemporaryPayment save(TemporaryPayment temporaryPayment);
+    void save(TemporaryPayment temporaryPayment);
 }
