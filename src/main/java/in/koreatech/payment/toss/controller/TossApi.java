@@ -1,7 +1,7 @@
 package in.koreatech.payment.toss.controller;
 
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 
@@ -15,7 +15,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 
 @Tag(name = "(Normal) Toss: 토스 페이먼츠", description = "토스 페이먼츠 API를 관리한다.")
-@RequestMapping("/toss")
+@RequestMapping("/toss/payments")
 public interface TossApi {
 
     @ApiResponses(
@@ -25,7 +25,7 @@ public interface TossApi {
         }
     )
     @Operation(summary = "임시 결제 정보를 저장한다")
-    @GetMapping
+    @PostMapping("/temporary")
     ResponseEntity<Void> saveTemporaryPayment(
         @RequestBody @Valid TemporaryPaymentRequest request
     );
