@@ -11,7 +11,7 @@ import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 
 @JsonNaming(value = SnakeCaseStrategy.class)
-public record TemporaryPaymentRequest(
+public record TemporaryPaymentSaveRequest(
     @Schema(description = "주문 번호", example = "a4CWyWY5m89PNh7xJwhk1", requiredMode = REQUIRED)
     @Size(min = 6, max = 64, message = "주문번호는 6자 이상, 64자 이하입니다.")
     @NotBlank(message = "주문 번호는 필수 입력사항입니다.")
