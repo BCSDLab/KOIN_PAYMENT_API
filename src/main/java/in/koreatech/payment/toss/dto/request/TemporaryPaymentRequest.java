@@ -1,0 +1,25 @@
+package in.koreatech.payment.toss.dto.request;
+
+import static com.fasterxml.jackson.databind.PropertyNamingStrategies.SnakeCaseStrategy;
+import static io.swagger.v3.oas.annotations.media.Schema.RequiredMode.REQUIRED;
+
+import com.fasterxml.jackson.databind.annotation.JsonNaming;
+
+import io.swagger.v3.oas.annotations.media.Schema;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Size;
+
+@JsonNaming(value = SnakeCaseStrategy.class)
+public record TemporaryPaymentRequest(
+    @Schema(description = "주문 번호", example = "a4CWyWY5m89PNh7xJwhk1", requiredMode = REQUIRED)
+    @Size(min = 6, max = 64, message = "주문번호는 6자 이상, 64자 이하입니다.")
+    @NotBlank(message = "주문 번호는 필수 입력사항입니다.")
+    String orderId,
+
+    @Schema(description = "결제 금액", example = "10000", requiredMode = REQUIRED)
+    @NotNull(message = "결제 금액은 필수 입력사항입니다.")
+    Integer amount
+) {
+
+}
