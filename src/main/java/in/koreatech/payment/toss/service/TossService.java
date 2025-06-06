@@ -17,7 +17,7 @@ public class TossService {
 
     @Transactional
     public void saveTemporaryPayment(TemporaryPaymentSaveRequest request) {
-        TemporaryPayment temporaryPayment = TemporaryPayment.of(request.orderId(), request.amount());
+        TemporaryPayment temporaryPayment = TemporaryPayment.of(request.orderId(), request.userId(), request.amount());
         temporaryPaymentRedisRepository.save(temporaryPayment);
     }
 }

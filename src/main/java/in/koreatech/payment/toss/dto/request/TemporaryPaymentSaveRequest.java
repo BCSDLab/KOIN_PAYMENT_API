@@ -11,6 +11,10 @@ import jakarta.validation.constraints.NotNull;
 
 @JsonNaming(value = SnakeCaseStrategy.class)
 public record TemporaryPaymentSaveRequest(
+    @Schema(description = "유저 고유 id", example = "123", requiredMode = REQUIRED)
+    @NotNull(message = "유저 고유 id는 필수 입력사항입니다.")
+    Integer userId,
+
     @Schema(description = "주문 번호", example = "a4CWyWY5m89PNh7xJwhk1", requiredMode = REQUIRED)
     @NotBlank(message = "주문 번호는 필수 입력사항입니다.")
     String orderId,
