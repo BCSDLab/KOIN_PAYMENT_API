@@ -59,7 +59,7 @@ public class TemporaryPayment extends BaseEntity {
     @Column(name = "is_deleted", nullable = false, columnDefinition = "TINYINT(1) NOT NULL DEFAULT 0")
     private Boolean isDeleted = FALSE;
 
-    public TemporaryPayment(String orderId, Integer userId, Integer amount) {
+    private TemporaryPayment(String orderId, Integer userId, Integer amount) {
         validateOrderIdPattern(orderId);
         this.orderId = orderId;
         this.userId = userId;
