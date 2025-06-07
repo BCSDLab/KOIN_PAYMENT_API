@@ -22,7 +22,7 @@ public class PaymentsController implements PaymentsApi {
     public ResponseEntity<Void> saveTemporaryPayment(
         @RequestBody @Valid TemporaryPaymentSaveRequest request
     ) {
-        paymentService.saveTemporaryPayment(request);
+        paymentService.saveTemporaryPayment(request.orderId(), request.userId(), request.amount());
         return ResponseEntity.ok().build();
     }
 }
