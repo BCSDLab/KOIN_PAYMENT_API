@@ -1,4 +1,4 @@
-package in.koreatech.payment.toss.controller;
+package in.koreatech.payment.controller;
 
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -6,8 +6,8 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import in.koreatech.payment.toss.dto.request.TemporaryPaymentSaveRequest;
-import in.koreatech.payment.toss.service.TossService;
+import in.koreatech.payment.dto.request.TemporaryPaymentSaveRequest;
+import in.koreatech.payment.service.TossService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 

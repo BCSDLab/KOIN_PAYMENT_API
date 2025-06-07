@@ -1,4 +1,4 @@
-package in.koreatech.payment.toss.model.redis;
+package in.koreatech.payment.model.redis;
 
 import java.time.LocalDateTime;
 

@@ -1,11 +1,11 @@
-package in.koreatech.payment.toss.controller;
+package in.koreatech.payment.controller;
 
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 
-import in.koreatech.payment.toss.dto.request.TemporaryPaymentSaveRequest;
+import in.koreatech.payment.dto.request.TemporaryPaymentSaveRequest;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;

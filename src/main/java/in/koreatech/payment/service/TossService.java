@@ -1,11 +1,11 @@
-package in.koreatech.payment.toss.service;
+package in.koreatech.payment.service;
 
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import in.koreatech.payment.toss.dto.request.TemporaryPaymentSaveRequest;
-import in.koreatech.payment.toss.model.redis.TemporaryPayment;
-import in.koreatech.payment.toss.repository.TemporaryPaymentRedisRepository;
+import in.koreatech.payment.dto.request.TemporaryPaymentSaveRequest;
+import in.koreatech.payment.model.redis.TemporaryPayment;
+import in.koreatech.payment.repository.TemporaryPaymentRedisRepository;
 import lombok.RequiredArgsConstructor;
 
 @Service
