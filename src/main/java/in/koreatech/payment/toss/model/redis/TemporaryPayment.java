@@ -1,5 +1,7 @@
 package in.koreatech.payment.toss.model.redis;
 
+import java.time.LocalDateTime;
+
 import org.springframework.data.annotation.Id;
 import org.springframework.data.redis.core.RedisHash;
 import org.springframework.data.redis.core.TimeToLive;
@@ -23,12 +25,15 @@ public class TemporaryPayment {
     @TimeToLive
     private Long expiryTime;
 
+    private LocalDateTime createdAt;
+
     public TemporaryPayment(String orderId, Integer userId, Integer amount) {
         validateOrderIdPattern(orderId);
         this.orderId = orderId;
         this.userId = userId;
         this.amount = amount;
         this.expiryTime = CACHE_EXPIRE_SECOND;
+        this.createdAt = LocalDateTime.now();
     }
 
     public static TemporaryPayment of(String orderId, Integer userId, Integer amount) {
