@@ -11,7 +11,7 @@ import lombok.RequiredArgsConstructor;
 @Service
 @RequiredArgsConstructor
 @Transactional(readOnly = true)
-public class TossService {
+public class TossService implements PaymentService {
 
     private final TemporaryPaymentRedisRepository temporaryPaymentRedisRepository;
 
