@@ -14,9 +14,9 @@ import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 
-@RequestMapping("/toss/payments")
-@Tag(name = "(Normal) Toss: 토스 페이먼츠", description = "토스 페이먼츠 API를 관리한다.")
-public interface TossPaymentsApi {
+@RequestMapping("/payments")
+@Tag(name = "(Normal) Payments: 결제", description = "결제 API를 관리한다.")
+public interface PaymentsApi {
 
     @ApiResponses(
         value = {
