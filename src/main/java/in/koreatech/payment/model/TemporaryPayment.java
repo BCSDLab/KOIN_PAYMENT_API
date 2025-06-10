@@ -56,16 +56,16 @@ public class TemporaryPayment extends BaseEntity {
     private Integer userId;
 
     @Size(max = 255)
-    @Column(name = "delivery_location", nullable = true, updatable = false)
+    @Column(name = "delivery_location", length = 255, nullable = true, updatable = false)
     private String deliveryLocation;
 
     @NotNull
     @Size(max = 50)
-    @Column(name = "owner_message", length = 100, nullable = false, updatable = false)
+    @Column(name = "owner_message", length = 50, nullable = false, updatable = false)
     private String ownerMessage;
 
     @Size(max = 50)
-    @Column(name = "rider_message", length = 100, nullable = true, updatable = false)
+    @Column(name = "rider_message", length = 50, nullable = true, updatable = false)
     private String riderMessage;
 
     @NotNull
