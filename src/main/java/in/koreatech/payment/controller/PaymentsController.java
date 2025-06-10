@@ -19,10 +19,10 @@ public class PaymentsController implements PaymentsApi {
     private final PaymentService paymentService;
 
     @PostMapping("/deliveries/temporary")
-    public ResponseEntity<Void> saveTemporaryPayment(
+    public ResponseEntity<Void> saveDeliveryTemporaryPayment(
         @RequestBody @Valid final DeliveryTemporaryPaymentSaveRequest request
     ) {
-        paymentService.saveTemporaryPayment(request.orderId(), request.userId(), request.amount());
+        paymentService.saveDeliveryTemporaryPayment(request.orderId(), request.userId(), request.amount());
         return ResponseEntity.ok().build();
     }
 }
