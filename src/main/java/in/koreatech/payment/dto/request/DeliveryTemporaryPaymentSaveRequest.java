@@ -14,7 +14,7 @@ import jakarta.validation.constraints.NotNull;
 
 // TODO. 변수명 변경
 @JsonNaming(value = SnakeCaseStrategy.class)
-public record TemporaryPaymentSaveRequest(
+public record DeliveryTemporaryPaymentSaveRequest(
     @Schema(description = "상점 고유 id", example = "1", requiredMode = REQUIRED)
     @NotNull(message = "상점 고유 id는 필수 이력사항입니다.")
     Integer shopId,

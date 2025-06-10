@@ -6,7 +6,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import in.koreatech.payment.dto.request.TemporaryPaymentSaveRequest;
+import in.koreatech.payment.dto.request.DeliveryTemporaryPaymentSaveRequest;
 import in.koreatech.payment.service.PaymentService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -20,7 +20,7 @@ public class PaymentsController implements PaymentsApi {
 
     @PostMapping("/temporary")
     public ResponseEntity<Void> saveTemporaryPayment(
-        @RequestBody @Valid final TemporaryPaymentSaveRequest request
+        @RequestBody @Valid final DeliveryTemporaryPaymentSaveRequest request
     ) {
         paymentService.saveTemporaryPayment(request.orderId(), request.userId(), request.amount());
         return ResponseEntity.ok().build();
