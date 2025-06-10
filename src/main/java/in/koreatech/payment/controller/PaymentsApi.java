@@ -24,8 +24,8 @@ public interface PaymentsApi {
             @ApiResponse(responseCode = "400", content = @Content(schema = @Schema(hidden = true))),
         }
     )
-    @Operation(summary = "임시 결제 정보를 저장한다")
-    @PostMapping("/temporary")
+    @Operation(summary = "배달 임시 결제 정보를 저장한다")
+    @PostMapping("/deliveries/temporary")
     ResponseEntity<Void> saveTemporaryPayment(
         @RequestBody @Valid final DeliveryTemporaryPaymentSaveRequest request
     );
