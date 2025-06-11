@@ -1,5 +1,5 @@
 package in.koreatech.payment.service;
 
 public interface PaymentService {
-    String createTemporaryPayment(Integer userId, Integer amount);
+    String createTemporaryPayment(String accessToken, Integer amount);
 }

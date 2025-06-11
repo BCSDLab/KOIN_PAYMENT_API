@@ -8,13 +8,9 @@ import java.lang.annotation.Target;
 
 import io.swagger.v3.oas.annotations.Hidden;
 
-/**
- * 토큰으로부터 사용자 ID를 추출하여 가져온다.
- * <p>
- */
 @Hidden
 @Target(PARAMETER)
 @Retention(RUNTIME)
-public @interface UserId {
+public @interface AccessToken {
 
 }

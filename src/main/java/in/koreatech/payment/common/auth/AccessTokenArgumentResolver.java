@@ -11,19 +11,18 @@ import lombok.RequiredArgsConstructor;
 
 @Component
 @RequiredArgsConstructor
-public class UserIdArgumentResolver implements HandlerMethodArgumentResolver {
+public class AccessTokenArgumentResolver implements HandlerMethodArgumentResolver {
 
-    private final UserIdContext userIdContext;
+    private final AccessTokenContext accessTokenContext;
 
     @Override
     public boolean supportsParameter(MethodParameter parameter) {
-        return parameter.hasParameterAnnotation(UserId.class);
+        return parameter.hasParameterAnnotation(AccessToken.class);
     }
 
     @Override
     public Object resolveArgument(MethodParameter parameter, ModelAndViewContainer mavContainer,
-        NativeWebRequest webRequest, WebDataBinderFactory binderFactory) {
-
-        return userIdContext.getUserId();
+        NativeWebRequest webRequest, WebDataBinderFactory binderFactory) throws Exception {
+        return accessTokenContext.getAccessToken();
     }
 }

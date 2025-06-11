@@ -18,7 +18,7 @@ public class TossService implements PaymentService {
 
     // TODO. userId 검증 로직 추가
     @Transactional
-    public String createTemporaryPayment(Integer userId, Integer amount) {
+    public String createTemporaryPayment(String accessToken, Integer amount) {
         String orderId = orderIdGenerator.generateOrderId();
         TemporaryPayment temporaryPayment = temporaryPaymentRepository.save(TemporaryPayment.of(orderId, userId, amount));
         return temporaryPayment.getOrderId();

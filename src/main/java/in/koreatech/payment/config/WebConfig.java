@@ -7,27 +7,27 @@ import org.springframework.web.method.support.HandlerMethodArgumentResolver;
 import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
-import in.koreatech.payment.common.auth.ExtractAuthenticationInterceptor;
-import in.koreatech.payment.common.auth.UserIdArgumentResolver;
+import in.koreatech.payment.common.auth.AccessTokenArgumentResolver;
+import in.koreatech.payment.common.auth.ExtractAccessTokenInterceptor;
 import lombok.RequiredArgsConstructor;
 
 @Configuration
 @RequiredArgsConstructor
 public class WebConfig implements WebMvcConfigurer {
 
-    private final ExtractAuthenticationInterceptor extractAuthenticationInterceptor;
+    private final ExtractAccessTokenInterceptor extractAccessTokenInterceptor;
 
-    private final UserIdArgumentResolver userIdArgumentResolver;
+    private final AccessTokenArgumentResolver accessTokenArgumentResolver;
 
     @Override
     public void addInterceptors(InterceptorRegistry registry) {
-        registry.addInterceptor(extractAuthenticationInterceptor)
+        registry.addInterceptor(extractAccessTokenInterceptor)
             .addPathPatterns("/**")
             .order(0);
     }
 
     @Override
     public void addArgumentResolvers(List<HandlerMethodArgumentResolver> resolvers) {
-        resolvers.add(userIdArgumentResolver);
+        resolvers.add(accessTokenArgumentResolver);
     }
 }
