@@ -8,7 +8,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import in.koreatech.payment.common.auth.UserId;
 import in.koreatech.payment.dto.request.TemporaryPaymentInformationSaveRequest;
-import in.koreatech.payment.dto.response.TemporaryDeliverPaymentSaveResponse;
+import in.koreatech.payment.dto.response.TemporaryPaymentResponse;
 import in.koreatech.payment.service.PaymentService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -21,12 +21,12 @@ public class PaymentsController implements PaymentsApi {
     private final PaymentService paymentService;
 
     @PostMapping("/temporary")
-    public ResponseEntity<TemporaryDeliverPaymentSaveResponse> saveTemporaryPaymentInformation(
+    public ResponseEntity<TemporaryPaymentResponse> createTemporaryPayment(
         @RequestBody @Valid final TemporaryPaymentInformationSaveRequest request,
         @UserId final Integer userId
     ) {
         String orderId = paymentService.createTemporaryPayment(userId, request.amount());
-        TemporaryDeliverPaymentSaveResponse response = TemporaryDeliverPaymentSaveResponse.of(orderId);
+        TemporaryPaymentResponse response = TemporaryPaymentResponse.of(orderId);
         return ResponseEntity.ok(response);
     }
 }
