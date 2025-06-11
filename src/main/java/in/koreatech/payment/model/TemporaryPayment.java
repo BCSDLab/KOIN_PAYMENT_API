@@ -37,7 +37,6 @@ public class TemporaryPayment extends BaseEntity {
 
     private static final String ORDER_ID_PATTERN = "^[a-zA-Z0-9-_]{6,64}$";
 
-
     @Id
     @GeneratedValue(strategy = IDENTITY)
     @Column(name = "id", nullable = false, updatable = false)
