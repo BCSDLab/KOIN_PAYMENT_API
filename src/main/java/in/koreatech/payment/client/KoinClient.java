@@ -1,10 +1,11 @@
 package in.koreatech.payment.client;
 
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;
 import org.springframework.web.reactive.function.client.WebClient;
 
-import in.koreatech.payment.client.dto.response.KoinErrorResponse;
+import in.koreatech.payment.client.exception.InternalKoinErrorResponse;
 import in.koreatech.payment.client.exception.InternalKoinException;
 import reactor.core.publisher.Mono;
 
@@ -26,18 +27,19 @@ public class KoinClient {
             .uri(uriBuilder -> uriBuilder
                 .path("/user/check/login")
                 .queryParam("accessToken", accessToken)
-                .build()
-            )
-            .retrieve()
-            .onStatus(status -> status.is4xxClientError() || status.is5xxServerError(),
-                clientResponse -> clientResponse.bodyToMono(KoinErrorResponse.class)
-                    .map(error -> new InternalKoinException(
+                .build())
+            .exchangeToMono(response -> {
+                HttpStatus status = (HttpStatus)response.statusCode();
+                if (status.is2xxSuccessful()) {
+                    return Mono.empty();
+                }
+                return response.bodyToMono(InternalKoinErrorResponse.class)
+                    .flatMap(error -> Mono.error(new InternalKoinException(
+                        status,
                         error.code(),
                         error.message(),
                         error.errorTraceId()
-                    ))
-            )
-            .toBodilessEntity()
-            .then();
+                    )));
+            });
     }
 }
