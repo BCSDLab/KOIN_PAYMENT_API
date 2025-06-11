@@ -5,6 +5,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import in.koreatech.payment.model.TemporaryPayment;
 import in.koreatech.payment.repository.TemporaryPaymentRepository;
+import in.koreatech.payment.util.OrderIdGenerator;
 import lombok.RequiredArgsConstructor;
 
 @Service
@@ -13,10 +14,12 @@ import lombok.RequiredArgsConstructor;
 public class TossService implements PaymentService {
 
     private final TemporaryPaymentRepository temporaryPaymentRepository;
+    private final OrderIdGenerator orderIdGenerator;
 
     @Transactional
-    public void saveTemporaryPaymentInformation(String orderId, Integer userId, Integer amount) {
-        TemporaryPayment temporaryPayment = TemporaryPayment.of(orderId, userId, amount);
-        temporaryPaymentRepository.save(temporaryPayment);
+    public String createTemporaryPayment(Integer userId, Integer amount) {
+        String orderId = orderIdGenerator.generateOrderId();
+        TemporaryPayment temporaryPayment = temporaryPaymentRepository.save(TemporaryPayment.of(orderId, userId, amount));
+        return temporaryPayment.getOrderId();
     }
 }

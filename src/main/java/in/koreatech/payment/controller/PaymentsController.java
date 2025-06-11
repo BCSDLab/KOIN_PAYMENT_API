@@ -25,7 +25,8 @@ public class PaymentsController implements PaymentsApi {
         @RequestBody @Valid final TemporaryPaymentInformationSaveRequest request,
         @UserId final Integer userId
     ) {
-        paymentService.saveTemporaryPaymentInformation(userId, request.amount());
-        return ResponseEntity.ok().build();
+        String orderId = paymentService.createTemporaryPayment(userId, request.amount());
+        TemporaryDeliverPaymentSaveResponse response = TemporaryDeliverPaymentSaveResponse.of(orderId);
+        return ResponseEntity.ok(response);
     }
 }

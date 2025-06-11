@@ -6,5 +6,5 @@ import in.koreatech.payment.model.TemporaryPayment;
 
 public interface TemporaryPaymentRepository extends Repository<TemporaryPayment, Integer> {
 
-    void save(TemporaryPayment temporaryPayment);
+    TemporaryPayment save(TemporaryPayment temporaryPayment);
 }
