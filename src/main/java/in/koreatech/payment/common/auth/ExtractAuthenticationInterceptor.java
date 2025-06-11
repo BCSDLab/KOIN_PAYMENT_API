@@ -19,24 +19,24 @@ public class ExtractAuthenticationInterceptor implements HandlerInterceptor {
     private static final String BEARER_TYPE = "Bearer ";
     private static final int BEARER_TYPE_LEN = 7;
 
-    private final JwtProvider jwtProvider;
+    private final JwtTokenResolver jwtTokenResolver;
     private final UserIdContext userIdContext;
 
     @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) {
-        Optional.ofNullable(extractAccessToken(request))
-            .ifPresent(token -> {
-                Integer userId = jwtProvider.getUserId(token);
+        return extractAccessToken(request.getHeader(AUTHORIZATION))
+            .map(token -> {
+                Integer userId = jwtTokenResolver.getUserId(token);
                 userIdContext.setUserId(userId);
-            });
-        return true;
+                return true;
+            })
+            .orElse(false);
     }
 
-    public static String extractAccessToken(HttpServletRequest request) {
-        String bearerToken = request.getHeader(AUTHORIZATION);
-        if (StringUtils.hasText(bearerToken) && bearerToken.startsWith(BEARER_TYPE)) {
-            return bearerToken.substring(BEARER_TYPE_LEN);
+    public Optional<String> extractAccessToken(String authorizationHeader) {
+        if (StringUtils.hasText(authorizationHeader) && authorizationHeader.startsWith(BEARER_TYPE)) {
+            return Optional.of(authorizationHeader.substring(BEARER_TYPE_LEN));
         }
-        return null;
+        return Optional.empty();
     }
 }

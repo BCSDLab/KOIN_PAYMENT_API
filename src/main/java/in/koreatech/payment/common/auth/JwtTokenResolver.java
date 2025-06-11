@@ -13,11 +13,11 @@ import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.security.Keys;
 
 @Component
-public class JwtProvider {
+public class JwtTokenResolver {
 
     private final String secretKey;
 
-    public JwtProvider(
+    public JwtTokenResolver(
         @Value("${jwt.secret-key}") String secretKey
     ) {
         this.secretKey = secretKey;
