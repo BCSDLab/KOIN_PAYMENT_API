@@ -15,7 +15,7 @@ public class TossService implements PaymentService {
     private final TemporaryPaymentRepository temporaryPaymentRepository;
 
     @Transactional
-    public void saveDeliveryTemporaryPayment(String orderId, Integer userId, Integer amount) {
+    public void saveTemporaryPaymentInformation(String orderId, Integer userId, Integer amount) {
         TemporaryPayment temporaryPayment = TemporaryPayment.of(orderId, userId, amount);
         temporaryPaymentRepository.save(temporaryPayment);
     }
