@@ -5,7 +5,9 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 
-import in.koreatech.payment.dto.request.TemporaryPaymentSaveRequest;
+import in.koreatech.payment.common.auth.AccessToken;
+import in.koreatech.payment.dto.request.TemporaryPaymentInformationSaveRequest;
+import in.koreatech.payment.dto.response.TemporaryPaymentResponse;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -26,7 +28,8 @@ public interface PaymentsApi {
     )
     @Operation(summary = "임시 결제 정보를 저장한다")
     @PostMapping("/temporary")
-    ResponseEntity<Void> saveTemporaryPayment(
-        @RequestBody @Valid final TemporaryPaymentSaveRequest request
+    ResponseEntity<TemporaryPaymentResponse> createTemporaryPayment(
+        @RequestBody @Valid final TemporaryPaymentInformationSaveRequest request,
+        @AccessToken final String accessToken
     );
 }
