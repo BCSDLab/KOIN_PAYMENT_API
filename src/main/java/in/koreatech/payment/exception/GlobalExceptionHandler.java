@@ -26,7 +26,6 @@ import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExcep
 import org.springframework.web.util.ContentCachingRequestWrapper;
 import org.springframework.web.util.WebUtils;
 
-import in.koreatech.payment.client.exception.InternalKoinException;
 import in.koreatech.payment.exception.custom.DataNotFoundException;
 import in.koreatech.payment.exception.custom.DuplicationException;
 import in.koreatech.payment.exception.custom.ExternalServiceException;
@@ -247,14 +246,6 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
             .map(DefaultMessageSourceResolvable::getDefaultMessage)
             .collect(Collectors.joining("\n"));
         return buildErrorResponse(HttpStatus.BAD_REQUEST, errorMessages);
-    }
-
-    // 내부 코인 API 호출 예외
-    @ExceptionHandler(InternalKoinException.class)
-    public ResponseEntity<Object> handleInternalKoinException(InternalKoinException e) {
-        log.warn(e.getMessage());
-        var response = new ErrorResponse(e.getHttpStatus().value(), e.getMessage(), e.getTraceId());
-        return ResponseEntity.status(e.getHttpStatus()).body(response);
     }
 
     // 예외 메시지 구성 로직
