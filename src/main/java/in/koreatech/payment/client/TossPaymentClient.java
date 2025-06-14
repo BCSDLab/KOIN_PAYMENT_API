@@ -1,12 +1,13 @@
 package in.koreatech.payment.client;
 
 import static java.nio.charset.StandardCharsets.UTF_8;
+import static org.springframework.http.HttpHeaders.AUTHORIZATION;
+import static org.springframework.http.HttpHeaders.CONTENT_TYPE;
+import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 
 import java.util.Base64;
 
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.MediaType;
 import org.springframework.stereotype.Component;
 import org.springframework.web.reactive.function.client.WebClient;
 import org.springframework.web.reactive.function.client.WebClientResponseException;
@@ -19,6 +20,9 @@ import in.koreatech.payment.client.dto.TossPaymentConfirmRequest;
 @Component
 public class TossPaymentClient {
 
+    private static final String BASE_URL = "https://api.tosspayments.com/v1/payments";
+    private static final String AUTH_PREFIX = "Basic ";
+
     private final WebClient webClient;
     private final String secretKey;
     private final ObjectMapper objectMapper;
@@ -27,40 +31,46 @@ public class TossPaymentClient {
         ObjectMapper objectMapper,
         @Value("${toss-payment.secret-key}") String secretKey
     ) {
-        this.objectMapper = objectMapper;
         this.secretKey = secretKey;
+        this.objectMapper = objectMapper;
         this.webClient = WebClient.builder()
-            .baseUrl("https://api.tosspayments.com/v1/payments")
-            .defaultHeader(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
-            .defaultHeader(HttpHeaders.AUTHORIZATION, buildAuthorizationHeader())
+            .baseUrl(BASE_URL)
+            .defaultHeader(CONTENT_TYPE, APPLICATION_JSON_VALUE)
+            .defaultHeader(AUTHORIZATION, buildAuthorizationHeader())
             .build();
     }
 
-    public String requestConfirm(String paymentKey, String orderId, Integer amount) {
-        final TossPaymentConfirmRequest request = new TossPaymentConfirmRequest(paymentKey, orderId, amount);
+    public void requestConfirm(String paymentKey, String orderId, Integer amount) {
+        TossPaymentConfirmRequest request = new TossPaymentConfirmRequest(paymentKey, orderId, amount);
 
         try {
-            return webClient.post()
+            webClient.post()
                 .uri("/confirm")
                 .bodyValue(request)
                 .retrieve()
                 .bodyToMono(String.class)
                 .block();
+
         } catch (WebClientResponseException e) {
-            String rawBody = e.getResponseBodyAsString();
-            try {
-                TossErrorResponse error = objectMapper.readValue(rawBody, TossErrorResponse.class);
-                throw new RuntimeException("Toss API 오류: " + error.code() + " - " + error.message(), e);
-            } catch (Exception parseException) {
-                throw new RuntimeException("Toss API 오류: " + rawBody, e);
-            }
+            throw handleErrorResponse(e);
         } catch (Exception e) {
-            throw new RuntimeException("Toss 결제 승인 요청 실패", e);
+            throw new RuntimeException("Toss 결제 승인 요청 실패");
+        }
+    }
+
+    // TODO. 패키지 정리 이후 커스텀 예외 처리
+    private RuntimeException handleErrorResponse(WebClientResponseException e) {
+        try {
+            String rawBody = new String(e.getResponseBodyAsByteArray(), UTF_8);
+            TossErrorResponse error = objectMapper.readValue(rawBody, TossErrorResponse.class);
+            return new RuntimeException("Toss 결제 승인 요청 실패");
+        } catch (Exception ex) {
+            return new RuntimeException("Toss 결제 승인 요청 실패");
         }
     }
 
     private String buildAuthorizationHeader() {
         String encoded = Base64.getEncoder().encodeToString((secretKey).getBytes(UTF_8));
-        return "Basic " + encoded;
+        return AUTH_PREFIX + encoded;
     }
 }

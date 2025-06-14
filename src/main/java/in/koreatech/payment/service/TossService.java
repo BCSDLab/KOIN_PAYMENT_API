@@ -38,7 +38,6 @@ public class TossService implements PaymentService {
         User user = userRepository.getById(userId);
         TemporaryPayment temporaryPayment = temporaryPaymentRepository.getByOrderId(orderId);
         temporaryPayment.validateMatches(orderId, user.getId(), amount);
-        String response = tossPaymentClient.requestConfirm(paymentKey, orderId, amount);
-        System.out.println("response = " + response);
+        tossPaymentClient.requestConfirm(paymentKey, orderId, amount);
     }
 }
