@@ -17,4 +17,6 @@ public interface TemporaryPaymentRepository extends Repository<TemporaryPayment,
         return findById(orderId)
             .orElseThrow(() -> new RuntimeException("TemporaryPayment not found"));
     }
+
+    void deleteById(String orderId);
 }
