@@ -29,4 +29,12 @@ public class TossService implements PaymentService {
         TemporaryPayment temporaryPayment = temporaryPaymentRepository.save(TemporaryPayment.of(orderId, user.getId(), amount));
         return temporaryPayment.getOrderId();
     }
+
+    @Transactional
+    public void confirmPayment(String accessToken, String paymentKey, String orderId, Integer amount) {
+        Integer userId = jwtTokenResolver.getUserId(accessToken);
+        User user = userRepository.getById(userId);
+        TemporaryPayment temporaryPayment = temporaryPaymentRepository.getByOrderId(orderId);
+        temporaryPayment.validateMatches(paymentKey, user.getId(), amount);
+    }
 }
