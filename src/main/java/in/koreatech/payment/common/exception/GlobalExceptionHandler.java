@@ -31,6 +31,7 @@ import in.koreatech.payment.common.exception.custom.AuthorizationException;
 import in.koreatech.payment.common.exception.custom.DataNotFoundException;
 import in.koreatech.payment.common.exception.custom.DuplicationException;
 import in.koreatech.payment.common.exception.custom.ExternalServiceException;
+import in.koreatech.payment.common.exception.custom.InvalidArgumentException;
 import in.koreatech.payment.common.exception.custom.KoinException;
 import in.koreatech.payment.common.exception.custom.KoinIllegalStateException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -59,7 +60,7 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
     ) {
         log.warn(e.getFullMessage());
         requestLogging(request);
-        return buildErrorResponse(HttpStatus.INTERNAL_SERVER_ERROR, e.getCode(), e.getMessage());
+        return buildErrorResponse(INTERNAL_SERVER_ERROR, e.getCode(), e.getMessage());
     }
 
     @ExceptionHandler(DataNotFoundException.class)
@@ -120,6 +121,16 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
         log.warn(e.getMessage());
         requestLogging(request);
         return buildErrorResponse(valueOf(e.getStatusCode()), e.getCode(), e.getMessage());
+    }
+
+    @ExceptionHandler(InvalidArgumentException.class)
+    public ResponseEntity<Object> handleInvalidArgumentException(
+        HttpServletRequest request,
+        InvalidArgumentException e
+    ) {
+        log.warn(e.getMessage());
+        requestLogging(request);
+        return buildErrorResponse(BAD_REQUEST, e.getCode(), e.getMessage());
     }
 
     // 표준 예외 및 정의되어 있는 예외

@@ -6,6 +6,7 @@ import org.springframework.data.annotation.Id;
 import org.springframework.data.redis.core.RedisHash;
 import org.springframework.data.redis.core.TimeToLive;
 
+import in.koreatech.payment.exception.InvalidTemporaryPaymentException;
 import lombok.Getter;
 
 @Getter
@@ -53,24 +54,21 @@ public class TemporaryPayment {
         validateAmountMatches(amount);
     }
 
-    // TODO. 패키지 정리 이후 커스텀 예외 처리
     private void validateOrderIdMatches(String orderId) {
         if (!orderId.equals(this.orderId)) {
-            throw new IllegalArgumentException("orderId가 일치하지 않습니다.");
+            throw InvalidTemporaryPaymentException.withDetail("orderId : " + orderId);
         }
     }
 
-    // TODO. 패키지 정리 이후 커스텀 예외 처리
     private void validateUserIdMatches(Integer userId) {
         if (!userId.equals(this.userId)) {
-            throw new IllegalArgumentException("userId가 일치하지 않습니다.");
+            throw InvalidTemporaryPaymentException.withDetail("userId : " + userId);
         }
     }
 
-    // TODO. 패키지 정리 이후 커스텀 예외 처리
     private void validateAmountMatches(Integer amount) {
         if (!amount.equals(this.amount)) {
-            throw new IllegalArgumentException("amount가 일치하지 않습니다.");
+            throw InvalidTemporaryPaymentException.withDetail("userId : " + userId);
         }
     }
 }
