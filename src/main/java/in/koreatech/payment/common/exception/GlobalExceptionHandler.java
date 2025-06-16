@@ -1,5 +1,7 @@
 package in.koreatech.payment.common.exception;
 
+import static org.springframework.http.HttpStatus.*;
+
 import java.time.DateTimeException;
 import java.util.Enumeration;
 import java.util.HashMap;
@@ -12,7 +14,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.HttpMessageNotReadableException;
-import org.springframework.lang.Nullable;
 import org.springframework.orm.ObjectOptimisticLockingFailureException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -31,10 +32,7 @@ import in.koreatech.payment.common.exception.custom.DataNotFoundException;
 import in.koreatech.payment.common.exception.custom.DuplicationException;
 import in.koreatech.payment.common.exception.custom.ExternalServiceException;
 import in.koreatech.payment.common.exception.custom.KoinException;
-import in.koreatech.payment.common.exception.custom.KoinIllegalArgumentException;
 import in.koreatech.payment.common.exception.custom.KoinIllegalStateException;
-import in.koreatech.payment.common.exception.custom.RequestTooFastException;
-import in.koreatech.payment.common.exception.custom.TooManyRequestsException;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.extern.slf4j.Slf4j;
 
@@ -51,17 +49,7 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
     ) {
         log.warn(e.getFullMessage());
         requestLogging(request);
-        return buildErrorResponse(HttpStatus.BAD_REQUEST, null, e.getMessage());
-    }
-
-    @ExceptionHandler(KoinIllegalArgumentException.class)
-    public ResponseEntity<Object> handleIllegalArgumentException(
-        HttpServletRequest request,
-        KoinIllegalArgumentException e
-    ) {
-        log.warn(e.getFullMessage());
-        requestLogging(request);
-        return buildErrorResponse(HttpStatus.BAD_REQUEST, null, e.getMessage());
+        return buildErrorResponse(BAD_REQUEST, e.getCode(), e.getMessage());
     }
 
     @ExceptionHandler(KoinIllegalStateException.class)
@@ -71,7 +59,7 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
     ) {
         log.warn(e.getFullMessage());
         requestLogging(request);
-        return buildErrorResponse(HttpStatus.INTERNAL_SERVER_ERROR, null, e.getMessage());
+        return buildErrorResponse(HttpStatus.INTERNAL_SERVER_ERROR, e.getCode(), e.getMessage());
     }
 
     @ExceptionHandler(DataNotFoundException.class)
@@ -81,7 +69,7 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
     ) {
         log.warn(e.getFullMessage());
         requestLogging(request);
-        return buildErrorResponse(HttpStatus.NOT_FOUND, null, e.getMessage());
+        return buildErrorResponse(NOT_FOUND, e.getCode(), e.getMessage());
     }
 
     @ExceptionHandler(DuplicationException.class)
@@ -91,7 +79,7 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
     ) {
         log.warn(e.getFullMessage());
         requestLogging(request);
-        return buildErrorResponse(HttpStatus.CONFLICT, null, e.getMessage());
+        return buildErrorResponse(CONFLICT, e.getCode(), e.getMessage());
     }
 
     @ExceptionHandler(ExternalServiceException.class)
@@ -101,17 +89,7 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
     ) {
         log.warn(e.getFullMessage());
         requestLogging(request);
-        return buildErrorResponse(HttpStatus.INTERNAL_SERVER_ERROR, null, e.getMessage());
-    }
-
-    @ExceptionHandler(TooManyRequestsException.class)
-    public ResponseEntity<Object> handleKoinRequestTooManyException(
-        HttpServletRequest request,
-        TooManyRequestsException e
-    ) {
-        log.warn(e.getFullMessage());
-        requestLogging(request);
-        return buildErrorResponse(HttpStatus.TOO_MANY_REQUESTS, null, e.getMessage());
+        return buildErrorResponse(INTERNAL_SERVER_ERROR, e.getCode(), e.getMessage());
     }
 
     @ExceptionHandler(AuthenticationException.class)
@@ -121,7 +99,7 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
     ) {
         log.warn(e.getFullMessage());
         requestLogging(request);
-        return buildErrorResponse(HttpStatus.UNAUTHORIZED, null, e.getMessage());
+        return buildErrorResponse(UNAUTHORIZED, e.getCode(), e.getMessage());
     }
 
     @ExceptionHandler(AuthorizationException.class)
@@ -131,7 +109,7 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
     ) {
         log.warn(e.getFullMessage());
         requestLogging(request);
-        return buildErrorResponse(HttpStatus.FORBIDDEN, null, e.getMessage());
+        return buildErrorResponse(FORBIDDEN, e.getCode(), e.getMessage());
     }
 
     @ExceptionHandler(TossPaymentException.class)
@@ -141,40 +119,10 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
     ) {
         log.warn(e.getMessage());
         requestLogging(request);
-        return buildErrorResponse(HttpStatus.valueOf(e.getStatusCode()), e.getCode(), e.getMessage());
+        return buildErrorResponse(valueOf(e.getStatusCode()), e.getCode(), e.getMessage());
     }
 
     // 표준 예외 및 정의되어 있는 예외
-    @ExceptionHandler(IllegalArgumentException.class)
-    public ResponseEntity<Object> handleRequestTooFastException(
-        HttpServletRequest request,
-        IllegalArgumentException e
-    ) {
-        log.warn(e.getMessage());
-        requestLogging(request);
-        return buildErrorResponse(HttpStatus.BAD_REQUEST, null, e.getMessage());
-    }
-
-    @ExceptionHandler(IllegalStateException.class)
-    public ResponseEntity<Object> handleRequestTooFastException(
-        HttpServletRequest request,
-        IllegalStateException e
-    ) {
-        log.warn(e.getMessage());
-        requestLogging(request);
-        return buildErrorResponse(HttpStatus.BAD_REQUEST, null, e.getMessage());
-    }
-
-    @ExceptionHandler(RequestTooFastException.class)
-    public ResponseEntity<Object> handleRequestTooFastException(
-        HttpServletRequest request,
-        RequestTooFastException e
-    ) {
-        log.warn(e.getMessage());
-        requestLogging(request);
-        return buildErrorResponse(HttpStatus.CONFLICT, null, e.getMessage());
-    }
-
     @ExceptionHandler(DateTimeException.class)
     public ResponseEntity<Object> handleDateTimeParseException(
         HttpServletRequest request,
@@ -182,7 +130,7 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
     ) {
         log.warn(e.getMessage());
         requestLogging(request);
-        return buildErrorResponse(HttpStatus.BAD_REQUEST, null, "잘못된 날짜 형식입니다.");
+        return buildErrorResponse(BAD_REQUEST, "INVALID_DATE_FORMAT", "잘못된 날짜 형식입니다.");
     }
 
     @ExceptionHandler(UnsupportedOperationException.class)
@@ -192,7 +140,7 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
     ) {
         log.warn(e.getMessage());
         requestLogging(request);
-        return buildErrorResponse(HttpStatus.BAD_REQUEST, null, "지원하지 않는 API 입니다.");
+        return buildErrorResponse(BAD_REQUEST, "UNSUPPORTED_API", "지원하지 않는 API 입니다.");
     }
 
     @ExceptionHandler(ClientAbortException.class)
@@ -202,7 +150,7 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
     ) {
         logger.warn("클라이언트가 연결을 중단했습니다: " + e.getMessage());
         requestLogging(request);
-        return buildErrorResponse(HttpStatus.INTERNAL_SERVER_ERROR, null, "클라이언트에 의해 연결이 중단되었습니다");
+        return buildErrorResponse(INTERNAL_SERVER_ERROR, "CLIENT_DISCONNECTED", "클라이언트에 의해 연결이 중단되었습니다");
     }
 
     @Override
@@ -214,7 +162,7 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
     ) {
         log.warn(e.getMessage());
         requestLogging(((ServletWebRequest)request).getRequest());
-        return buildErrorResponse(HttpStatus.BAD_REQUEST, null, "잘못된 입력 형식이거나, 값이 허용된 범위를 초과했습니다.");
+        return buildErrorResponse(BAD_REQUEST, "INVALID_INPUT_VALUE", "잘못된 입력 형식이거나, 값이 허용된 범위를 초과했습니다.");
     }
 
     @Override
@@ -226,7 +174,7 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
     ) {
         log.warn("유효하지 않은 API 경로입니다. {}", e.getRequestURL());
         requestLogging(((ServletWebRequest)request).getRequest());
-        return buildErrorResponse(HttpStatus.NOT_FOUND, null, "유효하지 않은 API 경로입니다.");
+        return buildErrorResponse(NOT_FOUND, "INVALID_ENDPOINT", "유효하지 않은 API 경로입니다.");
     }
 
     @ExceptionHandler(ObjectOptimisticLockingFailureException.class)
@@ -236,7 +184,7 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
     ) {
         log.warn(e.getMessage());
         requestLogging(((ServletWebRequest)request).getRequest());
-        return buildErrorResponse(HttpStatus.CONFLICT, null, "이미 처리된 요청입니다.");
+        return buildErrorResponse(CONFLICT, "OPTIMISTIC_LOCK_CONFLICT", "이미 처리된 요청입니다.");
     }
 
     @ExceptionHandler(Exception.class)
@@ -260,7 +208,7 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
             {}
             """, request.getMethod(), request.getRequestURI(), detail);
         requestLogging(request);
-        return buildErrorResponse(HttpStatus.INTERNAL_SERVER_ERROR, null, "서버에서 오류가 발생했습니다.");
+        return buildErrorResponse(INTERNAL_SERVER_ERROR, "INTERNAL_SERVER_ERROR", "서버에서 오류가 발생했습니다.");
     }
 
     @Override
@@ -273,24 +221,13 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
         HttpServletRequest request = ((ServletWebRequest)webRequest).getRequest();
         log.warn("검증과정에서 문제가 발생했습니다. uri: {} {}, ", request.getMethod(), request.getRequestURI(), e);
         requestLogging(request);
-        return buildErrorResponse(HttpStatus.BAD_REQUEST, null, "필수 파라미터가 누락됐습니다.");
+        return buildErrorResponse(BAD_REQUEST, "INVALID_REQUEST_PARAMETER", "필수 파라미터가 누락됐습니다.");
     }
 
     // 예외 메시지 구성 로직
-    @Override
-    protected ResponseEntity<Object> handleExceptionInternal(
-        Exception e,
-        @Nullable Object body,
-        HttpHeaders headers,
-        HttpStatusCode statusCode,
-        WebRequest request
-    ) {
-        return buildErrorResponse(HttpStatus.valueOf(statusCode.value()), null, e.getMessage());
-    }
-
     private ResponseEntity<Object> buildErrorResponse(
         HttpStatus httpStatus,
-        @Nullable String code,
+        String code,
         String message
     ) {
         String errorTraceId = UUID.randomUUID().toString();

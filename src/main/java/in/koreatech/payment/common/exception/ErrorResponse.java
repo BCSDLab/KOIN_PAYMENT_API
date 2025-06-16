@@ -16,9 +16,9 @@ public class ErrorResponse {
     private final String message;
     private final String errorTraceId;
 
-    public ErrorResponse(int status, @Nullable String code, String message, String errorTraceId) {
+    public ErrorResponse(int status, String code, String message, String errorTraceId) {
         this.status = status;
-        this.code = Objects.requireNonNullElse(code, "");
+        this.code = code;
         this.message = message;
         this.errorTraceId = errorTraceId;
     }
