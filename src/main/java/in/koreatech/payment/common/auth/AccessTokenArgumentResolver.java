@@ -7,7 +7,7 @@ import org.springframework.web.context.request.NativeWebRequest;
 import org.springframework.web.method.support.HandlerMethodArgumentResolver;
 import org.springframework.web.method.support.ModelAndViewContainer;
 
-import in.koreatech.payment.common.auth.exception.AuthenticationException;
+import in.koreatech.payment.common.exception.custom.AuthenticationException;
 import lombok.RequiredArgsConstructor;
 
 @Component
