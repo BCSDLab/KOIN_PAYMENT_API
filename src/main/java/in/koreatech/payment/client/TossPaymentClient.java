@@ -16,7 +16,9 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 import in.koreatech.payment.client.dto.TossErrorResponse;
 import in.koreatech.payment.client.dto.TossPaymentConfirmRequest;
+import lombok.extern.slf4j.Slf4j;
 
+@Slf4j
 @Component
 public class TossPaymentClient {
 
@@ -63,6 +65,7 @@ public class TossPaymentClient {
         try {
             String rawBody = new String(e.getResponseBodyAsByteArray(), UTF_8);
             TossErrorResponse error = objectMapper.readValue(rawBody, TossErrorResponse.class);
+            log.error("[Toss Payments 오류] code: {}, message: {}", error.code(), error.message());
             return new RuntimeException("Toss 결제 승인 요청 실패");
         } catch (Exception ex) {
             return new RuntimeException("Toss 결제 승인 요청 실패");
