@@ -5,10 +5,8 @@ import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
-import java.util.stream.Collectors;
 
 import org.apache.catalina.connector.ClientAbortException;
-import org.springframework.context.support.DefaultMessageSourceResolvable;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.HttpStatusCode;
@@ -26,6 +24,7 @@ import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExcep
 import org.springframework.web.util.ContentCachingRequestWrapper;
 import org.springframework.web.util.WebUtils;
 
+import in.koreatech.payment.client.exception.TossPaymentException;
 import in.koreatech.payment.common.exception.custom.AuthenticationException;
 import in.koreatech.payment.common.exception.custom.AuthorizationException;
 import in.koreatech.payment.common.exception.custom.DataNotFoundException;
@@ -133,6 +132,16 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
         log.warn(e.getFullMessage());
         requestLogging(request);
         return buildErrorResponse(HttpStatus.FORBIDDEN, e.getMessage());
+    }
+
+    @ExceptionHandler(TossPaymentException.class)
+    public ResponseEntity<Object> handleTossPaymentException(
+        HttpServletRequest request,
+        TossPaymentException e
+    ) {
+        log.warn(e.getMessage());
+        requestLogging(request);
+        return buildErrorResponse(HttpStatus.valueOf(e.getStatusCode()), e.getMessage());
     }
 
     // 표준 예외 및 정의되어 있는 예외
