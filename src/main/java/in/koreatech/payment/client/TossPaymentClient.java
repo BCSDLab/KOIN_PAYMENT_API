@@ -30,7 +30,7 @@ public class TossPaymentClient {
 
     public TossPaymentClient(
         ObjectMapper objectMapper,
-        @Value("${toss-payment.secret-key}") String baseUrl,
+        @Value("${toss-payment.api-base-url}") String baseUrl,
         @Value("${toss-payment.secret-key}") String secretKey
     ) {
         this.secretKey = secretKey;
