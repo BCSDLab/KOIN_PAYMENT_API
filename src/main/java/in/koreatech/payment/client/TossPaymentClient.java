@@ -22,7 +22,6 @@ import lombok.extern.slf4j.Slf4j;
 @Component
 public class TossPaymentClient {
 
-    private static final String BASE_URL = "https://api.tosspayments.com/v1/payments";
     private static final String AUTH_PREFIX = "Basic ";
 
     private final WebClient webClient;
@@ -31,12 +30,13 @@ public class TossPaymentClient {
 
     public TossPaymentClient(
         ObjectMapper objectMapper,
+        @Value("${toss-payment.secret-key}") String baseUrl,
         @Value("${toss-payment.secret-key}") String secretKey
     ) {
         this.secretKey = secretKey;
         this.objectMapper = objectMapper;
         this.webClient = WebClient.builder()
-            .baseUrl(BASE_URL)
+            .baseUrl(baseUrl)
             .defaultHeader(CONTENT_TYPE, APPLICATION_JSON_VALUE)
             .defaultHeader(AUTHORIZATION, buildAuthorizationHeader())
             .build();
