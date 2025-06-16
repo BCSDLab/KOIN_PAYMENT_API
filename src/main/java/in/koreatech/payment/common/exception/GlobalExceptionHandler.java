@@ -26,6 +26,8 @@ import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExcep
 import org.springframework.web.util.ContentCachingRequestWrapper;
 import org.springframework.web.util.WebUtils;
 
+import in.koreatech.payment.common.exception.custom.AuthenticationException;
+import in.koreatech.payment.common.exception.custom.AuthorizationException;
 import in.koreatech.payment.common.exception.custom.DataNotFoundException;
 import in.koreatech.payment.common.exception.custom.DuplicationException;
 import in.koreatech.payment.common.exception.custom.ExternalServiceException;
@@ -111,6 +113,26 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
         log.warn(e.getFullMessage());
         requestLogging(request);
         return buildErrorResponse(HttpStatus.TOO_MANY_REQUESTS, e.getMessage());
+    }
+
+    @ExceptionHandler(AuthenticationException.class)
+    public ResponseEntity<Object> handleAuthenticationException(
+        HttpServletRequest request,
+        AuthenticationException e
+    ) {
+        log.warn(e.getFullMessage());
+        requestLogging(request);
+        return buildErrorResponse(HttpStatus.UNAUTHORIZED, e.getMessage());
+    }
+
+    @ExceptionHandler(AuthorizationException.class)
+    public ResponseEntity<Object> handleAuthorizationException(
+        HttpServletRequest request,
+        AuthorizationException e
+    ) {
+        log.warn(e.getFullMessage());
+        requestLogging(request);
+        return buildErrorResponse(HttpStatus.FORBIDDEN, e.getMessage());
     }
 
     // 표준 예외 및 정의되어 있는 예외
