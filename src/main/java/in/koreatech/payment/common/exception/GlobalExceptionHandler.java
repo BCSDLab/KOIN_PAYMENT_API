@@ -264,10 +264,7 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
         HttpServletRequest request = ((ServletWebRequest)webRequest).getRequest();
         log.warn("검증과정에서 문제가 발생했습니다. uri: {} {}, ", request.getMethod(), request.getRequestURI(), e);
         requestLogging(request);
-        String errorMessages = e.getBindingResult().getAllErrors().stream()
-            .map(DefaultMessageSourceResolvable::getDefaultMessage)
-            .collect(Collectors.joining("\n"));
-        return buildErrorResponse(HttpStatus.BAD_REQUEST, errorMessages);
+        return buildErrorResponse(HttpStatus.BAD_REQUEST, "필수 파라미터가 누락됐습니다.");
     }
 
     // 예외 메시지 구성 로직
