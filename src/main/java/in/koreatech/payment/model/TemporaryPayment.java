@@ -40,9 +40,37 @@ public class TemporaryPayment {
         return new TemporaryPayment(orderId, userId, amount);
     }
 
+    // TODO. 패키지 정리 이후 커스텀 예외 처리
     private void validateOrderIdPattern(String orderId) {
         if (!orderId.matches(ORDER_ID_PATTERN)) {
             throw new IllegalArgumentException("orderId는 영문 대소문자, 숫자, 특수문자 '-', '_'로 이루어진 6자 이상 64자 이하의 문자열이어야 합니다.");
+        }
+    }
+
+    public void validateMatches(String orderId, Integer userId, Integer amount) {
+        validateOrderIdMatches(orderId);
+        validateUserIdMatches(userId);
+        validateAmountMatches(amount);
+    }
+
+    // TODO. 패키지 정리 이후 커스텀 예외 처리
+    private void validateOrderIdMatches(String orderId) {
+        if (!orderId.equals(this.orderId)) {
+            throw new IllegalArgumentException("orderId가 일치하지 않습니다.");
+        }
+    }
+
+    // TODO. 패키지 정리 이후 커스텀 예외 처리
+    private void validateUserIdMatches(Integer userId) {
+        if (!userId.equals(this.userId)) {
+            throw new IllegalArgumentException("userId가 일치하지 않습니다.");
+        }
+    }
+
+    // TODO. 패키지 정리 이후 커스텀 예외 처리
+    private void validateAmountMatches(Integer amount) {
+        if (!amount.equals(this.amount)) {
+            throw new IllegalArgumentException("amount가 일치하지 않습니다.");
         }
     }
 }

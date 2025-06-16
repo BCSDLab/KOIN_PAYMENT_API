@@ -5,6 +5,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import in.koreatech.koin.domain.user.model.User;
 import in.koreatech.koin.domain.user.repository.UserRepository;
+import in.koreatech.payment.client.TossPaymentClient;
 import in.koreatech.payment.common.auth.JwtTokenResolver;
 import in.koreatech.payment.model.TemporaryPayment;
 import in.koreatech.payment.repository.TemporaryPaymentRepository;
@@ -20,6 +21,7 @@ public class TossService implements PaymentService {
     private final OrderIdGenerator orderIdGenerator;
     private final JwtTokenResolver jwtTokenResolver;
     private final UserRepository userRepository;
+    private final TossPaymentClient tossPaymentClient;
 
     @Transactional
     public String createTemporaryPayment(String accessToken, Integer amount) {
@@ -28,5 +30,15 @@ public class TossService implements PaymentService {
         String orderId = orderIdGenerator.generateOrderId();
         TemporaryPayment temporaryPayment = temporaryPaymentRepository.save(TemporaryPayment.of(orderId, user.getId(), amount));
         return temporaryPayment.getOrderId();
+    }
+
+    @Transactional
+    public void confirmPayment(String accessToken, String paymentKey, String orderId, Integer amount) {
+        Integer userId = jwtTokenResolver.getUserId(accessToken);
+        User user = userRepository.getById(userId);
+        TemporaryPayment temporaryPayment = temporaryPaymentRepository.getByOrderId(orderId);
+        temporaryPayment.validateMatches(orderId, user.getId(), amount);
+        tossPaymentClient.requestConfirm(paymentKey, orderId, amount);
+        // TODO. 응답값 파싱 후 로직 처리
     }
 }

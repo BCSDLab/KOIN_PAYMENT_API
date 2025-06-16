@@ -7,6 +7,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import in.koreatech.payment.common.auth.AccessToken;
+import in.koreatech.payment.dto.request.PaymentConfirmRequest;
 import in.koreatech.payment.dto.request.TemporaryPaymentInformationSaveRequest;
 import in.koreatech.payment.dto.response.TemporaryPaymentResponse;
 import in.koreatech.payment.service.PaymentService;
@@ -28,5 +29,14 @@ public class PaymentsController implements PaymentsApi {
         String orderId = paymentService.createTemporaryPayment(accessToken, request.amount());
         TemporaryPaymentResponse response = TemporaryPaymentResponse.of(orderId);
         return ResponseEntity.ok(response);
+    }
+
+    @PostMapping("/confirm")
+    public ResponseEntity<Void> confirmPayment(
+        @RequestBody @Valid final PaymentConfirmRequest request,
+        @AccessToken final String accessToken
+    ) {
+        paymentService.confirmPayment(accessToken, request.paymentKey(), request.orderId(), request.amount());
+        return ResponseEntity.ok().build();
     }
 }
