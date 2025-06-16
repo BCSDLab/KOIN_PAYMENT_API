@@ -54,21 +54,21 @@ public class TemporaryPayment {
     }
 
     // TODO. 패키지 정리 이후 커스텀 예외 처리
-    public void validateOrderIdMatches(String orderId) {
+    private void validateOrderIdMatches(String orderId) {
         if (!orderId.equals(this.orderId)) {
             throw new IllegalArgumentException("orderId가 일치하지 않습니다.");
         }
     }
 
     // TODO. 패키지 정리 이후 커스텀 예외 처리
-    public void validateUserIdMatches(Integer userId) {
+    private void validateUserIdMatches(Integer userId) {
         if (!userId.equals(this.userId)) {
             throw new IllegalArgumentException("userId가 일치하지 않습니다.");
         }
     }
 
     // TODO. 패키지 정리 이후 커스텀 예외 처리
-    public void validateAmountMatches(Integer amount) {
+    private void validateAmountMatches(Integer amount) {
         if (!amount.equals(this.amount)) {
             throw new IllegalArgumentException("amount가 일치하지 않습니다.");
         }
