@@ -5,14 +5,14 @@ import in.koreatech.payment.common.exception.custom.InvalidArgumentException;
 public class InvalidTemporaryPaymentException extends InvalidArgumentException {
 
     private static final String DEFAULT_MESSAGE = "요청한 정보가 임시 결제 정보와 일치하지 않습니다.";
-    private static final String code = "MISMATCH_TEMPORARY_PAYMENT";
+    private static final String CODE = "MISMATCH_TEMPORARY_PAYMENT";
 
     public InvalidTemporaryPaymentException(String message) {
-        super(message, code);
+        super(message, CODE);
     }
 
     public InvalidTemporaryPaymentException(String message, String detail) {
-        super(message, detail, code);
+        super(message, detail, CODE);
     }
 
     public static InvalidTemporaryPaymentException withDetail(String detail) {
