@@ -1,6 +1,6 @@
 package in.koreatech.koin.domain.user.exception;
 
-import in.koreatech.payment.exception.custom.DataNotFoundException;
+import in.koreatech.payment.common.exception.custom.DataNotFoundException;
 
 public class UserNotFoundException extends DataNotFoundException {
 

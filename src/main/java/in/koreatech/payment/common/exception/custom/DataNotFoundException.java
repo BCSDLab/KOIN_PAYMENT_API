@@ -1,4 +1,4 @@
-package in.koreatech.payment.exception.custom;
+package in.koreatech.payment.common.exception.custom;
 
 public abstract class DataNotFoundException extends KoinException {
 

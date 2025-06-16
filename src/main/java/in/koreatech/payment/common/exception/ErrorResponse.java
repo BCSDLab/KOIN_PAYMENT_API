@@ -1,4 +1,4 @@
-package in.koreatech.payment.exception;
+package in.koreatech.payment.common.exception;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 

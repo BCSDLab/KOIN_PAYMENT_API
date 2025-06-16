@@ -1,4 +1,4 @@
-package in.koreatech.payment.config;
+package in.koreatech.payment.common.config;
 
 import org.springframework.context.annotation.Configuration;
 import org.springframework.data.jpa.repository.config.EnableJpaAuditing;

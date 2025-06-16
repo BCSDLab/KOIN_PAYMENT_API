@@ -1,4 +1,4 @@
-package in.koreatech.payment.exception;
+package in.koreatech.payment.common.exception;
 
 import java.time.DateTimeException;
 import java.util.Enumeration;
@@ -26,14 +26,14 @@ import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExcep
 import org.springframework.web.util.ContentCachingRequestWrapper;
 import org.springframework.web.util.WebUtils;
 
-import in.koreatech.payment.exception.custom.DataNotFoundException;
-import in.koreatech.payment.exception.custom.DuplicationException;
-import in.koreatech.payment.exception.custom.ExternalServiceException;
-import in.koreatech.payment.exception.custom.KoinException;
-import in.koreatech.payment.exception.custom.KoinIllegalArgumentException;
-import in.koreatech.payment.exception.custom.KoinIllegalStateException;
-import in.koreatech.payment.exception.custom.RequestTooFastException;
-import in.koreatech.payment.exception.custom.TooManyRequestsException;
+import in.koreatech.payment.common.exception.custom.DataNotFoundException;
+import in.koreatech.payment.common.exception.custom.DuplicationException;
+import in.koreatech.payment.common.exception.custom.ExternalServiceException;
+import in.koreatech.payment.common.exception.custom.KoinException;
+import in.koreatech.payment.common.exception.custom.KoinIllegalArgumentException;
+import in.koreatech.payment.common.exception.custom.KoinIllegalStateException;
+import in.koreatech.payment.common.exception.custom.RequestTooFastException;
+import in.koreatech.payment.common.exception.custom.TooManyRequestsException;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.extern.slf4j.Slf4j;
 

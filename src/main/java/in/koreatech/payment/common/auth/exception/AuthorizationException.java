@@ -1,6 +1,6 @@
 package in.koreatech.payment.common.auth.exception;
 
-import in.koreatech.payment.exception.custom.KoinException;
+import in.koreatech.payment.common.exception.custom.KoinException;
 
 public class AuthorizationException extends KoinException {
 
