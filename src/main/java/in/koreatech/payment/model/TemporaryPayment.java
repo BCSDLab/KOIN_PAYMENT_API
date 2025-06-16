@@ -6,6 +6,7 @@ import org.springframework.data.annotation.Id;
 import org.springframework.data.redis.core.RedisHash;
 import org.springframework.data.redis.core.TimeToLive;
 
+import in.koreatech.payment.exception.InvalidOrderIdException;
 import in.koreatech.payment.exception.InvalidTemporaryPaymentException;
 import lombok.Getter;
 
@@ -41,10 +42,9 @@ public class TemporaryPayment {
         return new TemporaryPayment(orderId, userId, amount);
     }
 
-    // TODO. 패키지 정리 이후 커스텀 예외 처리
     private void validateOrderIdPattern(String orderId) {
         if (!orderId.matches(ORDER_ID_PATTERN)) {
-            throw new IllegalArgumentException("orderId는 영문 대소문자, 숫자, 특수문자 '-', '_'로 이루어진 6자 이상 64자 이하의 문자열이어야 합니다.");
+            throw InvalidOrderIdException.withDetail(orderId);
         }
     }
 
