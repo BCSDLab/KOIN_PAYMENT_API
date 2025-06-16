@@ -2,19 +2,9 @@ package in.koreatech.payment.common.auth.exception;
 
 import in.koreatech.payment.common.exception.custom.KoinException;
 
-public class AuthorizationException extends KoinException {
+public abstract class AuthorizationException extends KoinException {
 
-    private static final String DEFAULT_MESSAGE = "권한이 없습니다.";
+    protected AuthorizationException(String message) {super(message);}
 
-    public AuthorizationException(String message) {
-        super(message);
-    }
-
-    public AuthorizationException(String message, String detail) {
-        super(message, detail);
-    }
-
-    public static AuthorizationException withDetail(String detail) {
-        return new AuthorizationException(DEFAULT_MESSAGE, detail);
-    }
+    protected AuthorizationException(String message, String detail) {super(message, detail);}
 }
