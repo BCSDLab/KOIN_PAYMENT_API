@@ -5,7 +5,7 @@ import in.koreatech.payment.common.exception.custom.DataNotFoundException;
 public class UserNotFoundException extends DataNotFoundException {
 
     private static final String DEFAULT_MESSAGE = "존재하지 않는 사용자입니다.";
-    private static final String code = "USER_NOT_FOUND";
+    private static final String code = "NOT_FOUND_USER";
 
     public UserNotFoundException(String message) {
         super(message, code);
