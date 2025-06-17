@@ -13,7 +13,6 @@ public interface TemporaryPaymentRepository extends Repository<TemporaryPayment,
 
     Optional<TemporaryPayment> findById(String orderId);
 
-    // TODO. 패키지 정리 이후 커스텀 예외 처리
     default TemporaryPayment getByOrderId(String orderId) {
         return findById(orderId)
             .orElseThrow(() -> TemporaryPaymentNotFoundException.withDetail("orderId: " + orderId));
