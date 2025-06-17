@@ -68,7 +68,7 @@ public class TemporaryPayment {
 
     private void validateAmountMatches(Integer amount) {
         if (!amount.equals(this.amount)) {
-            throw InvalidTemporaryPaymentException.withDetail("userId : " + userId);
+            throw InvalidTemporaryPaymentException.withDetail("amount : " + amount);
         }
     }
 }
