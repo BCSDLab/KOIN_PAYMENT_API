@@ -44,7 +44,7 @@ public class TemporaryPayment {
 
     private void validateOrderIdPattern(String orderId) {
         if (!orderId.matches(ORDER_ID_PATTERN)) {
-            throw InvalidOrderIdException.withDetail(orderId);
+            throw InvalidOrderIdException.withDetail("orderId: " + orderId);
         }
     }
 
