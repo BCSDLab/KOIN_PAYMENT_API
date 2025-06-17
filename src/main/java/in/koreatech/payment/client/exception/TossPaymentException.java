@@ -3,12 +3,12 @@ package in.koreatech.payment.client.exception;
 public class TossPaymentException extends RuntimeException {
 
     private final Integer statusCode;
-    private final String code;
+    private final String errorCode;
 
-    private TossPaymentException(String message, Integer statusCode, String code) {
+    private TossPaymentException(String message, Integer statusCode, String errorCode) {
         super(message);
         this.statusCode = statusCode;
-        this.code = code;
+        this.errorCode = errorCode;
     }
 
     public static TossPaymentException of(String message, Integer statusCode, String code) {
@@ -19,7 +19,7 @@ public class TossPaymentException extends RuntimeException {
         return statusCode;
     }
 
-    public String getCode() {
-        return code;
+    public String getErrorCode() {
+        return errorCode;
     }
 }

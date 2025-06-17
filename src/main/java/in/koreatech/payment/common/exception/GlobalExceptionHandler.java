@@ -120,7 +120,7 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
     ) {
         log.warn(e.getMessage());
         requestLogging(request);
-        return buildErrorResponse(valueOf(e.getStatusCode()), e.getCode(), e.getMessage());
+        return buildErrorResponse(valueOf(e.getStatusCode()), e.getErrorCode(), e.getMessage());
     }
 
     @ExceptionHandler(InvalidArgumentException.class)
