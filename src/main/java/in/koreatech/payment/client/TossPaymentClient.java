@@ -21,7 +21,6 @@ import in.koreatech.payment.client.exception.TossPaymentException;
 import in.koreatech.payment.common.exception.custom.KoinIllegalStateException;
 import lombok.extern.slf4j.Slf4j;
 
-@Slf4j
 @Component
 public class TossPaymentClient {
 
