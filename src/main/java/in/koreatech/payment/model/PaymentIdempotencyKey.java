@@ -3,6 +3,9 @@ package in.koreatech.payment.model;
 import static jakarta.persistence.GenerationType.IDENTITY;
 import static lombok.AccessLevel.PROTECTED;
 
+import java.time.LocalDateTime;
+import java.time.temporal.ChronoUnit;
+
 import in.koreatech.payment.common.model.BaseEntity;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -25,6 +28,8 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor(access = PROTECTED)
 public class PaymentIdempotencyKey extends BaseEntity {
 
+    private static final int EXPIRE_DAYS = 15;
+
     @Id
     @GeneratedValue(strategy = IDENTITY)
     private Integer id;
@@ -45,5 +50,13 @@ public class PaymentIdempotencyKey extends BaseEntity {
     ) {
         this.userId = userId;
         this.idempotencyKey = idempotencyKey;
+    }
+
+    public void updateIdempotencyKey(String idempotencyKey) {
+        this.idempotencyKey = idempotencyKey;
+    }
+
+    public boolean isOlderThanExpireDays() {
+        return ChronoUnit.DAYS.between(super.getUpdatedAt(), LocalDateTime.now()) >= EXPIRE_DAYS;
     }
 }

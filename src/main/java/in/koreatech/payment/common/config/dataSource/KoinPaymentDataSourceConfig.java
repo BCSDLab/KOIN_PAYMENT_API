@@ -1,5 +1,8 @@
 package in.koreatech.payment.common.config.dataSource;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import javax.sql.DataSource;
 
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -41,7 +44,16 @@ public class KoinPaymentDataSourceConfig {
         em.setDataSource(dataSource);
         em.setPackagesToScan("in.koreatech.payment");
         em.setJpaVendorAdapter(new HibernateJpaVendorAdapter());
+        em.setJpaPropertyMap(hibernateProperties());
         return em;
+    }
+
+    private Map<String, Object> hibernateProperties() {
+        Map<String, Object> props = new HashMap<>();
+        props.put("hibernate.hbm2ddl.auto", "create-drop");
+        props.put("hibernate.show_sql", true);
+        props.put("hibernate.format_sql", true);
+        return props;
     }
 
     @Primary

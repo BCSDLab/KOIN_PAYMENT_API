@@ -1,5 +1,7 @@
 package in.koreatech.payment.service;
 
+import java.util.UUID;
+
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -9,7 +11,9 @@ import in.koreatech.payment.client.TossPaymentClient;
 import in.koreatech.payment.client.dto.response.PaymentConfirmResponse;
 import in.koreatech.payment.common.auth.JwtTokenResolver;
 import in.koreatech.payment.model.Payment;
+import in.koreatech.payment.model.PaymentIdempotencyKey;
 import in.koreatech.payment.model.TemporaryPayment;
+import in.koreatech.payment.repository.PaymentIdempotencyKeyRepository;
 import in.koreatech.payment.repository.PaymentRepository;
 import in.koreatech.payment.repository.TemporaryPaymentRepository;
 import in.koreatech.payment.util.OrderIdGenerator;
@@ -26,6 +30,7 @@ public class TossService implements PaymentService {
     private final UserRepository userRepository;
     private final TossPaymentClient tossPaymentClient;
     private final PaymentRepository paymentRepository;
+    private final PaymentIdempotencyKeyRepository paymentIdempotencyKeyRepository;
 
     @Transactional
     public String createTemporaryPayment(String accessToken, Integer amount) {
@@ -59,6 +64,21 @@ public class TossService implements PaymentService {
         User user = userRepository.getById(userId);
         Payment payment = paymentRepository.getByPaymentKey(paymentKey);
         payment.validateUserIdMatches(user.getId());
-        
+        PaymentIdempotencyKey paymentIdempotencyKey = paymentIdempotencyKeyRepository
+            .findByUserId(user.getId())
+            .map(idempotencyKey -> {
+                if (idempotencyKey.isOlderThanExpireDays()) {
+                    idempotencyKey.updateIdempotencyKey(UUID.randomUUID().toString());
+                }
+                return idempotencyKey;
+            })
+            .orElseGet(() -> paymentIdempotencyKeyRepository.save(
+                PaymentIdempotencyKey.builder()
+                    .userId(user.getId())
+                    .idempotencyKey(UUID.randomUUID().toString())
+                    .build()
+            ));
+
+        tossPaymentClient.requestCancel(paymentKey, cancelReason, paymentIdempotencyKey.getIdempotencyKey());
     }
 }
