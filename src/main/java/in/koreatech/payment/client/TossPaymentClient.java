@@ -14,6 +14,7 @@ import org.springframework.web.reactive.function.client.WebClientResponseExcepti
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+import in.koreatech.payment.client.dto.PaymentConfirmResponse;
 import in.koreatech.payment.client.exception.TossPaymentErrorResponse;
 import in.koreatech.payment.client.dto.TossPaymentConfirmRequest;
 import in.koreatech.payment.client.exception.TossPaymentErrorCode;
@@ -44,15 +45,15 @@ public class TossPaymentClient {
             .build();
     }
 
-    public void requestConfirm(String paymentKey, String orderId, Integer amount) {
+    public PaymentConfirmResponse requestConfirm(String paymentKey, String orderId, Integer amount) {
         TossPaymentConfirmRequest request = new TossPaymentConfirmRequest(paymentKey, orderId, amount);
 
         try {
-            webClient.post()
+            return webClient.post()
                 .uri("/confirm")
                 .bodyValue(request)
                 .retrieve()
-                .bodyToMono(String.class)
+                .bodyToMono(PaymentConfirmResponse.class)
                 .block();
 
         } catch (WebClientResponseException e) {
