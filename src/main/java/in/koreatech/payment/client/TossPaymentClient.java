@@ -69,7 +69,7 @@ public class TossPaymentClient {
 
         try {
             webClient.post()
-                .uri("{paymentKey}/cancel", paymentKey)
+                .uri("/{paymentKey}/cancel", paymentKey)
                 .header(IDEMPOTENT_KEY, IdempotencyKey)
                 .bodyValue(request)
                 .retrieve()
