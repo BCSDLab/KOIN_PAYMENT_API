@@ -1,4 +1,4 @@
-package in.koreatech.payment.config;
+package in.koreatech.payment.common.config;
 
 import static io.swagger.v3.oas.models.security.SecurityScheme.Type.HTTP;
 

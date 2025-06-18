@@ -1,4 +1,4 @@
-package in.koreatech.payment.config.dataSource;
+package in.koreatech.payment.common.config.dataSource;
 
 import javax.sql.DataSource;
 
@@ -7,6 +7,7 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.boot.jdbc.DataSourceBuilder;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Primary;
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 import org.springframework.orm.jpa.JpaTransactionManager;
 import org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean;
@@ -19,32 +20,34 @@ import jakarta.persistence.EntityManagerFactory;
 @Configuration
 @EnableTransactionManagement
 @EnableJpaRepositories(
-    basePackages = "in.koreatech.koin",
-    entityManagerFactoryRef = "koinEntityManagerFactory",
-    transactionManagerRef = "koinTransactionManager"
+    basePackages = "in.koreatech.payment",
+    entityManagerFactoryRef = "koinPaymentEntityManagerFactory",
+    transactionManagerRef = "koinPaymentTransactionManager"
 )
-public class KoinDataSourceConfig {
+public class KoinPaymentDataSourceConfig {
 
-    @Bean(name = "koinDataSource")
-    @ConfigurationProperties("spring.datasource.koin")
-    public DataSource koinDataSource() {
+    @Bean(name = "koinPaymentDataSource")
+    @ConfigurationProperties("spring.datasource.koin-payment")
+    public DataSource koinPaymentDataSource() {
         return DataSourceBuilder.create().build();
     }
 
-    @Bean(name = "koinEntityManagerFactory")
-    public LocalContainerEntityManagerFactoryBean koinEntityManagerFactory(
-        @Qualifier(value = "koinDataSource") DataSource dataSource
+    @Primary
+    @Bean(name = "koinPaymentEntityManagerFactory")
+    public LocalContainerEntityManagerFactoryBean koinPaymentEntityManagerFactory(
+        @Qualifier(value = "koinPaymentDataSource") DataSource dataSource
     ) {
         LocalContainerEntityManagerFactoryBean em = new LocalContainerEntityManagerFactoryBean();
         em.setDataSource(dataSource);
-        em.setPackagesToScan("in.koreatech.koin");
+        em.setPackagesToScan("in.koreatech.payment");
         em.setJpaVendorAdapter(new HibernateJpaVendorAdapter());
         return em;
     }
 
-    @Bean(name = "koinTransactionManager")
-    public PlatformTransactionManager koinTransactionManager(
-        @Qualifier(value = "koinEntityManagerFactory") EntityManagerFactory entityManagerFactory
+    @Primary
+    @Bean(name = "koinPaymentTransactionManager")
+    public PlatformTransactionManager koinPaymentTransactionManager(
+        @Qualifier(value = "koinPaymentEntityManagerFactory") EntityManagerFactory entityManagerFactory
     ) {
         return new JpaTransactionManager(entityManagerFactory);
     }

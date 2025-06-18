@@ -7,7 +7,8 @@ import org.springframework.web.context.request.NativeWebRequest;
 import org.springframework.web.method.support.HandlerMethodArgumentResolver;
 import org.springframework.web.method.support.ModelAndViewContainer;
 
-import in.koreatech.payment.common.auth.exception.AuthenticationException;
+import in.koreatech.payment.common.auth.exception.UnauthenticatedTokenException;
+import in.koreatech.payment.common.exception.custom.AuthenticationException;
 import lombok.RequiredArgsConstructor;
 
 @Component
@@ -30,7 +31,7 @@ public class AccessTokenArgumentResolver implements HandlerMethodArgumentResolve
     ) {
         String accessToken = accessTokenContext.getAccessToken();
         if (accessToken == null || accessToken.isBlank()) {
-            throw AuthenticationException.withDetail("유효하지 않은 인증정보입니다.");
+            throw UnauthenticatedTokenException.withDetail("accessToken: " + accessToken);
         }
         return accessToken;
     }

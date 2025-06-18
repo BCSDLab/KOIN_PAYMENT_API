@@ -14,11 +14,13 @@ import org.springframework.web.reactive.function.client.WebClientResponseExcepti
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-import in.koreatech.payment.client.dto.TossErrorResponse;
-import in.koreatech.payment.client.dto.TossPaymentConfirmRequest;
-import lombok.extern.slf4j.Slf4j;
+import in.koreatech.payment.client.dto.response.PaymentConfirmResponse;
+import in.koreatech.payment.client.exception.TossPaymentErrorResponse;
+import in.koreatech.payment.client.dto.request.PaymentConfirmRequest;
+import in.koreatech.payment.client.exception.TossPaymentErrorCode;
+import in.koreatech.payment.client.exception.TossPaymentException;
+import in.koreatech.payment.common.exception.custom.KoinIllegalStateException;
 
-@Slf4j
 @Component
 public class TossPaymentClient {
 
@@ -42,33 +44,32 @@ public class TossPaymentClient {
             .build();
     }
 
-    public void requestConfirm(String paymentKey, String orderId, Integer amount) {
-        TossPaymentConfirmRequest request = new TossPaymentConfirmRequest(paymentKey, orderId, amount);
+    public PaymentConfirmResponse requestConfirm(String paymentKey, String orderId, Integer amount) {
+        PaymentConfirmRequest request = new PaymentConfirmRequest(paymentKey, orderId, amount);
 
         try {
-            webClient.post()
+            return webClient.post()
                 .uri("/confirm")
                 .bodyValue(request)
                 .retrieve()
-                .bodyToMono(String.class)
+                .bodyToMono(PaymentConfirmResponse.class)
                 .block();
 
         } catch (WebClientResponseException e) {
             throw handleErrorResponse(e);
         } catch (Exception e) {
-            throw new RuntimeException("Toss 결제 승인 요청 실패");
+            throw new KoinIllegalStateException("서버 에러가 발생했습니다. 관리자에게 문의해주세요.");
         }
     }
 
-    // TODO. 패키지 정리 이후 커스텀 예외 처리
     private RuntimeException handleErrorResponse(WebClientResponseException e) {
         try {
             String rawBody = new String(e.getResponseBodyAsByteArray(), UTF_8);
-            TossErrorResponse error = objectMapper.readValue(rawBody, TossErrorResponse.class);
-            log.error("[Toss Payments 오류] code: {}, message: {}", error.code(), error.message());
-            return new RuntimeException("Toss 결제 승인 요청 실패");
+            TossPaymentErrorResponse error = objectMapper.readValue(rawBody, TossPaymentErrorResponse.class);
+            TossPaymentErrorCode tossPaymentErrorCode = TossPaymentErrorCode.fromCode(error.code());
+            return TossPaymentException.of(tossPaymentErrorCode.getMessage(), tossPaymentErrorCode.getStatusCode(), tossPaymentErrorCode.getCode());
         } catch (Exception ex) {
-            return new RuntimeException("Toss 결제 승인 요청 실패");
+            return new KoinIllegalStateException("서버 에러가 발생했습니다. 관리자에게 문의해주세요.");
         }
     }
 

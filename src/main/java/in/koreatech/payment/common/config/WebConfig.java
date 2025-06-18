@@ -1,4 +1,4 @@
-package in.koreatech.payment.config;
+package in.koreatech.payment.common.config;
 
 import java.util.List;
 

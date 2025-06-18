@@ -1,17 +1,18 @@
 package in.koreatech.koin.domain.user.exception;
 
-import in.koreatech.payment.exception.custom.DataNotFoundException;
+import in.koreatech.payment.common.exception.custom.DataNotFoundException;
 
 public class UserNotFoundException extends DataNotFoundException {
 
     private static final String DEFAULT_MESSAGE = "존재하지 않는 사용자입니다.";
+    private static final String ERROR_CODE = "NOT_FOUND_USER";
 
     public UserNotFoundException(String message) {
-        super(message);
+        super(message, ERROR_CODE);
     }
 
     public UserNotFoundException(String message, String detail) {
-        super(message, detail);
+        super(message, detail, ERROR_CODE);
     }
 
     public static UserNotFoundException withDetail(String detail) {

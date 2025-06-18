@@ -7,7 +7,8 @@ import javax.crypto.SecretKey;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
-import in.koreatech.payment.common.auth.exception.AuthenticationException;
+import in.koreatech.payment.common.auth.exception.UnauthenticatedTokenException;
+import in.koreatech.payment.common.exception.custom.AuthenticationException;
 import io.jsonwebtoken.JwtException;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.security.Keys;
@@ -34,7 +35,7 @@ public class JwtTokenResolver {
                 .toString();
             return Integer.parseInt(userId);
         } catch (JwtException e) {
-            throw AuthenticationException.withDetail("token: " + token);
+            throw UnauthenticatedTokenException.withDetail("token: " + token);
         }
     }
 

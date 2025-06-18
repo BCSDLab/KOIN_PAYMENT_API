@@ -1,4 +1,4 @@
-package in.koreatech.payment.config;
+package in.koreatech.payment.common.config;
 
 import static java.nio.charset.StandardCharsets.UTF_8;
 import static org.springframework.data.redis.core.RedisKeyValueAdapter.EnableKeyspaceEvents.ON_STARTUP;
