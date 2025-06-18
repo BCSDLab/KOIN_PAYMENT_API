@@ -3,6 +3,7 @@ package in.koreatech.payment.model;
 import static jakarta.persistence.GenerationType.IDENTITY;
 import static lombok.AccessLevel.PROTECTED;
 
+import in.koreatech.payment.common.model.BaseEntity;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -22,7 +23,7 @@ import lombok.NoArgsConstructor;
     uniqueConstraints = @UniqueConstraint(name = "uk_idempotency_key_user_id", columnNames = "user_id")
 )
 @NoArgsConstructor(access = PROTECTED)
-public class PaymentIdempotencyKey {
+public class PaymentIdempotencyKey extends BaseEntity {
 
     @Id
     @GeneratedValue(strategy = IDENTITY)
