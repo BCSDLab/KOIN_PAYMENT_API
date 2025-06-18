@@ -1,4 +1,4 @@
-package in.koreatech.payment.client.dto;
+package in.koreatech.payment.client.dto.response;
 
 public record PaymentConfirmResponse(
     String paymentKey,

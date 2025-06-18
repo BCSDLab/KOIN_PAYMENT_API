@@ -6,7 +6,7 @@ import org.springframework.transaction.annotation.Transactional;
 import in.koreatech.koin.domain.user.model.User;
 import in.koreatech.koin.domain.user.repository.UserRepository;
 import in.koreatech.payment.client.TossPaymentClient;
-import in.koreatech.payment.client.dto.PaymentConfirmResponse;
+import in.koreatech.payment.client.dto.response.PaymentConfirmResponse;
 import in.koreatech.payment.common.auth.JwtTokenResolver;
 import in.koreatech.payment.model.Payment;
 import in.koreatech.payment.model.TemporaryPayment;

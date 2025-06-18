@@ -14,13 +14,12 @@ import org.springframework.web.reactive.function.client.WebClientResponseExcepti
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-import in.koreatech.payment.client.dto.PaymentConfirmResponse;
+import in.koreatech.payment.client.dto.response.PaymentConfirmResponse;
 import in.koreatech.payment.client.exception.TossPaymentErrorResponse;
-import in.koreatech.payment.client.dto.TossPaymentConfirmRequest;
+import in.koreatech.payment.client.dto.request.PaymentConfirmRequest;
 import in.koreatech.payment.client.exception.TossPaymentErrorCode;
 import in.koreatech.payment.client.exception.TossPaymentException;
 import in.koreatech.payment.common.exception.custom.KoinIllegalStateException;
-import lombok.extern.slf4j.Slf4j;
 
 @Component
 public class TossPaymentClient {
@@ -46,7 +45,7 @@ public class TossPaymentClient {
     }
 
     public PaymentConfirmResponse requestConfirm(String paymentKey, String orderId, Integer amount) {
-        TossPaymentConfirmRequest request = new TossPaymentConfirmRequest(paymentKey, orderId, amount);
+        PaymentConfirmRequest request = new PaymentConfirmRequest(paymentKey, orderId, amount);
 
         try {
             return webClient.post()
