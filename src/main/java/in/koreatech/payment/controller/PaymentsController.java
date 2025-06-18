@@ -1,12 +1,14 @@
 package in.koreatech.payment.controller;
 
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import in.koreatech.payment.common.auth.AccessToken;
+import in.koreatech.payment.dto.request.PaymentCancelRequest;
 import in.koreatech.payment.dto.request.PaymentConfirmRequest;
 import in.koreatech.payment.dto.request.TemporaryPaymentInformationSaveRequest;
 import in.koreatech.payment.dto.response.TemporaryPaymentResponse;
@@ -37,6 +39,16 @@ public class PaymentsController implements PaymentsApi {
         @AccessToken final String accessToken
     ) {
         paymentService.confirmPayment(accessToken, request.paymentKey(), request.orderId(), request.amount());
+        return ResponseEntity.ok().build();
+    }
+
+    @PostMapping("/{paymentKey}/cancel")
+    public ResponseEntity<Void> cancelPayment(
+        @PathVariable(value = "paymentKey") final String paymentKey,
+        @RequestBody @Valid final PaymentCancelRequest request,
+        @AccessToken final String accessToken
+    ) {
+        paymentService.cancelPayment(accessToken, paymentKey, request.cancelReason());
         return ResponseEntity.ok().build();
     }
 }

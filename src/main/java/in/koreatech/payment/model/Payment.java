@@ -6,6 +6,7 @@ import static lombok.AccessLevel.PROTECTED;
 
 import org.hibernate.annotations.Where;
 
+import in.koreatech.payment.exception.InvalidTemporaryPaymentException;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -63,5 +64,11 @@ public class Payment {
         this.orderId = orderId;
         this.amount = amount;
         this.userId = userId;
+    }
+
+    public void validateUserIdMatches(Integer userId) {
+        if (!userId.equals(this.userId)) {
+            throw InvalidTemporaryPaymentException.withDetail("userId : " + userId);
+        }
     }
 }

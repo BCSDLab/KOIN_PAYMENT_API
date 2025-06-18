@@ -52,4 +52,13 @@ public class TossService implements PaymentService {
             .build());
         temporaryPaymentRepository.deleteById(orderId);
     }
+
+    @Transactional
+    public void cancelPayment(String accessToken, String paymentKey, String cancelReason) {
+        Integer userId = jwtTokenResolver.getUserId(accessToken);
+        User user = userRepository.getById(userId);
+        Payment payment = paymentRepository.getByPaymentKey(paymentKey);
+        payment.validateUserIdMatches(user.getId());
+        
+    }
 }
