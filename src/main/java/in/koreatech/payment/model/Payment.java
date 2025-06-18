@@ -71,4 +71,6 @@ public class Payment {
             throw InvalidTemporaryPaymentException.withDetail("userId : " + userId);
         }
     }
+
+    // TODO. Payment 필드 추가, 결제 승인 및 취소 등 상태 변화 메소드 추가
 }
