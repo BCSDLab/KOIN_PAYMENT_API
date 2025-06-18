@@ -1,19 +1,15 @@
 package in.koreatech.payment.model;
 
-import static jakarta.persistence.FetchType.*;
 import static jakarta.persistence.GenerationType.IDENTITY;
+import static java.lang.Boolean.FALSE;
 import static lombok.AccessLevel.PROTECTED;
 
-import java.math.BigDecimal;
+import org.hibernate.annotations.Where;
 
-import in.koreatech.koin.domain.user.model.User;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
-import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.Id;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
@@ -25,6 +21,7 @@ import lombok.NoArgsConstructor;
 @Entity
 @Getter
 @Table(name = "payment")
+@Where(clause = "is_deleted=0")
 @NoArgsConstructor(access = PROTECTED)
 public class Payment {
 
@@ -47,20 +44,24 @@ public class Payment {
     @Column(name = "amount", nullable = false, updatable = false)
     private Integer amount;
 
-    @JoinColumn(name = "user_id")
-    @ManyToOne(fetch = LAZY)
-    private User user;
+    @NotNull
+    @Column(name = "user_id", nullable = false, updatable = false)
+    private Integer userId;
+
+    @NotNull
+    @Column(name = "is_deleted", nullable = false)
+    private Boolean isDeleted = FALSE;
 
     @Builder
     private Payment(
         String paymentKey,
         String orderId,
         Integer amount,
-        User user
+        Integer userId
     ) {
         this.paymentKey = paymentKey;
         this.orderId = orderId;
         this.amount = amount;
-        this.user = user;
+        this.userId = userId;
     }
 }

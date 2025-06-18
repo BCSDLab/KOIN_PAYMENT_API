@@ -48,7 +48,7 @@ public class TossService implements PaymentService {
             .paymentKey(response.paymentKey())
             .orderId(response.orderId())
             .amount(response.amount())
-            .user(user)
+            .userId(user.getId())
             .build());
         temporaryPaymentRepository.deleteById(orderId);
     }
