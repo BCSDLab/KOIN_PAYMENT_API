@@ -6,8 +6,11 @@ import org.springframework.transaction.annotation.Transactional;
 import in.koreatech.koin.domain.user.model.User;
 import in.koreatech.koin.domain.user.repository.UserRepository;
 import in.koreatech.payment.client.TossPaymentClient;
+import in.koreatech.payment.client.dto.response.PaymentConfirmResponse;
 import in.koreatech.payment.common.auth.JwtTokenResolver;
+import in.koreatech.payment.model.Payment;
 import in.koreatech.payment.model.TemporaryPayment;
+import in.koreatech.payment.repository.PaymentRepository;
 import in.koreatech.payment.repository.TemporaryPaymentRepository;
 import in.koreatech.payment.util.OrderIdGenerator;
 import lombok.RequiredArgsConstructor;
@@ -22,13 +25,15 @@ public class TossService implements PaymentService {
     private final JwtTokenResolver jwtTokenResolver;
     private final UserRepository userRepository;
     private final TossPaymentClient tossPaymentClient;
+    private final PaymentRepository paymentRepository;
 
     @Transactional
     public String createTemporaryPayment(String accessToken, Integer amount) {
         Integer userId = jwtTokenResolver.getUserId(accessToken);
         User user = userRepository.getById(userId);
         String orderId = orderIdGenerator.generateOrderId();
-        TemporaryPayment temporaryPayment = temporaryPaymentRepository.save(TemporaryPayment.of(orderId, user.getId(), amount));
+        TemporaryPayment temporaryPayment = temporaryPaymentRepository.save(
+            TemporaryPayment.of(orderId, user.getId(), amount));
         return temporaryPayment.getOrderId();
     }
 
@@ -38,7 +43,13 @@ public class TossService implements PaymentService {
         User user = userRepository.getById(userId);
         TemporaryPayment temporaryPayment = temporaryPaymentRepository.getByOrderId(orderId);
         temporaryPayment.validateMatches(orderId, user.getId(), amount);
-        tossPaymentClient.requestConfirm(paymentKey, orderId, amount);
-        // TODO. 응답값 파싱 후 로직 처리
+        PaymentConfirmResponse response = tossPaymentClient.requestConfirm(paymentKey, orderId, amount);
+        paymentRepository.save(Payment.builder()
+            .paymentKey(response.paymentKey())
+            .orderId(response.orderId())
+            .amount(response.amount())
+            .userId(user.getId())
+            .build());
+        temporaryPaymentRepository.deleteById(orderId);
     }
 }
