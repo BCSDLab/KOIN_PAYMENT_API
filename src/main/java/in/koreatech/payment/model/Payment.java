@@ -6,6 +6,8 @@ import static lombok.AccessLevel.PROTECTED;
 
 import org.hibernate.annotations.Where;
 
+import in.koreatech.payment.exception.InvalidTemporaryPaymentException;
+import in.koreatech.payment.exception.PaymentAccessDeniedException;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -64,4 +66,12 @@ public class Payment {
         this.amount = amount;
         this.userId = userId;
     }
+
+    public void validateUserIdMatches(Integer userId) {
+        if (!userId.equals(this.userId)) {
+            throw PaymentAccessDeniedException.withDetail("userId : " + userId);
+        }
+    }
+
+    // TODO. Payment 필드 추가, 결제 승인 및 취소 등 상태 변화 메소드 추가
 }

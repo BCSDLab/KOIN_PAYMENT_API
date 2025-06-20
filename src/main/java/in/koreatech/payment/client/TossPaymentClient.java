@@ -14,10 +14,11 @@ import org.springframework.web.reactive.function.client.WebClientResponseExcepti
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-import in.koreatech.payment.client.dto.response.PaymentConfirmResponse;
-import in.koreatech.payment.client.exception.TossPaymentErrorResponse;
+import in.koreatech.payment.client.dto.request.PaymentCancelRequest;
 import in.koreatech.payment.client.dto.request.PaymentConfirmRequest;
+import in.koreatech.payment.client.dto.response.PaymentConfirmResponse;
 import in.koreatech.payment.client.exception.TossPaymentErrorCode;
+import in.koreatech.payment.client.exception.TossPaymentErrorResponse;
 import in.koreatech.payment.client.exception.TossPaymentException;
 import in.koreatech.payment.common.exception.custom.KoinIllegalStateException;
 
@@ -25,6 +26,7 @@ import in.koreatech.payment.common.exception.custom.KoinIllegalStateException;
 public class TossPaymentClient {
 
     private static final String AUTH_PREFIX = "Basic ";
+    private static final String IDEMPOTENT_KEY = "Idempotency-Key";
 
     private final WebClient webClient;
     private final String secretKey;
@@ -55,6 +57,24 @@ public class TossPaymentClient {
                 .bodyToMono(PaymentConfirmResponse.class)
                 .block();
 
+        } catch (WebClientResponseException e) {
+            throw handleErrorResponse(e);
+        } catch (Exception e) {
+            throw new KoinIllegalStateException("서버 에러가 발생했습니다. 관리자에게 문의해주세요.");
+        }
+    }
+
+    public void requestCancel(String paymentKey, String cancelReason, String IdempotencyKey) {
+        PaymentCancelRequest request = new PaymentCancelRequest(cancelReason);
+
+        try {
+            webClient.post()
+                .uri("/{paymentKey}/cancel", paymentKey)
+                .header(IDEMPOTENT_KEY, IdempotencyKey)
+                .bodyValue(request)
+                .retrieve()
+                .bodyToMono(String.class)
+                .block();
         } catch (WebClientResponseException e) {
             throw handleErrorResponse(e);
         } catch (Exception e) {

@@ -1,15 +1,18 @@
 package in.koreatech.payment.controller;
 
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 
 import in.koreatech.payment.common.auth.AccessToken;
+import in.koreatech.payment.dto.request.PaymentCancelRequest;
 import in.koreatech.payment.dto.request.PaymentConfirmRequest;
 import in.koreatech.payment.dto.request.TemporaryPaymentInformationSaveRequest;
 import in.koreatech.payment.dto.response.TemporaryPaymentResponse;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.ExampleObject;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
@@ -82,6 +85,18 @@ public interface PaymentsApi {
     @PostMapping("/confirm")
     ResponseEntity<Void> confirmPayment(
         @RequestBody @Valid final PaymentConfirmRequest request,
+        @AccessToken final String accessToken
+    );
+
+    @Operation(
+        summary = "결제 취소를 한다.",
+        description = "결제 취소를 한다."
+    )
+    @PostMapping("/{paymentKey}/cancel")
+    ResponseEntity<Void> cancelPayment(
+        @Parameter(description = "결제 키", example = "5EnNZRJGvaBX7zk2yd8ydw26XvwXkLrx9POLqKQjmAw4b0e1")
+        @PathVariable(value = "paymentKey") final String paymentKey,
+        @RequestBody @Valid final PaymentCancelRequest request,
         @AccessToken final String accessToken
     );
 }
