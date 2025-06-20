@@ -1,5 +1,8 @@
 package in.koreatech.payment.common.config.dataSource;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import javax.sql.DataSource;
 
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -15,8 +18,10 @@ import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
 
 import jakarta.persistence.EntityManagerFactory;
+import lombok.RequiredArgsConstructor;
 
 @Configuration
+@RequiredArgsConstructor
 @EnableTransactionManagement
 @EnableJpaRepositories(
     basePackages = "in.koreatech.koin",
@@ -24,6 +29,8 @@ import jakarta.persistence.EntityManagerFactory;
     transactionManagerRef = "koinTransactionManager"
 )
 public class KoinDataSourceConfig {
+
+    private final KoinDBProperties koinDBProperties;
 
     @Bean(name = "koinDataSource")
     @ConfigurationProperties("spring.datasource.koin")
@@ -37,9 +44,18 @@ public class KoinDataSourceConfig {
     ) {
         LocalContainerEntityManagerFactoryBean em = new LocalContainerEntityManagerFactoryBean();
         em.setDataSource(dataSource);
-        em.setPackagesToScan("in.koreatech.koin");
+        em.setPackagesToScan(koinDBProperties.packagesToScan());
         em.setJpaVendorAdapter(new HibernateJpaVendorAdapter());
+        em.setJpaPropertyMap(createJpaVendorProperties());
         return em;
+    }
+
+    private Map<String, Object> createJpaVendorProperties() {
+        Map<String, Object> properties = new HashMap<>();
+        properties.put("hibernate.show_sql", koinDBProperties.showSql());
+        properties.put("hibernate.hbm2ddl.auto", koinDBProperties.ddlAuto());
+        properties.put("hibernate.format_sql", koinDBProperties.formatSql());
+        return properties;
     }
 
     @Bean(name = "koinTransactionManager")
