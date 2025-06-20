@@ -80,5 +80,6 @@ public class TossService implements PaymentService {
             ));
 
         tossPaymentClient.requestCancel(paymentKey, cancelReason, paymentIdempotencyKey.getIdempotencyKey());
+        // TODO. Payment 필드 추가 후 로직 추가
     }
 }
