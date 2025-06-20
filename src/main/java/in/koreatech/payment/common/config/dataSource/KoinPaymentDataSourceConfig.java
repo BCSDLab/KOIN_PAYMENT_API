@@ -56,6 +56,7 @@ public class KoinPaymentDataSourceConfig {
         Map<String, Object> properties = new HashMap<>();
         properties.put("hibernate.show_sql", koinPaymentDBProperties.showSql());
         properties.put("hibernate.hbm2ddl.auto", koinPaymentDBProperties.ddlAuto());
+        properties.put("hibernate.format_sql", koinPaymentDBProperties.formatSql());
         return properties;
     }
 

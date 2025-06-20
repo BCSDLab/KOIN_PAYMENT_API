@@ -6,6 +6,7 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 public record KoinPaymentDBProperties(
     String ddlAuto,
     Boolean showSql,
-    String packagesToScan
+    String packagesToScan,
+    String formatSql
 ) {
 }
