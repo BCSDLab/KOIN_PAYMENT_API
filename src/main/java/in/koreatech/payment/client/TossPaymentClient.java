@@ -74,7 +74,7 @@ public class TossPaymentClient {
                 .header(IDEMPOTENT_KEY, IdempotencyKey)
                 .bodyValue(request)
                 .retrieve()
-                .bodyToMono(PaymentwCancelResponse.class)
+                .bodyToMono(PaymentCancelResponse.class)
                 .block();
         } catch (WebClientResponseException e) {
             throw handleErrorResponse(e);
