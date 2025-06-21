@@ -14,6 +14,7 @@ import in.koreatech.payment.client.dto.response.PaymentConfirmResponse;
 import in.koreatech.payment.common.auth.JwtTokenResolver;
 import in.koreatech.payment.common.exception.custom.KoinIllegalStateException;
 import in.koreatech.payment.exception.PaymentAlreadyCanceledException;
+import in.koreatech.payment.exception.PaymentCancelException;
 import in.koreatech.payment.exception.PaymentConfirmException;
 import in.koreatech.payment.model.Payment;
 import in.koreatech.payment.model.PaymentCancel;
@@ -62,7 +63,7 @@ public class TossService implements PaymentService {
         PaymentConfirmResponse response = tossPaymentClient.requestConfirm(paymentKey, orderId, amount);
         PaymentStatus paymentStatus = PaymentStatus.valueOf(response.status());
         if (!paymentStatus.isDone()) {
-            throw new KoinIllegalStateException("서버 에러가 발생했습니다. 관리자에게 문의해주세요.");
+            throw PaymentConfirmException.withDetail("paymentStatus : " + response.status());
         }
 
         Payment payment = response.toEntity(user.getId());
@@ -99,7 +100,7 @@ public class TossService implements PaymentService {
         PaymentCancelResponse response = tossPaymentClient.requestCancel(paymentKey, cancelReason,
             paymentIdempotencyKey.getIdempotencyKey());
         if (!PaymentStatus.valueOf(response.status()).isCanceled()) {
-            throw new KoinIllegalStateException("서버 에러가 발생했습니다. 관리자에게 문의해주세요.");
+            throw PaymentCancelException.withDetail("paymentStatus : " + response.status());
         }
 
         payment.cancel();
