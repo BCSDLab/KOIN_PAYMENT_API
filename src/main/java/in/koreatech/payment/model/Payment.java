@@ -57,13 +57,13 @@ public class Payment {
     @NotNull
     @Size(max = 30)
     @Enumerated(STRING)
-    @Column(name = "status", nullable = false, length = 30)
+    @Column(name = "status", length = 30, nullable = false)
     private PaymentStatus paymentStatus;
 
     @NotNull
     @Size(max = 30)
     @Enumerated(STRING)
-    @Column(name = "method", nullable = false, length = 30)
+    @Column(name = "method", length = 30, nullable = false, updatable = false)
     private PaymentMethod paymentMethod;
 
     @NotNull
