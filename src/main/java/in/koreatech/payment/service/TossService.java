@@ -10,8 +10,11 @@ import in.koreatech.koin.domain.user.repository.UserRepository;
 import in.koreatech.payment.client.TossPaymentClient;
 import in.koreatech.payment.client.dto.response.PaymentConfirmResponse;
 import in.koreatech.payment.common.auth.JwtTokenResolver;
+import in.koreatech.payment.exception.PaymentNotFoundException;
 import in.koreatech.payment.model.Payment;
 import in.koreatech.payment.model.PaymentIdempotencyKey;
+import in.koreatech.payment.model.PaymentMethod;
+import in.koreatech.payment.model.PaymentStatus;
 import in.koreatech.payment.model.TemporaryPayment;
 import in.koreatech.payment.repository.PaymentIdempotencyKeyRepository;
 import in.koreatech.payment.repository.PaymentRepository;
@@ -49,12 +52,11 @@ public class TossService implements PaymentService {
         TemporaryPayment temporaryPayment = temporaryPaymentRepository.getByOrderId(orderId);
         temporaryPayment.validateMatches(orderId, user.getId(), amount);
         PaymentConfirmResponse response = tossPaymentClient.requestConfirm(paymentKey, orderId, amount);
-        paymentRepository.save(Payment.builder()
-            .paymentKey(response.paymentKey())
-            .orderId(response.orderId())
-            .amount(response.amount())
-            .userId(user.getId())
-            .build());
+        PaymentStatus paymentStatus = PaymentStatus.valueOf(response.status());
+        if (!paymentStatus.isDone()) {
+            throw PaymentNotFoundException.withDetail("paymentStatus : " + paymentStatus);
+        }
+        paymentRepository.save(response.toEntity(user.getId()));
         temporaryPaymentRepository.deleteById(orderId);
     }
 
