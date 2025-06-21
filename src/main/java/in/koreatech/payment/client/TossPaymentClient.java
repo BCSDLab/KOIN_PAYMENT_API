@@ -16,6 +16,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 import in.koreatech.payment.client.dto.request.PaymentCancelRequest;
 import in.koreatech.payment.client.dto.request.PaymentConfirmRequest;
+import in.koreatech.payment.client.dto.response.PaymentCancelResponse;
 import in.koreatech.payment.client.dto.response.PaymentConfirmResponse;
 import in.koreatech.payment.client.exception.TossPaymentErrorCode;
 import in.koreatech.payment.client.exception.TossPaymentErrorResponse;
@@ -64,16 +65,16 @@ public class TossPaymentClient {
         }
     }
 
-    public void requestCancel(String paymentKey, String cancelReason, String IdempotencyKey) {
+    public PaymentCancelResponse requestCancel(String paymentKey, String cancelReason, String IdempotencyKey) {
         PaymentCancelRequest request = new PaymentCancelRequest(cancelReason);
 
         try {
-            webClient.post()
+            return webClient.post()
                 .uri("/{paymentKey}/cancel", paymentKey)
                 .header(IDEMPOTENT_KEY, IdempotencyKey)
                 .bodyValue(request)
                 .retrieve()
-                .bodyToMono(String.class)
+                .bodyToMono(PaymentCancelResponse.class)
                 .block();
         } catch (WebClientResponseException e) {
             throw handleErrorResponse(e);

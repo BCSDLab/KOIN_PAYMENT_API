@@ -74,13 +74,6 @@ public class Payment {
     @Column(name = "approved_at", nullable = false, updatable = false)
     private LocalDateTime approvedAt;
 
-    @Column(name = "canceled_at")
-    private LocalDateTime canceledAt;
-
-    @Size(max = 200)
-    @Column(name = "cancel_reason", length = 200)
-    private String cancelReason;
-
     @NotNull
     @Column(name = "is_deleted", nullable = false)
     private Boolean isDeleted = FALSE;
@@ -94,9 +87,7 @@ public class Payment {
         PaymentStatus paymentStatus,
         PaymentMethod paymentMethod,
         LocalDateTime requestedAt,
-        LocalDateTime approvedAt,
-        LocalDateTime canceledAt,
-        String cancelReason
+        LocalDateTime approvedAt
     ) {
         this.paymentKey = paymentKey;
         this.orderId = orderId;
@@ -106,8 +97,6 @@ public class Payment {
         this.paymentMethod = paymentMethod;
         this.requestedAt = requestedAt;
         this.approvedAt = approvedAt;
-        this.canceledAt = canceledAt;
-        this.cancelReason = cancelReason;
     }
 
 
@@ -117,9 +106,7 @@ public class Payment {
         }
     }
 
-    public void cancel(String cancelReason, LocalDateTime canceledAt) {
+    public void cancel() {
         this.paymentStatus = CANCELED;
-        this.cancelReason = cancelReason;
-        this.canceledAt = canceledAt;
     }
 }

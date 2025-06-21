@@ -1,0 +1,10 @@
+package in.koreatech.payment.repository;
+
+import org.springframework.data.repository.Repository;
+
+import in.koreatech.payment.model.PaymentCancel;
+
+public interface PaymentCancelRepository extends Repository<PaymentCancel, Integer> {
+
+    void saveAll(Iterable<PaymentCancel> paymentCancels);
+}

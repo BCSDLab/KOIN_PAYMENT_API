@@ -17,4 +17,8 @@ public enum PaymentStatus {
     public boolean isDone() {
         return this == DONE;
     }
+
+    public boolean isCanceled() {
+        return this == CANCELED;
+    }
 }

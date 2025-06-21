@@ -1,5 +1,6 @@
 package in.koreatech.payment.service;
 
+import java.util.List;
 import java.util.UUID;
 
 import org.springframework.stereotype.Service;
@@ -8,14 +9,18 @@ import org.springframework.transaction.annotation.Transactional;
 import in.koreatech.koin.domain.user.model.User;
 import in.koreatech.koin.domain.user.repository.UserRepository;
 import in.koreatech.payment.client.TossPaymentClient;
+import in.koreatech.payment.client.dto.response.PaymentCancelResponse;
 import in.koreatech.payment.client.dto.response.PaymentConfirmResponse;
 import in.koreatech.payment.common.auth.JwtTokenResolver;
-import in.koreatech.payment.exception.PaymentNotFoundException;
+import in.koreatech.payment.common.exception.custom.KoinIllegalStateException;
+import in.koreatech.payment.exception.PaymentAlreadyCanceledException;
+import in.koreatech.payment.exception.PaymentConfirmException;
 import in.koreatech.payment.model.Payment;
+import in.koreatech.payment.model.PaymentCancel;
 import in.koreatech.payment.model.PaymentIdempotencyKey;
-import in.koreatech.payment.model.PaymentMethod;
 import in.koreatech.payment.model.PaymentStatus;
 import in.koreatech.payment.model.TemporaryPayment;
+import in.koreatech.payment.repository.PaymentCancelRepository;
 import in.koreatech.payment.repository.PaymentIdempotencyKeyRepository;
 import in.koreatech.payment.repository.PaymentRepository;
 import in.koreatech.payment.repository.TemporaryPaymentRepository;
@@ -34,6 +39,7 @@ public class TossService implements PaymentService {
     private final TossPaymentClient tossPaymentClient;
     private final PaymentRepository paymentRepository;
     private final PaymentIdempotencyKeyRepository paymentIdempotencyKeyRepository;
+    private final PaymentCancelRepository paymentCancelRepository;
 
     @Transactional
     public String createTemporaryPayment(String accessToken, Integer amount) {
@@ -54,7 +60,7 @@ public class TossService implements PaymentService {
         PaymentConfirmResponse response = tossPaymentClient.requestConfirm(paymentKey, orderId, amount);
         PaymentStatus paymentStatus = PaymentStatus.valueOf(response.status());
         if (!paymentStatus.isDone()) {
-            throw PaymentNotFoundException.withDetail("paymentStatus : " + paymentStatus);
+            throw new KoinIllegalStateException("서버 에러가 발생했습니다. 관리자에게 문의해주세요.");
         }
         paymentRepository.save(response.toEntity(user.getId()));
         temporaryPaymentRepository.deleteById(orderId);
@@ -65,6 +71,9 @@ public class TossService implements PaymentService {
         Integer userId = jwtTokenResolver.getUserId(accessToken);
         User user = userRepository.getById(userId);
         Payment payment = paymentRepository.getByPaymentKey(paymentKey);
+        if (payment.getPaymentStatus().isCanceled()) {
+            throw PaymentAlreadyCanceledException.withDetail("paymentId : " + payment.getId());
+        }
         payment.validateUserIdMatches(user.getId());
         PaymentIdempotencyKey paymentIdempotencyKey = paymentIdempotencyKeyRepository
             .findByUserId(user.getId())
@@ -81,7 +90,12 @@ public class TossService implements PaymentService {
                     .build()
             ));
 
-        tossPaymentClient.requestCancel(paymentKey, cancelReason, paymentIdempotencyKey.getIdempotencyKey());
-        // TODO. Payment 필드 추가 후 로직 추가
+        PaymentCancelResponse response = tossPaymentClient.requestCancel(paymentKey, cancelReason,
+            paymentIdempotencyKey.getIdempotencyKey());
+        if (!PaymentStatus.valueOf(response.status()).isCanceled()) {
+            throw new KoinIllegalStateException("서버 에러가 발생했습니다. 관리자에게 문의해주세요.");
+        }
+        List<PaymentCancel> paymentCancels = response.getPaymentCancels(payment);
+        paymentCancelRepository.saveAll(paymentCancels);
     }
 }
