@@ -46,6 +46,7 @@ public class TossService implements PaymentService {
         Integer userId = jwtTokenResolver.getUserId(accessToken);
         User user = userRepository.getById(userId);
         String orderId = orderIdGenerator.generateOrderId();
+
         TemporaryPayment temporaryPayment = temporaryPaymentRepository.save(
             TemporaryPayment.of(orderId, user.getId(), amount));
         return temporaryPayment.getOrderId();
@@ -57,11 +58,13 @@ public class TossService implements PaymentService {
         User user = userRepository.getById(userId);
         TemporaryPayment temporaryPayment = temporaryPaymentRepository.getByOrderId(orderId);
         temporaryPayment.validateMatches(orderId, user.getId(), amount);
+
         PaymentConfirmResponse response = tossPaymentClient.requestConfirm(paymentKey, orderId, amount);
         PaymentStatus paymentStatus = PaymentStatus.valueOf(response.status());
         if (!paymentStatus.isDone()) {
             throw new KoinIllegalStateException("서버 에러가 발생했습니다. 관리자에게 문의해주세요.");
         }
+
         Payment payment = response.toEntity(user.getId());
         paymentRepository.save(payment);
         temporaryPaymentRepository.deleteById(orderId);
@@ -77,6 +80,7 @@ public class TossService implements PaymentService {
             throw PaymentAlreadyCanceledException.withDetail("paymentId : " + payment.getId());
         }
         payment.validateUserIdMatches(user.getId());
+
         PaymentIdempotencyKey paymentIdempotencyKey = paymentIdempotencyKeyRepository
             .findByUserId(user.getId())
             .map(idempotencyKey -> {
@@ -97,6 +101,7 @@ public class TossService implements PaymentService {
         if (!PaymentStatus.valueOf(response.status()).isCanceled()) {
             throw new KoinIllegalStateException("서버 에러가 발생했습니다. 관리자에게 문의해주세요.");
         }
+
         payment.cancel();
         List<PaymentCancel> paymentCancels = response.getPaymentCancels(payment);
         paymentCancelRepository.saveAll(paymentCancels);
