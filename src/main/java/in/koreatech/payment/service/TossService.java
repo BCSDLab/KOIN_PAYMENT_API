@@ -52,7 +52,7 @@ public class TossService implements PaymentService {
     }
 
     @Transactional
-    public void confirmPayment(String accessToken, String paymentKey, String orderId, Integer amount) {
+    public Payment confirmPayment(String accessToken, String paymentKey, String orderId, Integer amount) {
         Integer userId = jwtTokenResolver.getUserId(accessToken);
         User user = userRepository.getById(userId);
         TemporaryPayment temporaryPayment = temporaryPaymentRepository.getByOrderId(orderId);
@@ -62,12 +62,14 @@ public class TossService implements PaymentService {
         if (!paymentStatus.isDone()) {
             throw new KoinIllegalStateException("서버 에러가 발생했습니다. 관리자에게 문의해주세요.");
         }
-        paymentRepository.save(response.toEntity(user.getId()));
+        Payment payment = response.toEntity(user.getId());
+        paymentRepository.save(payment);
         temporaryPaymentRepository.deleteById(orderId);
+        return payment;
     }
 
     @Transactional
-    public void cancelPayment(String accessToken, String paymentKey, String cancelReason) {
+    public List<PaymentCancel> cancelPayment(String accessToken, String paymentKey, String cancelReason) {
         Integer userId = jwtTokenResolver.getUserId(accessToken);
         User user = userRepository.getById(userId);
         Payment payment = paymentRepository.getByPaymentKey(paymentKey);
@@ -95,7 +97,9 @@ public class TossService implements PaymentService {
         if (!PaymentStatus.valueOf(response.status()).isCanceled()) {
             throw new KoinIllegalStateException("서버 에러가 발생했습니다. 관리자에게 문의해주세요.");
         }
+        payment.cancel();
         List<PaymentCancel> paymentCancels = response.getPaymentCancels(payment);
         paymentCancelRepository.saveAll(paymentCancels);
+        return paymentCancels;
     }
 }

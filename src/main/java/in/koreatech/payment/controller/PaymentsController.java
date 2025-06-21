@@ -1,5 +1,7 @@
 package in.koreatech.payment.controller;
 
+import java.util.List;
+
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -11,7 +13,11 @@ import in.koreatech.payment.common.auth.AccessToken;
 import in.koreatech.payment.dto.request.PaymentCancelRequest;
 import in.koreatech.payment.dto.request.PaymentConfirmRequest;
 import in.koreatech.payment.dto.request.TemporaryPaymentInformationSaveRequest;
+import in.koreatech.payment.dto.response.PaymentCancelResponse;
+import in.koreatech.payment.dto.response.PaymentConfirmResponse;
 import in.koreatech.payment.dto.response.TemporaryPaymentResponse;
+import in.koreatech.payment.model.Payment;
+import in.koreatech.payment.model.PaymentCancel;
 import in.koreatech.payment.service.PaymentService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -34,21 +40,25 @@ public class PaymentsController implements PaymentsApi {
     }
 
     @PostMapping("/confirm")
-    public ResponseEntity<Void> confirmPayment(
+    public ResponseEntity<PaymentConfirmResponse> confirmPayment(
         @RequestBody @Valid final PaymentConfirmRequest request,
         @AccessToken final String accessToken
     ) {
-        paymentService.confirmPayment(accessToken, request.paymentKey(), request.orderId(), request.amount());
-        return ResponseEntity.ok().build();
+        Payment payment = paymentService.confirmPayment(accessToken, request.paymentKey(), request.orderId(),
+            request.amount());
+        PaymentConfirmResponse response = PaymentConfirmResponse.from(payment);
+        return ResponseEntity.ok(response);
     }
 
     @PostMapping("/{paymentKey}/cancel")
-    public ResponseEntity<Void> cancelPayment(
+    public ResponseEntity<PaymentCancelResponse> cancelPayment(
         @PathVariable(value = "paymentKey") final String paymentKey,
         @RequestBody @Valid final PaymentCancelRequest request,
         @AccessToken final String accessToken
     ) {
-        paymentService.cancelPayment(accessToken, paymentKey, request.cancelReason());
-        return ResponseEntity.ok().build();
+        List<PaymentCancel> paymentCancels = paymentService.cancelPayment(accessToken, paymentKey,
+            request.cancelReason());
+        PaymentCancelResponse response = PaymentCancelResponse.from(paymentCancels);
+        return ResponseEntity.ok(response);
     }
 }
