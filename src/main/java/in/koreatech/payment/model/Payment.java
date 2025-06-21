@@ -1,6 +1,7 @@
 package in.koreatech.payment.model;
 
-import static jakarta.persistence.EnumType.*;
+import static in.koreatech.payment.model.PaymentStatus.CANCELED;
+import static jakarta.persistence.EnumType.STRING;
 import static jakarta.persistence.GenerationType.IDENTITY;
 import static java.lang.Boolean.FALSE;
 import static lombok.AccessLevel.PROTECTED;
@@ -73,6 +74,13 @@ public class Payment {
     @Column(name = "approved_at", nullable = false, updatable = false)
     private LocalDateTime approvedAt;
 
+    @Column(name = "canceled_at")
+    private LocalDateTime canceledAt;
+
+    @Size(max = 200)
+    @Column(name = "cancel_reason", length = 200)
+    private String cancelReason;
+
     @NotNull
     @Column(name = "is_deleted", nullable = false)
     private Boolean isDeleted = FALSE;
@@ -86,7 +94,9 @@ public class Payment {
         PaymentStatus paymentStatus,
         PaymentMethod paymentMethod,
         LocalDateTime requestedAt,
-        LocalDateTime approvedAt
+        LocalDateTime approvedAt,
+        LocalDateTime canceledAt,
+        String cancelReason
     ) {
         this.paymentKey = paymentKey;
         this.orderId = orderId;
@@ -96,6 +106,8 @@ public class Payment {
         this.paymentMethod = paymentMethod;
         this.requestedAt = requestedAt;
         this.approvedAt = approvedAt;
+        this.canceledAt = canceledAt;
+        this.cancelReason = cancelReason;
     }
 
 
@@ -105,5 +117,9 @@ public class Payment {
         }
     }
 
-    // TODO. Payment 필드 추가, 결제 승인 및 취소 등 상태 변화 메소드 추가
+    public void cancel(String cancelReason, LocalDateTime canceledAt) {
+        this.paymentStatus = CANCELED;
+        this.cancelReason = cancelReason;
+        this.canceledAt = canceledAt;
+    }
 }
