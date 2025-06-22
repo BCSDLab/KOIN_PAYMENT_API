@@ -1,15 +1,19 @@
 package in.koreatech.payment.model;
 
+import static in.koreatech.payment.model.PaymentStatus.CANCELED;
+import static jakarta.persistence.EnumType.STRING;
 import static jakarta.persistence.GenerationType.IDENTITY;
 import static java.lang.Boolean.FALSE;
 import static lombok.AccessLevel.PROTECTED;
 
+import java.time.LocalDateTime;
+
 import org.hibernate.annotations.Where;
 
-import in.koreatech.payment.exception.InvalidTemporaryPaymentException;
 import in.koreatech.payment.exception.PaymentAccessDeniedException;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
@@ -51,6 +55,26 @@ public class Payment {
     private Integer userId;
 
     @NotNull
+    @Size(max = 30)
+    @Enumerated(STRING)
+    @Column(name = "status", length = 30, nullable = false)
+    private PaymentStatus paymentStatus;
+
+    @NotNull
+    @Size(max = 30)
+    @Enumerated(STRING)
+    @Column(name = "method", length = 30, nullable = false, updatable = false)
+    private PaymentMethod paymentMethod;
+
+    @NotNull
+    @Column(name = "requested_at", nullable = false, updatable = false)
+    private LocalDateTime requestedAt;
+
+    @NotNull
+    @Column(name = "approved_at", nullable = false, updatable = false)
+    private LocalDateTime approvedAt;
+
+    @NotNull
     @Column(name = "is_deleted", nullable = false)
     private Boolean isDeleted = FALSE;
 
@@ -59,13 +83,22 @@ public class Payment {
         String paymentKey,
         String orderId,
         Integer amount,
-        Integer userId
+        Integer userId,
+        PaymentStatus paymentStatus,
+        PaymentMethod paymentMethod,
+        LocalDateTime requestedAt,
+        LocalDateTime approvedAt
     ) {
         this.paymentKey = paymentKey;
         this.orderId = orderId;
         this.amount = amount;
         this.userId = userId;
+        this.paymentStatus = paymentStatus;
+        this.paymentMethod = paymentMethod;
+        this.requestedAt = requestedAt;
+        this.approvedAt = approvedAt;
     }
+
 
     public void validateUserIdMatches(Integer userId) {
         if (!userId.equals(this.userId)) {
@@ -73,5 +106,7 @@ public class Payment {
         }
     }
 
-    // TODO. Payment 필드 추가, 결제 승인 및 취소 등 상태 변화 메소드 추가
+    public void cancel() {
+        this.paymentStatus = CANCELED;
+    }
 }
