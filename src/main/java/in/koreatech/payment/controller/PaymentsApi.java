@@ -32,15 +32,15 @@ public interface PaymentsApi {
         @AccessToken final String accessToken
     );
 
-    @Operation(
-        summary = "결제 승인을 한다.",
-        description = "결제 승인을 한다."
-    )
-    @PostMapping("/confirm")
-    ResponseEntity<PaymentConfirmResponse> confirmPayment(
-        @RequestBody @Valid final PaymentConfirmRequest request,
-        @AccessToken final String accessToken
-    );
+    // @Operation(
+    //     summary = "결제 승인을 한다.",
+    //     description = "결제 승인을 한다."
+    // )
+    // @PostMapping("/confirm")
+    // ResponseEntity<PaymentConfirmResponse> confirmPayment(
+    //     @RequestBody @Valid final PaymentConfirmRequest request,
+    //     @AccessToken final String accessToken
+    // );
 
     @Operation(
         summary = "결제 취소를 한다.",

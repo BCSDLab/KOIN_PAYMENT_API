@@ -39,16 +39,16 @@ public class PaymentsController implements PaymentsApi {
         return ResponseEntity.ok(response);
     }
 
-    @PostMapping("/confirm")
-    public ResponseEntity<PaymentConfirmResponse> confirmPayment(
-        @RequestBody @Valid final PaymentConfirmRequest request,
-        @AccessToken final String accessToken
-    ) {
-        Payment payment = paymentService.confirmPayment(accessToken, request.paymentKey(), request.orderId(),
-            request.amount());
-        PaymentConfirmResponse response = PaymentConfirmResponse.from(payment);
-        return ResponseEntity.ok(response);
-    }
+    // @PostMapping("/confirm")
+    // public ResponseEntity<PaymentConfirmResponse> confirmPayment(
+    //     @RequestBody @Valid final PaymentConfirmRequest request,
+    //     @AccessToken final String accessToken
+    // ) {
+    //     Payment payment = paymentService.confirmPayment(accessToken, request.paymentKey(), request.orderId(),
+    //         request.amount());
+    //     PaymentConfirmResponse response = PaymentConfirmResponse.from(payment);
+    //     return ResponseEntity.ok(response);
+    // }
 
     @PostMapping("/{paymentKey}/cancel")
     public ResponseEntity<PaymentCancelResponse> cancelPayment(
