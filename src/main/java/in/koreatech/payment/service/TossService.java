@@ -87,7 +87,6 @@ public class TossService implements PaymentService {
         Cart cart = cartRepository.getCartById(request.cartId());
         cart.validateUserId(user.getId());
 
-        OrderableShop orderableShop = cart.getOrderableShop();
         List<TemporaryMenuItems> temporaryMenuItems = TemporaryMenuItemConverter.fromCart(cart);
         int totalProductPrice = cart.calculateItemsAmount();
         int finalAmount = totalProductPrice;
