@@ -11,6 +11,9 @@ import java.util.Set;
 
 import org.hibernate.annotations.Where;
 
+import in.koreatech.koin.domain.order.shop.model.domain.ShopBaseDeliveryTips;
+import in.koreatech.koin.domain.order.shop.model.domain.ShopMenuOrigins;
+import in.koreatech.koin.domain.order.shop.model.entity.shop.ShopOperation;
 import in.koreatech.koin.domain.shop.model.event.EventArticle;
 import in.koreatech.koin.domain.shop.model.menu.Menu;
 import in.koreatech.koin.domain.shop.model.menu.MenuCategory;
@@ -43,10 +46,6 @@ public class Shop extends BaseEntity {
     @Id
     @GeneratedValue(strategy = IDENTITY)
     private Integer id;
-
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "owner_id", referencedColumnName = "user_id")
-    private Owner owner;
 
     @Size(max = 50)
     @NotNull
