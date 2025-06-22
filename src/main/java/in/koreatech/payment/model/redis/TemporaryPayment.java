@@ -3,13 +3,13 @@ package in.koreatech.payment.model.redis;
 import java.time.LocalDateTime;
 import java.util.List;
 
+import org.springframework.data.annotation.Id;
 import org.springframework.data.redis.core.RedisHash;
 import org.springframework.data.redis.core.TimeToLive;
 
 import in.koreatech.payment.exception.InvalidTemporaryPaymentException;
 import in.koreatech.payment.model.OrderType;
 import in.koreatech.payment.model.TemporaryMenuItems;
-import jakarta.persistence.Id;
 import lombok.Getter;
 
 @Getter

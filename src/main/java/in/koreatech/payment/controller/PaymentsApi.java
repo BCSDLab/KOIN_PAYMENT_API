@@ -26,7 +26,7 @@ public interface PaymentsApi {
         summary = "임시 배달 결제 정보를 저장한다",
         description = "임시 배달 결제 정보를 저장한다."
     )
-    @PostMapping("/temporary")
+    @PostMapping("/delivery/temporary")
     ResponseEntity<TemporaryPaymentResponse> createTemporaryDeliveryPayment(
         @RequestBody @Valid final TemporaryDeliveryPaymentSaveRequest request,
         @AccessToken final String accessToken

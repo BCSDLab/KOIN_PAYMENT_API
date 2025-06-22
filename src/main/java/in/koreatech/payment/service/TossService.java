@@ -22,6 +22,7 @@ import in.koreatech.payment.model.PaymentCancel;
 import in.koreatech.payment.model.PaymentIdempotencyKey;
 import in.koreatech.payment.model.PaymentStatus;
 import in.koreatech.payment.model.TemporaryMenuItems;
+import in.koreatech.payment.model.redis.TemporaryPayment;
 import in.koreatech.payment.repository.PaymentCancelRepository;
 import in.koreatech.payment.repository.PaymentIdempotencyKeyRepository;
 import in.koreatech.payment.repository.PaymentRepository;
@@ -54,16 +55,14 @@ public class TossService implements PaymentService {
         cart.validateUserId(user.getId());
 
         OrderableShop orderableShop = cart.getOrderableShop();
-
         List<TemporaryMenuItems> temporaryMenuItems = TemporaryMenuItemConverter.fromCart(cart);
-
         int totalProductPrice = cart.calculateItemsAmount();
         int deliveryFee = orderableShop.calculateDeliveryFee(totalProductPrice);
         int finalAmount = totalProductPrice + deliveryFee;
 
         String orderId = orderIdGenerator.generateOrderId();
 
-        in.koreatech.payment.model.redis.TemporaryPayment deliveryEntity = in.koreatech.payment.model.redis.TemporaryPayment.toDeliveryEntity(
+        TemporaryPayment deliveryEntity = TemporaryPayment.toDeliveryEntity(
             orderId,
             user.getId(),
             request.address(),

@@ -29,7 +29,7 @@ public class PaymentsController implements PaymentsApi {
 
     private final PaymentService paymentService;
 
-    @PostMapping("/temporary")
+    @PostMapping("/delivery/temporary")
     public ResponseEntity<TemporaryPaymentResponse> createTemporaryDeliveryPayment(
         @RequestBody @Valid final TemporaryDeliveryPaymentSaveRequest request,
         @AccessToken final String accessToken
