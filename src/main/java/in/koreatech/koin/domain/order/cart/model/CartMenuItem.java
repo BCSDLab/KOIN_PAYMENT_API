@@ -54,4 +54,12 @@ public class CartMenuItem extends BaseEntity {
 
     @OneToMany(mappedBy = "cartMenuItem", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<CartMenuItemOption> cartMenuItemOptions = new ArrayList<>();
+
+    public Integer calculateTotalAmount() {
+        int totalOptionPrice = this.cartMenuItemOptions.stream()
+            .mapToInt(CartMenuItemOption::getOptionPrice)
+            .sum();
+
+        return (this.orderableShopMenuPrice.getPrice() + totalOptionPrice) * this.quantity;
+    }
 }

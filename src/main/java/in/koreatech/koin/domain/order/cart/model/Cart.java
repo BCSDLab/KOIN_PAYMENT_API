@@ -7,6 +7,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
+import in.koreatech.koin.domain.order.cart.exception.CartAccessDeniedException;
 import in.koreatech.koin.domain.order.shop.model.entity.shop.OrderableShop;
 import in.koreatech.koin.domain.user.model.User;
 import in.koreatech.payment.common.model.BaseEntity;
@@ -45,4 +46,16 @@ public class Cart extends BaseEntity {
 
     @OneToMany(mappedBy = "cart", cascade = CascadeType.ALL, orphanRemoval = true)
     List<CartMenuItem> cartMenuItems = new ArrayList<>();
+
+    public void validateUserId(Integer userId) {
+        if (!user.getId().equals(userId)) {
+            throw CartAccessDeniedException.withDetail("userId : " + userId);
+        }
+    }
+
+    public Integer calculateItemsAmount() {
+        return this.cartMenuItems.stream()
+            .mapToInt(CartMenuItem::calculateTotalAmount)
+            .sum();
+    }
 }

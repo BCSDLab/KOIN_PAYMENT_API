@@ -60,4 +60,8 @@ public class OrderableShop extends BaseEntity {
     @BatchSize(size = 7) // 기본 4개 (메인, 추천, 세트, 사이드) + 사장님 커스텀 3개
     @OneToMany(mappedBy = "orderableShop", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<OrderableShopMenuGroup> menuGroups = new ArrayList<>();
+
+    public Integer calculateDeliveryFee(Integer orderAmount) {
+        return this.shop.getBaseDeliveryTips().calculateDeliveryTip(orderAmount);
+    }
 }
