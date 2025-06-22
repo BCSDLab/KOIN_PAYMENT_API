@@ -15,6 +15,7 @@ import in.koreatech.payment.client.TossPaymentClient;
 import in.koreatech.payment.client.dto.response.PaymentCancelResponse;
 import in.koreatech.payment.common.auth.JwtTokenResolver;
 import in.koreatech.payment.dto.request.TemporaryDeliveryPaymentSaveRequest;
+import in.koreatech.payment.dto.request.TemporaryTakeoutPaymentSaveRequest;
 import in.koreatech.payment.exception.PaymentAlreadyCanceledException;
 import in.koreatech.payment.exception.PaymentCancelException;
 import in.koreatech.payment.model.Payment;
@@ -70,6 +71,34 @@ public class TossService implements PaymentService {
             request.toRider(),
             totalProductPrice,
             deliveryFee,
+            finalAmount,
+            temporaryMenuItems
+        );
+
+        temporaryPaymentRedisRepository.save(deliveryEntity);
+        return orderId;
+    }
+
+    @Transactional
+    public String createTemporaryTakeoutPayment(String accessToken, TemporaryTakeoutPaymentSaveRequest request) {
+        Integer userId = jwtTokenResolver.getUserId(accessToken);
+        User user = userRepository.getById(userId);
+
+        Cart cart = cartRepository.getCartById(request.cartId());
+        cart.validateUserId(user.getId());
+
+        OrderableShop orderableShop = cart.getOrderableShop();
+        List<TemporaryMenuItems> temporaryMenuItems = TemporaryMenuItemConverter.fromCart(cart);
+        int totalProductPrice = cart.calculateItemsAmount();
+        int finalAmount = totalProductPrice;
+
+        String orderId = orderIdGenerator.generateOrderId();
+
+        TemporaryPayment deliveryEntity = TemporaryPayment.toTakeOutEntity(
+            orderId,
+            user.getId(),
+            request.toOwner(),
+            totalProductPrice,
             finalAmount,
             temporaryMenuItems
         );

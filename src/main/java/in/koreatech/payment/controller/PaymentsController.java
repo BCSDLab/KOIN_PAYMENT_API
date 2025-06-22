@@ -13,6 +13,7 @@ import in.koreatech.payment.common.auth.AccessToken;
 import in.koreatech.payment.dto.request.PaymentCancelRequest;
 import in.koreatech.payment.dto.request.PaymentConfirmRequest;
 import in.koreatech.payment.dto.request.TemporaryDeliveryPaymentSaveRequest;
+import in.koreatech.payment.dto.request.TemporaryTakeoutPaymentSaveRequest;
 import in.koreatech.payment.dto.response.PaymentCancelResponse;
 import in.koreatech.payment.dto.response.PaymentConfirmResponse;
 import in.koreatech.payment.dto.response.TemporaryPaymentResponse;
@@ -35,6 +36,16 @@ public class PaymentsController implements PaymentsApi {
         @AccessToken final String accessToken
     ) {
         String orderId = paymentService.createTemporaryDeliveryPayment(accessToken, request);
+        TemporaryPaymentResponse response = TemporaryPaymentResponse.of(orderId);
+        return ResponseEntity.ok(response);
+    }
+
+    @PostMapping("/takeout/temporary")
+    public ResponseEntity<TemporaryPaymentResponse> createTemporaryTakeoutPayment(
+        @RequestBody @Valid final TemporaryTakeoutPaymentSaveRequest request,
+        @AccessToken final String accessToken
+    ) {
+        String orderId = paymentService.createTemporaryTakeoutPayment(accessToken, request);
         TemporaryPaymentResponse response = TemporaryPaymentResponse.of(orderId);
         return ResponseEntity.ok(response);
     }

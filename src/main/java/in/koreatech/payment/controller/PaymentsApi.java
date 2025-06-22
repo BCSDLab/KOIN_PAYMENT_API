@@ -8,10 +8,9 @@ import org.springframework.web.bind.annotation.RequestMapping;
 
 import in.koreatech.payment.common.auth.AccessToken;
 import in.koreatech.payment.dto.request.PaymentCancelRequest;
-import in.koreatech.payment.dto.request.PaymentConfirmRequest;
 import in.koreatech.payment.dto.request.TemporaryDeliveryPaymentSaveRequest;
+import in.koreatech.payment.dto.request.TemporaryTakeoutPaymentSaveRequest;
 import in.koreatech.payment.dto.response.PaymentCancelResponse;
-import in.koreatech.payment.dto.response.PaymentConfirmResponse;
 import in.koreatech.payment.dto.response.TemporaryPaymentResponse;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -29,6 +28,16 @@ public interface PaymentsApi {
     @PostMapping("/delivery/temporary")
     ResponseEntity<TemporaryPaymentResponse> createTemporaryDeliveryPayment(
         @RequestBody @Valid final TemporaryDeliveryPaymentSaveRequest request,
+        @AccessToken final String accessToken
+    );
+
+    @Operation(
+        summary = "임시 포장 결제 정보를 저장한다",
+        description = "임시 포장 결제 정보를 저장한다."
+    )
+    @PostMapping("/takeout/temporary")
+    ResponseEntity<TemporaryPaymentResponse> createTemporaryTakeoutPayment(
+        @RequestBody @Valid final TemporaryTakeoutPaymentSaveRequest request,
         @AccessToken final String accessToken
     );
 

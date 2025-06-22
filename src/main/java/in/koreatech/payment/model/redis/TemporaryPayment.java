@@ -95,6 +95,28 @@ public class TemporaryPayment {
         );
     }
 
+    public static TemporaryPayment toTakeOutEntity(
+        String orderId,
+        Integer userId,
+        String toOwner,
+        Integer totalProductPrice,
+        Integer totalPrice,
+        List<TemporaryMenuItems> temporaryMenuItems
+    ) {
+        return new TemporaryPayment(
+            orderId,
+            userId,
+            OrderType.TAKE_OUT,
+            null,
+            toOwner,
+            null,
+            totalProductPrice,
+            null,
+            totalPrice,
+            temporaryMenuItems
+        );
+    }
+
     private void validateOrderIdMatches(String orderId) {
         if (!orderId.equals(this.orderId)) {
             throw InvalidTemporaryPaymentException.withDetail("orderId : " + orderId);
