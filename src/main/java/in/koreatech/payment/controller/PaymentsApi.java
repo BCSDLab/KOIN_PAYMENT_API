@@ -9,7 +9,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import in.koreatech.payment.common.auth.AccessToken;
 import in.koreatech.payment.dto.request.PaymentCancelRequest;
 import in.koreatech.payment.dto.request.PaymentConfirmRequest;
-import in.koreatech.payment.dto.request.TemporaryPaymentInformationSaveRequest;
+import in.koreatech.payment.dto.request.TemporaryDeliveryPaymentSaveRequest;
 import in.koreatech.payment.dto.response.PaymentCancelResponse;
 import in.koreatech.payment.dto.response.PaymentConfirmResponse;
 import in.koreatech.payment.dto.response.TemporaryPaymentResponse;
@@ -23,12 +23,12 @@ import jakarta.validation.Valid;
 public interface PaymentsApi {
 
     @Operation(
-        summary = "임시 결제 정보를 저장한다",
-        description = "사용자의 임시 결제 정보를 저장한다."
+        summary = "임시 배달 결제 정보를 저장한다",
+        description = "임시 배달 결제 정보를 저장한다."
     )
     @PostMapping("/temporary")
-    ResponseEntity<TemporaryPaymentResponse> createTemporaryPayment(
-        @RequestBody @Valid final TemporaryPaymentInformationSaveRequest request,
+    ResponseEntity<TemporaryPaymentResponse> createTemporaryDeliveryPayment(
+        @RequestBody @Valid final TemporaryDeliveryPaymentSaveRequest request,
         @AccessToken final String accessToken
     );
 
