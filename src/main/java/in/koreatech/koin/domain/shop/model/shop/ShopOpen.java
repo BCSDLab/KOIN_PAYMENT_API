@@ -8,7 +8,7 @@ import java.util.Map;
 
 import org.hibernate.annotations.Where;
 
-import in.koreatech.common.converter.LocalTimeAttributeConverter;
+import in.koreatech.koin.common.converter.LocalTimeAttributeConverter;
 import in.koreatech.payment.common.model.BaseEntity;
 import jakarta.persistence.Column;
 import jakarta.persistence.Convert;

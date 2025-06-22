@@ -1,4 +1,4 @@
-package in.koreatech.common.converter;
+package in.koreatech.koin.common.converter;
 
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
