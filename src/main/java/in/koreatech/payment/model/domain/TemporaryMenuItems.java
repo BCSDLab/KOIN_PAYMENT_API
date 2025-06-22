@@ -1,4 +1,4 @@
-package in.koreatech.payment.model;
+package in.koreatech.payment.model.domain;
 
 import java.util.List;
 

@@ -7,9 +7,9 @@ import in.koreatech.koin.domain.order.cart.model.CartMenuItem;
 import in.koreatech.koin.domain.order.cart.model.CartMenuItemOption;
 import in.koreatech.koin.domain.order.shop.model.entity.menu.OrderableShopMenuOption;
 import in.koreatech.koin.domain.order.shop.model.entity.menu.OrderableShopMenuPrice;
-import in.koreatech.payment.model.TemporaryMenuItems;
-import in.koreatech.payment.model.TemporaryMenuOption;
-import in.koreatech.payment.model.TemporaryMenuPrice;
+import in.koreatech.payment.model.domain.TemporaryMenuItems;
+import in.koreatech.payment.model.domain.TemporaryMenuOption;
+import in.koreatech.payment.model.domain.TemporaryMenuPrice;
 
 public class TemporaryMenuItemConverter {
 

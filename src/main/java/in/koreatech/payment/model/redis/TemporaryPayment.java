@@ -8,8 +8,8 @@ import org.springframework.data.redis.core.RedisHash;
 import org.springframework.data.redis.core.TimeToLive;
 
 import in.koreatech.payment.exception.InvalidTemporaryPaymentException;
-import in.koreatech.payment.model.OrderType;
-import in.koreatech.payment.model.TemporaryMenuItems;
+import in.koreatech.payment.model.enums.OrderType;
+import in.koreatech.payment.model.domain.TemporaryMenuItems;
 import lombok.Getter;
 
 @Getter
