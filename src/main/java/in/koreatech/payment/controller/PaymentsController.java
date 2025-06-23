@@ -11,10 +11,13 @@ import org.springframework.web.bind.annotation.RestController;
 
 import in.koreatech.payment.common.auth.AccessToken;
 import in.koreatech.payment.dto.request.PaymentCancelRequest;
+import in.koreatech.payment.dto.request.PaymentConfirmRequest;
 import in.koreatech.payment.dto.request.TemporaryDeliveryPaymentSaveRequest;
 import in.koreatech.payment.dto.request.TemporaryTakeoutPaymentSaveRequest;
 import in.koreatech.payment.dto.response.PaymentCancelResponse;
+import in.koreatech.payment.dto.response.PaymentConfirmResponse;
 import in.koreatech.payment.dto.response.TemporaryPaymentResponse;
+import in.koreatech.payment.model.entity.Payment;
 import in.koreatech.payment.model.entity.PaymentCancel;
 import in.koreatech.payment.service.PaymentService;
 import jakarta.validation.Valid;
@@ -47,16 +50,16 @@ public class PaymentsController implements PaymentsApi {
         return ResponseEntity.ok(response);
     }
 
-    // @PostMapping("/confirm")
-    // public ResponseEntity<PaymentConfirmResponse> confirmPayment(
-    //     @RequestBody @Valid final PaymentConfirmRequest request,
-    //     @AccessToken final String accessToken
-    // ) {
-    //     Payment payment = paymentService.confirmPayment(accessToken, request.paymentKey(), request.orderId(),
-    //         request.amount());
-    //     PaymentConfirmResponse response = PaymentConfirmResponse.from(payment);
-    //     return ResponseEntity.ok(response);
-    // }
+    @PostMapping("/confirm")
+    public ResponseEntity<PaymentConfirmResponse> confirmPayment(
+        @RequestBody @Valid final PaymentConfirmRequest request,
+        @AccessToken final String accessToken
+    ) {
+        Payment payment = paymentService.confirmPayment(accessToken, request.paymentKey(), request.orderId(),
+            request.amount());
+        PaymentConfirmResponse response = PaymentConfirmResponse.from(payment);
+        return ResponseEntity.ok(response);
+    }
 
     @PostMapping("/{paymentKey}/cancel")
     public ResponseEntity<PaymentCancelResponse> cancelPayment(

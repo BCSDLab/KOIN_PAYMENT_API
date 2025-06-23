@@ -104,24 +104,24 @@ public class TossService implements PaymentService {
         return orderId;
     }
 
-    // @Transactional
-    // public Payment confirmPayment(String accessToken, String paymentKey, String orderId, Integer amount) {
-    //     Integer userId = jwtTokenResolver.getUserId(accessToken);
-    //     User user = userRepository.getById(userId);
-    //     TemporaryPayment temporaryPayment = temporaryPaymentRepository.getByOrderId(orderId);
-    //     temporaryPayment.validateMatches(orderId, user.getId(), amount);
-    //
-    //     PaymentConfirmResponse response = tossPaymentClient.requestConfirm(paymentKey, orderId, amount);
-    //     PaymentStatus paymentStatus = PaymentStatus.valueOf(response.status());
-    //     if (!paymentStatus.isDone()) {
-    //         throw PaymentConfirmException.withDetail("paymentStatus : " + response.status());
-    //     }
-    //
-    //     Payment payment = response.toEntity(user.getId());
-    //     paymentRepository.save(payment);
-    //     temporaryPaymentRepository.deleteById(orderId);
-    //     return payment;
-    // }
+    @Transactional
+    public Payment confirmPayment(String accessToken, String paymentKey, String orderId, Integer amount) {
+        Integer userId = jwtTokenResolver.getUserId(accessToken);
+        User user = userRepository.getById(userId);
+        TemporaryPayment temporaryPayment = temporaryPaymentRepository.getByOrderId(orderId);
+        temporaryPayment.validateMatches(orderId, user.getId(), amount);
+
+        PaymentConfirmResponse response = tossPaymentClient.requestConfirm(paymentKey, orderId, amount);
+        PaymentStatus paymentStatus = PaymentStatus.valueOf(response.status());
+        if (!paymentStatus.isDone()) {
+            throw PaymentConfirmException.withDetail("paymentStatus : " + response.status());
+        }
+
+        Payment payment = response.toEntity(user.getId());
+        paymentRepository.save(payment);
+        temporaryPaymentRepository.deleteById(orderId);
+        return payment;
+    }
 
     @Transactional
     public List<PaymentCancel> cancelPayment(String accessToken, String paymentKey, String cancelReason) {
