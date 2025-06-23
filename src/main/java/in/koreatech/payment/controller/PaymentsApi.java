@@ -8,9 +8,11 @@ import org.springframework.web.bind.annotation.RequestMapping;
 
 import in.koreatech.payment.common.auth.AccessToken;
 import in.koreatech.payment.dto.request.PaymentCancelRequest;
+import in.koreatech.payment.dto.request.PaymentConfirmRequest;
 import in.koreatech.payment.dto.request.TemporaryDeliveryPaymentSaveRequest;
 import in.koreatech.payment.dto.request.TemporaryTakeoutPaymentSaveRequest;
 import in.koreatech.payment.dto.response.PaymentCancelResponse;
+import in.koreatech.payment.dto.response.PaymentConfirmResponse;
 import in.koreatech.payment.dto.response.TemporaryPaymentResponse;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -41,15 +43,15 @@ public interface PaymentsApi {
         @AccessToken final String accessToken
     );
 
-    // @Operation(
-    //     summary = "결제 승인을 한다.",
-    //     description = "결제 승인을 한다."
-    // )
-    // @PostMapping("/confirm")
-    // ResponseEntity<PaymentConfirmResponse> confirmPayment(
-    //     @RequestBody @Valid final PaymentConfirmRequest request,
-    //     @AccessToken final String accessToken
-    // );
+    @Operation(
+        summary = "결제 승인을 한다.",
+        description = "결제 승인을 한다."
+    )
+    @PostMapping("/confirm")
+    ResponseEntity<PaymentConfirmResponse> confirmPayment(
+        @RequestBody @Valid final PaymentConfirmRequest request,
+        @AccessToken final String accessToken
+    );
 
     @Operation(
         summary = "결제 취소를 한다.",
