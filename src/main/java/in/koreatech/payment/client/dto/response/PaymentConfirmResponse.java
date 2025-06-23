@@ -3,9 +3,9 @@ package in.koreatech.payment.client.dto.response;
 import java.time.LocalDateTime;
 import java.time.OffsetDateTime;
 
-import in.koreatech.payment.model.Payment;
-import in.koreatech.payment.model.PaymentMethod;
-import in.koreatech.payment.model.PaymentStatus;
+import in.koreatech.payment.model.entity.Payment;
+import in.koreatech.payment.model.enums.PaymentMethod;
+import in.koreatech.payment.model.enums.PaymentStatus;
 
 public record PaymentConfirmResponse(
     String paymentKey,

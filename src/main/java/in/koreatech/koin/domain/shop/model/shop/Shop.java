@@ -5,14 +5,17 @@ import static jakarta.persistence.GenerationType.IDENTITY;
 import static lombok.AccessLevel.PROTECTED;
 
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 
 import org.hibernate.annotations.Where;
 
 import in.koreatech.koin.domain.order.shop.model.domain.ShopBaseDeliveryTips;
 import in.koreatech.koin.domain.order.shop.model.domain.ShopMenuOrigins;
+import in.koreatech.koin.domain.order.shop.model.entity.delivery.ShopBaseDeliveryTip;
 import in.koreatech.koin.domain.order.shop.model.entity.shop.ShopOperation;
 import in.koreatech.koin.domain.shop.model.event.EventArticle;
 import in.koreatech.koin.domain.shop.model.menu.Menu;

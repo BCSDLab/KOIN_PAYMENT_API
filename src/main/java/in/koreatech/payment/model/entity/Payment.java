@@ -1,6 +1,6 @@
-package in.koreatech.payment.model;
+package in.koreatech.payment.model.entity;
 
-import static in.koreatech.payment.model.PaymentStatus.CANCELED;
+import static in.koreatech.payment.model.enums.PaymentStatus.CANCELED;
 import static jakarta.persistence.EnumType.STRING;
 import static jakarta.persistence.GenerationType.IDENTITY;
 import static java.lang.Boolean.FALSE;
@@ -11,6 +11,8 @@ import java.time.LocalDateTime;
 import org.hibernate.annotations.Where;
 
 import in.koreatech.payment.exception.PaymentAccessDeniedException;
+import in.koreatech.payment.model.enums.PaymentMethod;
+import in.koreatech.payment.model.enums.PaymentStatus;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Enumerated;

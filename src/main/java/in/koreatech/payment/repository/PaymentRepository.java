@@ -5,7 +5,7 @@ import java.util.Optional;
 import org.springframework.data.repository.Repository;
 
 import in.koreatech.payment.exception.PaymentNotFoundException;
-import in.koreatech.payment.model.Payment;
+import in.koreatech.payment.model.entity.Payment;
 
 public interface PaymentRepository extends Repository<Payment, Integer> {
 
