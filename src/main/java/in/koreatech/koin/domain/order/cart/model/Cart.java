@@ -47,12 +47,6 @@ public class Cart extends BaseEntity {
     @OneToMany(mappedBy = "cart", cascade = CascadeType.ALL, orphanRemoval = true)
     List<CartMenuItem> cartMenuItems = new ArrayList<>();
 
-    public void validateUserId(Integer userId) {
-        if (!user.getId().equals(userId)) {
-            throw CartAccessDeniedException.withDetail("userId : " + userId);
-        }
-    }
-
     public Integer calculateItemsAmount() {
         return this.cartMenuItems.stream()
             .mapToInt(CartMenuItem::calculateTotalAmount)

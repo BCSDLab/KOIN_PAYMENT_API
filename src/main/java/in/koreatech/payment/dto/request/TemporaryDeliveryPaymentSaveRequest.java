@@ -15,10 +15,6 @@ import jakarta.validation.constraints.NotNull;
 
 @JsonNaming(value = SnakeCaseStrategy.class)
 public record TemporaryDeliveryPaymentSaveRequest(
-    @Schema(description = "장바구니 ID", example = "1", requiredMode = REQUIRED)
-    @NotNull(message = "장바구니 ID는 필수 입력사항입니다.")
-    Integer cartId,
-
     @Schema(description = "배달 주소", example = "충청남도 천안시 동남구 병천면 충절로 1600 은솔관 422호", requiredMode = REQUIRED)
     @NotBlank(message = "배달 주소는 필수 입력사항입니다.")
     String address,

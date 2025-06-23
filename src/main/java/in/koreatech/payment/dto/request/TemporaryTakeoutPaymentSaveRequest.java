@@ -8,10 +8,6 @@ import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 
 public record TemporaryTakeoutPaymentSaveRequest(
-    @Schema(description = "장바구니 ID", example = "1", requiredMode = REQUIRED)
-    @NotNull(message = "장바구니 ID는 필수 입력사항입니다.")
-    Integer cartId,
-
     @Schema(description = "연락처", example = "01012345678", requiredMode = REQUIRED)
     @NotBlank(message = "연락처는 필수 입력사항입니다.")
     String phoneNumber,

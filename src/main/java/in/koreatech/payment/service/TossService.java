@@ -52,8 +52,7 @@ public class TossService implements PaymentService {
         Integer userId = jwtTokenResolver.getUserId(accessToken);
         User user = userRepository.getById(userId);
 
-        Cart cart = cartRepository.getCartById(request.cartId());
-        cart.validateUserId(user.getId());
+        Cart cart = cartRepository.getCartById(user.getId());
 
         OrderableShop orderableShop = cart.getOrderableShop();
         List<TemporaryMenuItems> temporaryMenuItems = TemporaryMenuItemConverter.fromCart(cart);
@@ -84,8 +83,7 @@ public class TossService implements PaymentService {
         Integer userId = jwtTokenResolver.getUserId(accessToken);
         User user = userRepository.getById(userId);
 
-        Cart cart = cartRepository.getCartById(request.cartId());
-        cart.validateUserId(user.getId());
+        Cart cart = cartRepository.getCartById(user.getId());
 
         List<TemporaryMenuItems> temporaryMenuItems = TemporaryMenuItemConverter.fromCart(cart);
         int totalProductPrice = cart.calculateItemsAmount();
