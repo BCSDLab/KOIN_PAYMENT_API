@@ -117,6 +117,12 @@ public class TemporaryPayment {
         );
     }
 
+    public void validateMatches(String orderId, Integer userId, Integer amount) {
+        validateOrderIdMatches(orderId);
+        validateUserIdMatches(userId);
+        validateAmountMatches(amount);
+    }
+
     private void validateOrderIdMatches(String orderId) {
         if (!orderId.equals(this.orderId)) {
             throw InvalidTemporaryPaymentException.withDetail("orderId : " + orderId);

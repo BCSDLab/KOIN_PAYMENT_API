@@ -13,11 +13,13 @@ import in.koreatech.koin.domain.user.model.User;
 import in.koreatech.koin.domain.user.repository.UserRepository;
 import in.koreatech.payment.client.TossPaymentClient;
 import in.koreatech.payment.client.dto.response.PaymentCancelResponse;
+import in.koreatech.payment.client.dto.response.PaymentConfirmResponse;
 import in.koreatech.payment.common.auth.JwtTokenResolver;
 import in.koreatech.payment.dto.request.TemporaryDeliveryPaymentSaveRequest;
 import in.koreatech.payment.dto.request.TemporaryTakeoutPaymentSaveRequest;
 import in.koreatech.payment.exception.PaymentAlreadyCanceledException;
 import in.koreatech.payment.exception.PaymentCancelException;
+import in.koreatech.payment.exception.PaymentConfirmException;
 import in.koreatech.payment.model.entity.Payment;
 import in.koreatech.payment.model.entity.PaymentCancel;
 import in.koreatech.payment.model.entity.PaymentIdempotencyKey;
@@ -108,7 +110,7 @@ public class TossService implements PaymentService {
     public Payment confirmPayment(String accessToken, String paymentKey, String orderId, Integer amount) {
         Integer userId = jwtTokenResolver.getUserId(accessToken);
         User user = userRepository.getById(userId);
-        TemporaryPayment temporaryPayment = temporaryPaymentRepository.getByOrderId(orderId);
+        TemporaryPayment temporaryPayment = temporaryPaymentRedisRepository.getById(orderId);
         temporaryPayment.validateMatches(orderId, user.getId(), amount);
 
         PaymentConfirmResponse response = tossPaymentClient.requestConfirm(paymentKey, orderId, amount);
@@ -119,7 +121,7 @@ public class TossService implements PaymentService {
 
         Payment payment = response.toEntity(user.getId());
         paymentRepository.save(payment);
-        temporaryPaymentRepository.deleteById(orderId);
+        temporaryPaymentRedisRepository.deleteById(orderId);
         return payment;
     }
 
