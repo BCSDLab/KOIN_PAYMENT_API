@@ -6,18 +6,20 @@ import in.koreatech.koin.domain.order.model.Order;
 import in.koreatech.koin.domain.order.model.OrderMenu;
 import in.koreatech.koin.domain.order.model.OrderMenuOption;
 
-public record TemporaryMenuItems (
+public record TemporaryMenuItems(
     String name,
     Integer quantity,
     Integer totalAmount,
     TemporaryMenuPrice price,
     List<TemporaryMenuOption> options
-){
+) {
     public OrderMenu toOrderMenu(Order order) {
         OrderMenu orderMenu = OrderMenu.builder()
             .menuName(name)
             .quantity(quantity)
+            .menuOptionName(price.name())
             .menuPrice(price.price())
+            .order(order)
             .build();
 
         List<OrderMenuOption> orderMenuOptions = options.stream()
