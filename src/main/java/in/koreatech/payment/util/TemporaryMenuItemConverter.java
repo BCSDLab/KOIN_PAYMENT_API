@@ -45,6 +45,7 @@ public class TemporaryMenuItemConverter {
         return new TemporaryMenuOption(
             optionGroupName,
             option.getOptionName(),
+            option.getQuantity(),
             option.getOptionPrice()
         );
     }

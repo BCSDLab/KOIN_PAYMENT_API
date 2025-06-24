@@ -1,8 +1,8 @@
-package in.koreatech.payment.repository;
+package in.koreatech.koin.domain.order.repository;
 
 import org.springframework.data.repository.Repository;
 
-import in.koreatech.payment.model.entity.PaymentCancel;
+import in.koreatech.koin.domain.order.model.PaymentCancel;
 
 public interface PaymentCancelRepository extends Repository<PaymentCancel, Integer> {
 

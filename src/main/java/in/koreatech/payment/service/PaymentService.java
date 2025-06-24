@@ -2,10 +2,10 @@ package in.koreatech.payment.service;
 
 import java.util.List;
 
+import in.koreatech.koin.domain.order.model.Payment;
+import in.koreatech.koin.domain.order.model.PaymentCancel;
 import in.koreatech.payment.dto.request.TemporaryDeliveryPaymentSaveRequest;
 import in.koreatech.payment.dto.request.TemporaryTakeoutPaymentSaveRequest;
-import in.koreatech.payment.model.entity.Payment;
-import in.koreatech.payment.model.entity.PaymentCancel;
 
 public interface PaymentService {
     String createTemporaryDeliveryPayment(String accessToken, TemporaryDeliveryPaymentSaveRequest request);

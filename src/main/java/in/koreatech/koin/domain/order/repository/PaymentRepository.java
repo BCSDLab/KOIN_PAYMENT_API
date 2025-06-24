@@ -1,11 +1,11 @@
-package in.koreatech.payment.repository;
+package in.koreatech.koin.domain.order.repository;
 
 import java.util.Optional;
 
 import org.springframework.data.repository.Repository;
 
+import in.koreatech.koin.domain.order.model.Payment;
 import in.koreatech.payment.exception.PaymentNotFoundException;
-import in.koreatech.payment.model.entity.Payment;
 
 public interface PaymentRepository extends Repository<Payment, Integer> {
 

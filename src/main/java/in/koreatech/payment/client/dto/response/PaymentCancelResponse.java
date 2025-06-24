@@ -5,9 +5,6 @@ import java.time.OffsetDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
-import in.koreatech.payment.model.entity.Payment;
-import in.koreatech.payment.model.entity.PaymentCancel;
-
 public record PaymentCancelResponse(
     String paymentKey,
     String orderId,

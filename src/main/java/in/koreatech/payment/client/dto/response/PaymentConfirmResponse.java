@@ -3,13 +3,12 @@ package in.koreatech.payment.client.dto.response;
 import java.time.LocalDateTime;
 import java.time.OffsetDateTime;
 
-import in.koreatech.payment.model.entity.Payment;
-import in.koreatech.payment.model.enums.PaymentMethod;
-import in.koreatech.payment.model.enums.PaymentStatus;
+import in.koreatech.koin.domain.order.model.Payment;
+import in.koreatech.koin.domain.order.model.PaymentMethod;
+import in.koreatech.koin.domain.order.model.PaymentStatus;
 
 public record PaymentConfirmResponse(
     String paymentKey,
-    String orderId,
     Integer amount,
     String status,
     String method,
@@ -23,11 +22,9 @@ public record PaymentConfirmResponse(
         LocalDateTime requested = requestedOffsetDateTime.toLocalDateTime();
         LocalDateTime approved = approvedOffsetDateTime.toLocalDateTime();
 
-        return Payment.builder()
+        return in.koreatech.koin.domain.order.model.Payment.builder()
             .paymentKey(paymentKey)
-            .orderId(orderId)
             .amount(amount)
-            .userId(userId)
             .paymentStatus(PaymentStatus.valueOf(status))
             .paymentMethod(PaymentMethod.from(method))
             .requestedAt(requested)

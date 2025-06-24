@@ -2,6 +2,10 @@ package in.koreatech.payment.model.domain;
 
 import java.util.List;
 
+import in.koreatech.koin.domain.order.model.Order;
+import in.koreatech.koin.domain.order.model.OrderMenu;
+import in.koreatech.koin.domain.order.model.OrderMenuOption;
+
 public record TemporaryMenuItems (
     String name,
     Integer quantity,
@@ -9,5 +13,18 @@ public record TemporaryMenuItems (
     TemporaryMenuPrice price,
     List<TemporaryMenuOption> options
 ){
+    public OrderMenu toOrderMenu(Order order) {
+        OrderMenu orderMenu = OrderMenu.builder()
+            .menuName(name)
+            .quantity(quantity)
+            .menuPrice(price.price())
+            .build();
 
+        List<OrderMenuOption> orderMenuOptions = options.stream()
+            .map(temporaryMenuOption -> temporaryMenuOption.toOrderMenuOption(orderMenu))
+            .toList();
+
+        orderMenu.setOrderMenuOptions(orderMenuOptions);
+        return orderMenu;
+    }
 }
