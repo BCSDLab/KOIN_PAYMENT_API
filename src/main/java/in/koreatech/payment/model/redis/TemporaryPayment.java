@@ -150,6 +150,7 @@ public class TemporaryPayment {
             .totalPrice(totalPrice)
             .orderableShop(orderableShop)
             .user(user)
+            .isDeleted(false)
             .build();
 
         if (orderType == DELIVERY) {
@@ -189,7 +190,7 @@ public class TemporaryPayment {
     }
 
     private void validateAmountMatches(Integer amount) {
-        if (!amount.equals(this.totalProductPrice)) {
+        if (!amount.equals(this.totalPrice)) {
             throw InvalidTemporaryPaymentException.withDetail("amount : " + amount);
         }
     }

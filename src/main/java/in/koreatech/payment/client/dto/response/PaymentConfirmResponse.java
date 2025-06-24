@@ -15,14 +15,14 @@ public record PaymentConfirmResponse(
     String requestedAt,
     String approvedAt
 ) {
-    public Payment toEntity(Integer userId) {
+    public Payment toEntity() {
         OffsetDateTime requestedOffsetDateTime = OffsetDateTime.parse(requestedAt);
         OffsetDateTime approvedOffsetDateTime = OffsetDateTime.parse(approvedAt);
 
         LocalDateTime requested = requestedOffsetDateTime.toLocalDateTime();
         LocalDateTime approved = approvedOffsetDateTime.toLocalDateTime();
 
-        return in.koreatech.koin.domain.order.model.Payment.builder()
+        return Payment.builder()
             .paymentKey(paymentKey)
             .amount(amount)
             .paymentStatus(PaymentStatus.valueOf(status))

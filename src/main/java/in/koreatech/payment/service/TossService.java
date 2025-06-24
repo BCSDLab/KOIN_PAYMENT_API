@@ -62,7 +62,7 @@ public class TossService implements PaymentService {
         Integer userId = jwtTokenResolver.getUserId(accessToken);
         User user = userRepository.getById(userId);
 
-        Cart cart = cartRepository.getCartById(user.getId());
+        Cart cart = cartRepository.getCartByUserId(user.getId());
 
         OrderableShop orderableShop = cart.getOrderableShop();
         List<TemporaryMenuItems> temporaryMenuItems = TemporaryMenuItemConverter.fromCart(cart);
@@ -95,7 +95,7 @@ public class TossService implements PaymentService {
         Integer userId = jwtTokenResolver.getUserId(accessToken);
         User user = userRepository.getById(userId);
 
-        Cart cart = cartRepository.getCartById(user.getId());
+        Cart cart = cartRepository.getCartByUserId(user.getId());
 
         OrderableShop orderableShop = cart.getOrderableShop();
         List<TemporaryMenuItems> temporaryMenuItems = TemporaryMenuItemConverter.fromCart(cart);
@@ -120,7 +120,7 @@ public class TossService implements PaymentService {
     }
 
     @Transactional
-    public in.koreatech.koin.domain.order.model.Payment confirmPayment(String accessToken, String paymentKey, String orderId, Integer amount) {
+    public Payment confirmPayment(String accessToken, String paymentKey, String orderId, Integer amount) {
         Integer userId = jwtTokenResolver.getUserId(accessToken);
         User user = userRepository.getById(userId);
         TemporaryPayment temporaryPayment = temporaryPaymentRedisRepository.getById(orderId);
@@ -141,7 +141,7 @@ public class TossService implements PaymentService {
             .toList();
         orderMenuRepository.saveAll(orderMenus);
 
-        Payment payment = response.toEntity(user.getId());
+        Payment payment = response.toEntity();
         paymentRepository.save(payment);
         temporaryPaymentRedisRepository.deleteById(orderId);
         return payment;

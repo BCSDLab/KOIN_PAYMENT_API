@@ -22,11 +22,13 @@ public record TemporaryMenuItems(
             .order(order)
             .build();
 
-        List<OrderMenuOption> orderMenuOptions = options.stream()
-            .map(temporaryMenuOption -> temporaryMenuOption.toOrderMenuOption(orderMenu))
-            .toList();
+        if (options != null) {
+            List<OrderMenuOption> orderMenuOptions = options.stream()
+                .map(temporaryMenuOption -> temporaryMenuOption.toOrderMenuOption(orderMenu))
+                .toList();
+            orderMenu.setOrderMenuOptions(orderMenuOptions);
+        }
 
-        orderMenu.setOrderMenuOptions(orderMenuOptions);
         return orderMenu;
     }
 }
