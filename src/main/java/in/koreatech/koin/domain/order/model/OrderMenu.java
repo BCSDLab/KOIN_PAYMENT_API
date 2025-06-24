@@ -37,6 +37,10 @@ public class OrderMenu {
     @Column(name = "menu_name", nullable = false, updatable = false)
     private String menuName;
 
+    @NotBlank
+    @Column(name = "menu_option_name", nullable = false, updatable = false)
+    private String menuOptionName;
+
     @NotNull
     @Column(name = "menu_price", nullable = false, updatable = false)
     private Integer menuPrice;
@@ -55,11 +59,13 @@ public class OrderMenu {
     @Builder
     private OrderMenu(
         String menuName,
+        String menuOptionName,
         Integer menuPrice,
         Integer quantity,
         Order order
     ) {
         this.menuName = menuName;
+        this.menuOptionName = menuOptionName;
         this.menuPrice = menuPrice;
         this.quantity = quantity;
         this.order = order;
