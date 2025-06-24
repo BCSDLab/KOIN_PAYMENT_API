@@ -1,5 +1,6 @@
 package in.koreatech.koin.domain.order.model;
 
+import static in.koreatech.koin.domain.order.model.PaymentStatus.CANCELED;
 import static jakarta.persistence.EnumType.STRING;
 import static jakarta.persistence.FetchType.LAZY;
 import static jakarta.persistence.GenerationType.IDENTITY;
@@ -7,6 +8,7 @@ import static lombok.AccessLevel.PROTECTED;
 
 import java.time.LocalDateTime;
 
+import in.koreatech.koin.domain.order.exception.PaymentAccessDeniedException;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Enumerated;
@@ -83,5 +85,15 @@ public class Payment {
         this.requestedAt = requestedAt;
         this.approvedAt = approvedAt;
         this.order = order;
+    }
+
+    // public void validateUserIdMatches(Integer userId) {
+    //     if (!userId.equals(this.userId)) {
+    //         throw PaymentAccessDeniedException.withDetail("userId : " + userId);
+    //     }
+    // }
+
+    public void cancel() {
+        this.paymentStatus = CANCELED;
     }
 }

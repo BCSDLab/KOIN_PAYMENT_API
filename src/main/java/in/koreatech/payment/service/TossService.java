@@ -155,7 +155,7 @@ public class TossService implements PaymentService {
         if (payment.getPaymentStatus().isCanceled()) {
             throw PaymentAlreadyCanceledException.withDetail("paymentId : " + payment.getId());
         }
-        payment.validateUserIdMatches(user.getId());
+        // payment.validateUserIdMatches(user.getId());
 
         PaymentIdempotencyKey paymentIdempotencyKey = paymentIdempotencyKeyRepository
             .findByUserId(user.getId())
