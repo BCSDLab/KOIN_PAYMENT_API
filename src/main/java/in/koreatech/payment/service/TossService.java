@@ -119,7 +119,7 @@ public class TossService implements PaymentService {
         return orderId;
     }
 
-    @Transactional
+    @Transactional(transactionManager = "koinTransactionManager")
     public Payment confirmPayment(String accessToken, String paymentKey, String orderId, Integer amount) {
         Integer userId = jwtTokenResolver.getUserId(accessToken);
         User user = userRepository.getById(userId);
