@@ -87,11 +87,11 @@ public class Payment {
         this.order = order;
     }
 
-    // public void validateUserIdMatches(Integer userId) {
-    //     if (!userId.equals(this.userId)) {
-    //         throw PaymentAccessDeniedException.withDetail("userId : " + userId);
-    //     }
-    // }
+    public void validateUserIdMatches(Integer userId) {
+        if (!userId.equals(this.order.getUser().getId())) {
+            throw PaymentAccessDeniedException.withDetail("userId : " + userId);
+        }
+    }
 
     public void cancel() {
         this.paymentStatus = CANCELED;
