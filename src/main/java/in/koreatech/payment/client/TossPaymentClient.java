@@ -95,7 +95,7 @@ public class TossPaymentClient {
     }
 
     private String buildAuthorizationHeader() {
-        String encoded = Base64.getEncoder().encodeToString((secretKey).getBytes(UTF_8));
+        String encoded = Base64.getEncoder().encodeToString((secretKey + ":").getBytes(UTF_8));
         return AUTH_PREFIX + encoded;
     }
 }
