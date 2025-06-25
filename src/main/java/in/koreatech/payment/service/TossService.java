@@ -27,6 +27,7 @@ import in.koreatech.payment.client.dto.response.PaymentConfirmResponse;
 import in.koreatech.payment.common.auth.JwtTokenResolver;
 import in.koreatech.payment.dto.request.TemporaryDeliveryPaymentSaveRequest;
 import in.koreatech.payment.dto.request.TemporaryTakeoutPaymentSaveRequest;
+import in.koreatech.payment.exception.OrderPriceMismatchException;
 import in.koreatech.payment.exception.PaymentAlreadyCanceledException;
 import in.koreatech.payment.exception.PaymentCancelException;
 import in.koreatech.payment.exception.PaymentConfirmException;
@@ -70,6 +71,13 @@ public class TossService implements PaymentService {
         int deliveryFee = orderableShop.calculateDeliveryFee(totalProductPrice);
         int finalAmount = totalProductPrice + deliveryFee;
 
+        if (!request.totalMenuPrice().equals(totalProductPrice)
+            || !request.deliveryTip().equals(deliveryFee)
+            || !request.totalAmount().equals(finalAmount)
+        ) {
+            throw OrderPriceMismatchException.withDetail("totalProductPrice : " + totalProductPrice + "deliveryFee : " + deliveryFee + "totalAmount : " + totalProductPrice + "finalAmount : " + finalAmount);
+        }
+
         String orderId = orderIdGenerator.generateOrderId();
 
         TemporaryPayment deliveryEntity = TemporaryPayment.toDeliveryEntity(
@@ -101,6 +109,12 @@ public class TossService implements PaymentService {
         List<TemporaryMenuItems> temporaryMenuItems = TemporaryMenuItemConverter.fromCart(cart);
         int totalProductPrice = cart.calculateItemsAmount();
         int finalAmount = totalProductPrice;
+
+        if (!request.totalMenuPrice().equals(totalProductPrice)
+            || !request.totalAmount().equals(finalAmount)
+        ) {
+            throw OrderPriceMismatchException.withDetail("totalProductPrice : " + totalProductPrice + "totalAmount : " + totalProductPrice + "finalAmount : " + finalAmount);
+        }
 
         String orderId = orderIdGenerator.generateOrderId();
 
