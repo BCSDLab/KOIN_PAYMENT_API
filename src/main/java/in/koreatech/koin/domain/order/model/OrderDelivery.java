@@ -12,6 +12,7 @@ import jakarta.persistence.Table;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -48,4 +49,19 @@ public class OrderDelivery {
     @NotNull
     @Column(name = "delivery_tip", nullable = false, updatable = false)
     private Integer deliveryTip;
+
+    @Builder
+    public OrderDelivery(
+        Order order,
+        String address,
+        String toOwner,
+        String toRider,
+        Integer deliveryTip
+    ) {
+        this.order = order;
+        this.address = address;
+        this.toOwner = toOwner;
+        this.toRider = toRider;
+        this.deliveryTip = deliveryTip;
+    }
 }

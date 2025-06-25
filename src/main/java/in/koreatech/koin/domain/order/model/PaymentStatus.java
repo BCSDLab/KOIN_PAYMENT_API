@@ -1,4 +1,4 @@
-package in.koreatech.payment.model.enums;
+package in.koreatech.koin.domain.order.model;
 
 import lombok.Getter;
 

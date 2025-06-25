@@ -8,25 +8,33 @@ import org.springframework.transaction.annotation.Transactional;
 
 import in.koreatech.koin.domain.order.cart.model.Cart;
 import in.koreatech.koin.domain.order.cart.repository.CartRepository;
+import in.koreatech.koin.domain.order.model.Order;
+import in.koreatech.koin.domain.order.model.OrderMenu;
+import in.koreatech.koin.domain.order.model.Payment;
+import in.koreatech.koin.domain.order.model.PaymentCancel;
+import in.koreatech.koin.domain.order.model.PaymentStatus;
+import in.koreatech.koin.domain.order.repository.OrderMenuRepository;
+import in.koreatech.koin.domain.order.repository.OrderRepository;
+import in.koreatech.koin.domain.order.repository.PaymentCancelRepository;
+import in.koreatech.koin.domain.order.repository.PaymentRepository;
 import in.koreatech.koin.domain.order.shop.model.entity.shop.OrderableShop;
+import in.koreatech.koin.domain.order.shop.repository.OrderableShopRepository;
 import in.koreatech.koin.domain.user.model.User;
 import in.koreatech.koin.domain.user.repository.UserRepository;
 import in.koreatech.payment.client.TossPaymentClient;
 import in.koreatech.payment.client.dto.response.PaymentCancelResponse;
+import in.koreatech.payment.client.dto.response.PaymentConfirmResponse;
 import in.koreatech.payment.common.auth.JwtTokenResolver;
 import in.koreatech.payment.dto.request.TemporaryDeliveryPaymentSaveRequest;
 import in.koreatech.payment.dto.request.TemporaryTakeoutPaymentSaveRequest;
+import in.koreatech.payment.exception.OrderPriceMismatchException;
 import in.koreatech.payment.exception.PaymentAlreadyCanceledException;
 import in.koreatech.payment.exception.PaymentCancelException;
-import in.koreatech.payment.model.entity.Payment;
-import in.koreatech.payment.model.entity.PaymentCancel;
-import in.koreatech.payment.model.entity.PaymentIdempotencyKey;
-import in.koreatech.payment.model.enums.PaymentStatus;
+import in.koreatech.payment.exception.PaymentConfirmException;
 import in.koreatech.payment.model.domain.TemporaryMenuItems;
+import in.koreatech.payment.model.entity.PaymentIdempotencyKey;
 import in.koreatech.payment.model.redis.TemporaryPayment;
-import in.koreatech.payment.repository.PaymentCancelRepository;
 import in.koreatech.payment.repository.PaymentIdempotencyKeyRepository;
-import in.koreatech.payment.repository.PaymentRepository;
 import in.koreatech.payment.repository.redis.TemporaryPaymentRedisRepository;
 import in.koreatech.payment.util.OrderIdGenerator;
 import in.koreatech.payment.util.TemporaryMenuItemConverter;
@@ -46,13 +54,16 @@ public class TossService implements PaymentService {
     private final PaymentCancelRepository paymentCancelRepository;
     private final CartRepository cartRepository;
     private final TemporaryPaymentRedisRepository temporaryPaymentRedisRepository;
+    private final OrderableShopRepository orderableShopRepository;
+    private final OrderRepository orderRepository;
+    private final OrderMenuRepository orderMenuRepository;
 
     @Transactional
     public String createTemporaryDeliveryPayment(String accessToken, TemporaryDeliveryPaymentSaveRequest request) {
         Integer userId = jwtTokenResolver.getUserId(accessToken);
         User user = userRepository.getById(userId);
 
-        Cart cart = cartRepository.getCartById(user.getId());
+        Cart cart = cartRepository.getCartByUserId(user.getId());
 
         OrderableShop orderableShop = cart.getOrderableShop();
         List<TemporaryMenuItems> temporaryMenuItems = TemporaryMenuItemConverter.fromCart(cart);
@@ -60,11 +71,20 @@ public class TossService implements PaymentService {
         int deliveryFee = orderableShop.calculateDeliveryFee(totalProductPrice);
         int finalAmount = totalProductPrice + deliveryFee;
 
+        if (!request.totalMenuPrice().equals(totalProductPrice)
+            || !request.deliveryTip().equals(deliveryFee)
+            || !request.totalAmount().equals(finalAmount)
+        ) {
+            throw OrderPriceMismatchException.withDetail("totalProductPrice : " + totalProductPrice + "deliveryFee : " + deliveryFee + "totalAmount : " + totalProductPrice + "finalAmount : " + finalAmount);
+        }
+
         String orderId = orderIdGenerator.generateOrderId();
 
         TemporaryPayment deliveryEntity = TemporaryPayment.toDeliveryEntity(
             orderId,
             user.getId(),
+            orderableShop.getId(),
+            request.phoneNumber(),
             request.address(),
             request.toOwner(),
             request.toRider(),
@@ -83,17 +103,26 @@ public class TossService implements PaymentService {
         Integer userId = jwtTokenResolver.getUserId(accessToken);
         User user = userRepository.getById(userId);
 
-        Cart cart = cartRepository.getCartById(user.getId());
+        Cart cart = cartRepository.getCartByUserId(user.getId());
 
+        OrderableShop orderableShop = cart.getOrderableShop();
         List<TemporaryMenuItems> temporaryMenuItems = TemporaryMenuItemConverter.fromCart(cart);
         int totalProductPrice = cart.calculateItemsAmount();
         int finalAmount = totalProductPrice;
+
+        if (!request.totalMenuPrice().equals(totalProductPrice)
+            || !request.totalAmount().equals(finalAmount)
+        ) {
+            throw OrderPriceMismatchException.withDetail("totalProductPrice : " + totalProductPrice + "totalAmount : " + totalProductPrice + "finalAmount : " + finalAmount);
+        }
 
         String orderId = orderIdGenerator.generateOrderId();
 
         TemporaryPayment deliveryEntity = TemporaryPayment.toTakeOutEntity(
             orderId,
             user.getId(),
+            orderableShop.getId(),
+            request.phoneNumber(),
             request.toOwner(),
             totalProductPrice,
             finalAmount,
@@ -104,24 +133,34 @@ public class TossService implements PaymentService {
         return orderId;
     }
 
-    // @Transactional
-    // public Payment confirmPayment(String accessToken, String paymentKey, String orderId, Integer amount) {
-    //     Integer userId = jwtTokenResolver.getUserId(accessToken);
-    //     User user = userRepository.getById(userId);
-    //     TemporaryPayment temporaryPayment = temporaryPaymentRepository.getByOrderId(orderId);
-    //     temporaryPayment.validateMatches(orderId, user.getId(), amount);
-    //
-    //     PaymentConfirmResponse response = tossPaymentClient.requestConfirm(paymentKey, orderId, amount);
-    //     PaymentStatus paymentStatus = PaymentStatus.valueOf(response.status());
-    //     if (!paymentStatus.isDone()) {
-    //         throw PaymentConfirmException.withDetail("paymentStatus : " + response.status());
-    //     }
-    //
-    //     Payment payment = response.toEntity(user.getId());
-    //     paymentRepository.save(payment);
-    //     temporaryPaymentRepository.deleteById(orderId);
-    //     return payment;
-    // }
+    @Transactional(transactionManager = "koinTransactionManager")
+    public Payment confirmPayment(String accessToken, String paymentKey, String orderId, Integer amount) {
+        Integer userId = jwtTokenResolver.getUserId(accessToken);
+        User user = userRepository.getById(userId);
+        TemporaryPayment temporaryPayment = temporaryPaymentRedisRepository.getById(orderId);
+        temporaryPayment.validateMatches(orderId, user.getId(), amount);
+
+        PaymentConfirmResponse response = tossPaymentClient.requestConfirm(paymentKey, orderId, amount);
+        PaymentStatus paymentStatus = PaymentStatus.valueOf(response.status());
+        if (!paymentStatus.isDone()) {
+            throw PaymentConfirmException.withDetail("paymentStatus : " + response.status());
+        }
+
+        OrderableShop orderableShop = orderableShopRepository.getById(temporaryPayment.getOrderableShopId());
+        Order order = temporaryPayment.toOrder(user, orderableShop);
+        orderRepository.save(order);
+
+        List<OrderMenu> orderMenus = temporaryPayment.getTemporaryMenuItems().stream()
+            .map(temporaryMenuItems -> temporaryMenuItems.toOrderMenu(order))
+            .toList();
+        orderMenuRepository.saveAll(orderMenus);
+
+        Payment payment = response.toEntity();
+        paymentRepository.save(payment);
+        temporaryPaymentRedisRepository.deleteById(orderId);
+        cartRepository.deleteByUserId(user.getId());
+        return payment;
+    }
 
     @Transactional
     public List<PaymentCancel> cancelPayment(String accessToken, String paymentKey, String cancelReason) {

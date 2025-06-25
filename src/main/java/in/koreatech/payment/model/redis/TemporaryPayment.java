@@ -1,5 +1,8 @@
 package in.koreatech.payment.model.redis;
 
+import static in.koreatech.koin.domain.order.model.OrderType.DELIVERY;
+import static in.koreatech.koin.domain.order.model.OrderType.TAKE_OUT;
+
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -7,8 +10,13 @@ import org.springframework.data.annotation.Id;
 import org.springframework.data.redis.core.RedisHash;
 import org.springframework.data.redis.core.TimeToLive;
 
+import in.koreatech.koin.domain.order.model.Order;
+import in.koreatech.koin.domain.order.model.OrderDelivery;
+import in.koreatech.koin.domain.order.model.OrderTakeout;
+import in.koreatech.koin.domain.order.model.OrderType;
+import in.koreatech.koin.domain.order.shop.model.entity.shop.OrderableShop;
+import in.koreatech.koin.domain.user.model.User;
 import in.koreatech.payment.exception.InvalidTemporaryPaymentException;
-import in.koreatech.payment.model.enums.OrderType;
 import in.koreatech.payment.model.domain.TemporaryMenuItems;
 import lombok.Getter;
 
@@ -23,7 +31,11 @@ public class TemporaryPayment {
 
     private Integer userId;
 
-    private OrderType orderType;
+    private Integer orderableShopId;
+
+    private String phoneNumber;
+
+    private in.koreatech.koin.domain.order.model.OrderType orderType;
 
     private String address;
 
@@ -47,6 +59,8 @@ public class TemporaryPayment {
     private TemporaryPayment(
         String orderId,
         Integer userId,
+        Integer orderableShopId,
+        String phoneNumber,
         OrderType orderType,
         String address,
         String toOwner,
@@ -58,6 +72,8 @@ public class TemporaryPayment {
     ) {
         this.orderId = orderId;
         this.userId = userId;
+        this.orderableShopId = orderableShopId;
+        this.phoneNumber = phoneNumber;
         this.orderType = orderType;
         this.address = address;
         this.toOwner = toOwner;
@@ -73,6 +89,8 @@ public class TemporaryPayment {
     public static TemporaryPayment toDeliveryEntity(
         String orderId,
         Integer userId,
+        Integer orderableShopId,
+        String phoneNumber,
         String address,
         String toOwner,
         String toRider,
@@ -84,6 +102,8 @@ public class TemporaryPayment {
         return new TemporaryPayment(
             orderId,
             userId,
+            orderableShopId,
+            phoneNumber,
             OrderType.DELIVERY,
             address,
             toOwner,
@@ -98,6 +118,8 @@ public class TemporaryPayment {
     public static TemporaryPayment toTakeOutEntity(
         String orderId,
         Integer userId,
+        Integer orderableShopId,
+        String phoneNumber,
         String toOwner,
         Integer totalProductPrice,
         Integer totalPrice,
@@ -106,6 +128,8 @@ public class TemporaryPayment {
         return new TemporaryPayment(
             orderId,
             userId,
+            orderableShopId,
+            phoneNumber,
             OrderType.TAKE_OUT,
             null,
             toOwner,
@@ -115,6 +139,42 @@ public class TemporaryPayment {
             totalPrice,
             temporaryMenuItems
         );
+    }
+
+    public Order toOrder(User user, OrderableShop orderableShop) {
+        Order order = Order.builder()
+            .id(orderId)
+            .orderType(orderType)
+            .phoneNumber(phoneNumber)
+            .totalProductPrice(totalProductPrice)
+            .totalPrice(totalPrice)
+            .orderableShop(orderableShop)
+            .user(user)
+            .isDeleted(false)
+            .build();
+
+        if (orderType == DELIVERY) {
+            order.setOrderDelivery(OrderDelivery.builder()
+                .order(order)
+                .address(address)
+                .toOwner(toOwner)
+                .toRider(toRider)
+                .deliveryTip(deliveryFee)
+                .build());
+        } else if (orderType == TAKE_OUT) {
+            order.setOrderTakeout(OrderTakeout.builder()
+                .order(order)
+                .toOwner(toOwner)
+                .build());
+        }
+
+        return order;
+    }
+
+    public void validateMatches(String orderId, Integer userId, Integer amount) {
+        validateOrderIdMatches(orderId);
+        validateUserIdMatches(userId);
+        validateAmountMatches(amount);
     }
 
     private void validateOrderIdMatches(String orderId) {
@@ -130,7 +190,7 @@ public class TemporaryPayment {
     }
 
     private void validateAmountMatches(Integer amount) {
-        if (!amount.equals(this.totalProductPrice)) {
+        if (!amount.equals(this.totalPrice)) {
             throw InvalidTemporaryPaymentException.withDetail("amount : " + amount);
         }
     }

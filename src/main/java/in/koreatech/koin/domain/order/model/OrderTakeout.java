@@ -11,6 +11,7 @@ import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -33,4 +34,13 @@ public class OrderTakeout {
     @Size(max = 50)
     @Column(name = "to_owner", length = 50, nullable = false, updatable = false)
     private String toOwner;
+
+    @Builder
+    private OrderTakeout(
+        Order order,
+        String toOwner
+    ) {
+        this.order = order;
+        this.toOwner = toOwner;
+    }
 }

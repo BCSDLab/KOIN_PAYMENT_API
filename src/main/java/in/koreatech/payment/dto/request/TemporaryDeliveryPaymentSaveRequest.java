@@ -41,5 +41,13 @@ public record TemporaryDeliveryPaymentSaveRequest(
     @NotNull(message = "결제 금액은 필수 입력사항입니다.")
     Integer totalAmount
 ) {
+    public TemporaryDeliveryPaymentSaveRequest {
+        if (toOwner == null) {
+            toOwner = "";
+        }
 
+        if (toRider == null) {
+            toRider = "";
+        }
+    }
 }

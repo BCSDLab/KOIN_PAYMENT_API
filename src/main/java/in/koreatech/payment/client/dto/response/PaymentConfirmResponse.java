@@ -3,20 +3,19 @@ package in.koreatech.payment.client.dto.response;
 import java.time.LocalDateTime;
 import java.time.OffsetDateTime;
 
-import in.koreatech.payment.model.entity.Payment;
-import in.koreatech.payment.model.enums.PaymentMethod;
-import in.koreatech.payment.model.enums.PaymentStatus;
+import in.koreatech.koin.domain.order.model.Payment;
+import in.koreatech.koin.domain.order.model.PaymentMethod;
+import in.koreatech.koin.domain.order.model.PaymentStatus;
 
 public record PaymentConfirmResponse(
     String paymentKey,
-    String orderId,
     Integer amount,
     String status,
     String method,
     String requestedAt,
     String approvedAt
 ) {
-    public Payment toEntity(Integer userId) {
+    public Payment toEntity() {
         OffsetDateTime requestedOffsetDateTime = OffsetDateTime.parse(requestedAt);
         OffsetDateTime approvedOffsetDateTime = OffsetDateTime.parse(approvedAt);
 
@@ -25,9 +24,7 @@ public record PaymentConfirmResponse(
 
         return Payment.builder()
             .paymentKey(paymentKey)
-            .orderId(orderId)
             .amount(amount)
-            .userId(userId)
             .paymentStatus(PaymentStatus.valueOf(status))
             .paymentMethod(PaymentMethod.from(method))
             .requestedAt(requested)

@@ -12,17 +12,11 @@ import io.lettuce.core.dynamic.annotation.Param;
 
 public interface CartRepository extends Repository<Cart, Integer> {
 
-    @Query("""
-        SELECT c FROM Cart c
-        LEFT JOIN FETCH c.orderableShop
-        LEFT JOIN FETCH c.cartMenuItems
-        WHERE c.id = :cartId
-    """)
-    Optional<Cart> findByCardId(@Param("cartId") Integer cartId);
+    Optional<Cart> findByUserId(Integer userId);
 
-    default Cart getCartById(Integer cartId) {
-        return findByCardId(cartId)
-            .orElseThrow(() -> CartNotFoundException.withDetail("cartId : " + cartId));
+    default Cart getCartByUserId(Integer userId) {
+        return findByUserId(userId)
+            .orElseThrow(() -> CartNotFoundException.withDetail("userId : " + userId));
     }
 
     void deleteByUserId(Integer userId);

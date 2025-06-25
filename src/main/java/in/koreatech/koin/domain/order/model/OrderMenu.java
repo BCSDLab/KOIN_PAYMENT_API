@@ -18,6 +18,7 @@ import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -36,6 +37,10 @@ public class OrderMenu {
     @Column(name = "menu_name", nullable = false, updatable = false)
     private String menuName;
 
+    @NotBlank
+    @Column(name = "menu_option_name", nullable = false, updatable = false)
+    private String menuOptionName;
+
     @NotNull
     @Column(name = "menu_price", nullable = false, updatable = false)
     private Integer menuPrice;
@@ -50,4 +55,23 @@ public class OrderMenu {
 
     @OneToMany(mappedBy = "orderMenu", cascade = ALL, orphanRemoval = true)
     private List<OrderMenuOption> orderMenuOptions = new ArrayList<>();
+
+    @Builder
+    private OrderMenu(
+        String menuName,
+        String menuOptionName,
+        Integer menuPrice,
+        Integer quantity,
+        Order order
+    ) {
+        this.menuName = menuName;
+        this.menuOptionName = menuOptionName;
+        this.menuPrice = menuPrice;
+        this.quantity = quantity;
+        this.order = order;
+    }
+
+    public void setOrderMenuOptions(List<OrderMenuOption> orderMenuOptions) {
+        this.orderMenuOptions = orderMenuOptions;
+    }
 }

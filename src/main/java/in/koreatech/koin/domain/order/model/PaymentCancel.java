@@ -1,13 +1,10 @@
-package in.koreatech.payment.model.entity;
+package in.koreatech.koin.domain.order.model;
 
 import static jakarta.persistence.FetchType.LAZY;
 import static jakarta.persistence.GenerationType.IDENTITY;
-import static java.lang.Boolean.FALSE;
 import static lombok.AccessLevel.PROTECTED;
 
 import java.time.LocalDateTime;
-
-import org.hibernate.annotations.Where;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -25,7 +22,6 @@ import lombok.NoArgsConstructor;
 @Entity
 @Getter
 @Table(name = "payment_cancel")
-@Where(clause = "is_deleted=0")
 @NoArgsConstructor(access = PROTECTED)
 public class PaymentCancel {
 
@@ -49,16 +45,12 @@ public class PaymentCancel {
     private Integer cancelAmount;
 
     @NotNull
-    @Column(name = "canceled_at", updatable = false, nullable = false)
+    @Column(name = "canceled_at", updatable = false, nullable = false, columnDefinition = "TIMESTAMP")
     private LocalDateTime canceledAt;
 
     @JoinColumn(name = "payment_id")
     @ManyToOne(fetch = LAZY)
     private Payment payment;
-
-    @NotNull
-    @Column(name = "is_deleted", nullable = false)
-    private Boolean isDeleted = FALSE;
 
     @Builder
     private PaymentCancel(
