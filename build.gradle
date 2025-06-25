@@ -45,6 +45,9 @@ dependencies {
 	// slack Notification
 	implementation 'com.github.maricn:logback-slack-appender:1.4.0'
 
+	// Actuator
+	implementation 'org.springframework.boot:spring-boot-starter-actuator'
+
 	testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
 	testImplementation 'org.springframework.boot:spring-boot-starter-test'
 }
