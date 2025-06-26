@@ -9,7 +9,7 @@ import in.koreatech.koin.domain.order.model.PaymentStatus;
 
 public record PaymentConfirmResponse(
     String paymentKey,
-    Integer amount,
+    Integer totalAmount,
     String status,
     String method,
     String requestedAt,
@@ -24,7 +24,7 @@ public record PaymentConfirmResponse(
 
         return Payment.builder()
             .paymentKey(paymentKey)
-            .amount(amount)
+            .amount(totalAmount)
             .paymentStatus(PaymentStatus.valueOf(status))
             .paymentMethod(PaymentMethod.from(method))
             .requestedAt(requested)
