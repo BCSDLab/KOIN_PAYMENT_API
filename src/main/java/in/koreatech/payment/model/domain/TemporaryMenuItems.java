@@ -1,6 +1,7 @@
 package in.koreatech.payment.model.domain;
 
 import java.util.List;
+import java.util.Objects;
 
 import in.koreatech.koin.domain.order.model.Order;
 import in.koreatech.koin.domain.order.model.OrderMenu;
@@ -15,9 +16,9 @@ public record TemporaryMenuItems(
 ) {
     public OrderMenu toOrderMenu(Order order) {
         OrderMenu orderMenu = OrderMenu.builder()
-            .menuName(name)
+            .menuName(Objects.requireNonNullElse(name, ""))
             .quantity(quantity)
-            .menuOptionName(price.name())
+            .menuOptionName(Objects.requireNonNullElse(price.name(), ""))
             .menuPrice(price.price())
             .order(order)
             .build();
