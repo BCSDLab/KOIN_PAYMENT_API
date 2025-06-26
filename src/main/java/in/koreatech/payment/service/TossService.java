@@ -155,7 +155,7 @@ public class TossService implements PaymentService {
             .toList();
         orderMenuRepository.saveAll(orderMenus);
 
-        Payment payment = response.toEntity();
+        Payment payment = response.toEntity(order);
         paymentRepository.save(payment);
         temporaryPaymentRedisRepository.deleteById(orderId);
         cartRepository.deleteByUserId(user.getId());
