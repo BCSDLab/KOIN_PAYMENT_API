@@ -28,7 +28,7 @@ public class OrderMenuOption {
     @Column(name = "id", nullable = false, updatable = false)
     private Integer id;
 
-    @NotBlank
+    @NotNull
     @Column(name = "option_name", nullable = false, updatable = false)
     private String optionName;
 
