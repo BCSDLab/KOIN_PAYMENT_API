@@ -33,11 +33,11 @@ public class OrderMenu {
     @GeneratedValue(strategy = IDENTITY)
     private Integer id;
 
-    @NotBlank
+    @NotNull
     @Column(name = "menu_name", nullable = false, updatable = false)
     private String menuName;
 
-    @NotBlank
+    @NotNull
     @Column(name = "menu_option_name", nullable = false, updatable = false)
     private String menuOptionName;
 
