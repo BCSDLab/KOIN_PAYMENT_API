@@ -113,7 +113,7 @@ public class TossService implements PaymentService {
         if (!request.totalMenuPrice().equals(totalProductPrice)
             || !request.totalAmount().equals(finalAmount)
         ) {
-            throw OrderPriceMismatchException.withDetail("totalProductPrice : " + totalProductPrice + "totalAmount : " + totalProductPrice + "finalAmount : " + finalAmount);
+            throw OrderPriceMismatchException.withDetail("totalProductPrice : " + totalProductPrice + "finalAmount : " + finalAmount);
         }
 
         String orderId = orderIdGenerator.generateOrderId();
