@@ -107,10 +107,10 @@ public interface PaymentsApi {
                 @ExampleObject(name = "포장", value = """
                     {
                       "id": 1,
-                      "delivery_address": "null",
+                      "delivery_address": null,
                       "shop_address": "충청남도 천안시 동남구 병천면 충절로 1600 은솔관 422호",
                       "to_owner": "리뷰 이벤트 감사합니다.",
-                      "to_rider": "null",
+                      "to_rider": null,
                       "amount": 1000,
                       "shop_name": "굿모닝 살로만 치킨",
                       "menus": [
