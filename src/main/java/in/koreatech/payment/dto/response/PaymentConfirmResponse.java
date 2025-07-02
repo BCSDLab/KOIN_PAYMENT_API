@@ -46,7 +46,7 @@ public record PaymentConfirmResponse(
     String shopName,
 
     @Schema(description = "주문 메뉴 목록", requiredMode = REQUIRED)
-    List<InnerCartItemResponse> items,
+    List<InnerCartItemResponse> menus,
 
     @Schema(description = "주문 방법", example = "DELIVERY", requiredMode = REQUIRED)
     String orderType,
