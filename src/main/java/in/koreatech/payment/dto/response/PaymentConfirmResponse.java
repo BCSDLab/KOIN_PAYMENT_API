@@ -1,6 +1,8 @@
 package in.koreatech.payment.dto.response;
 
 import static com.fasterxml.jackson.databind.PropertyNamingStrategies.SnakeCaseStrategy;
+import static in.koreatech.koin.domain.order.model.OrderType.DELIVERY;
+import static in.koreatech.koin.domain.order.model.OrderType.TAKE_OUT;
 import static io.swagger.v3.oas.annotations.media.Schema.RequiredMode.NOT_REQUIRED;
 import static io.swagger.v3.oas.annotations.media.Schema.RequiredMode.REQUIRED;
 
@@ -100,42 +102,34 @@ public record PaymentConfirmResponse(
         }
     }
 
-    public static PaymentConfirmResponse takeOut(Payment payment, Order order,
-        List<TemporaryMenuItems> temporaryMenuItems) {
+    public static PaymentConfirmResponse of(
+        Payment payment,
+        Order order,
+        List<TemporaryMenuItems> temporaryMenuItems
+    ) {
         OrderableShop orderableShop = order.getOrderableShop();
         Shop shop = orderableShop.getShop();
-        OrderTakeout orderTakeout = order.getOrderTakeout();
+
+        String deliveryAddress = null;
+        String toOwner = null;
+        String toRider = null;
+
+        if (order.getOrderType() == DELIVERY) {
+            OrderDelivery delivery = order.getOrderDelivery();
+            deliveryAddress = delivery.getAddress();
+            toOwner = delivery.getToOwner();
+            toRider = delivery.getToRider();
+        } else if (order.getOrderType() == TAKE_OUT) {
+            OrderTakeout takeout = order.getOrderTakeout();
+            toOwner = takeout.getToOwner();
+        }
 
         return new PaymentConfirmResponse(
             payment.getId(),
-            null,
+            deliveryAddress,
             shop.getAddress(),
-            orderTakeout.getToOwner(),
-            null,
-            payment.getAmount(),
-            shop.getName(),
-            temporaryMenuItems.stream()
-                .map(InnerCartItemResponse::from)
-                .toList(),
-            order.getOrderType().name(),
-            payment.getRequestedAt(),
-            payment.getApprovedAt(),
-            payment.getPaymentMethod().getDisplayName()
-        );
-    }
-
-    public static PaymentConfirmResponse delivery(Payment payment, Order order,
-        List<TemporaryMenuItems> temporaryMenuItems) {
-        OrderableShop orderableShop = order.getOrderableShop();
-        Shop shop = orderableShop.getShop();
-        OrderDelivery orderDelivery = order.getOrderDelivery();
-
-        return new PaymentConfirmResponse(
-            payment.getId(),
-            orderDelivery.getAddress(),
-            shop.getAddress(),
-            orderDelivery.getToOwner(),
-            orderDelivery.getToRider(),
+            toOwner,
+            toRider,
             payment.getAmount(),
             shop.getName(),
             temporaryMenuItems.stream()
