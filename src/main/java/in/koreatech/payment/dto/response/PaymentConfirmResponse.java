@@ -6,20 +6,18 @@ import static io.swagger.v3.oas.annotations.media.Schema.RequiredMode.REQUIRED;
 
 import java.time.LocalDateTime;
 import java.util.List;
-import java.util.stream.Collectors;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.databind.annotation.JsonNaming;
 
-import in.koreatech.koin.domain.order.cart.model.Cart;
-import in.koreatech.koin.domain.order.cart.model.CartMenuItem;
-import in.koreatech.koin.domain.order.cart.model.CartMenuItemOption;
 import in.koreatech.koin.domain.order.model.Order;
 import in.koreatech.koin.domain.order.model.OrderDelivery;
 import in.koreatech.koin.domain.order.model.OrderTakeout;
 import in.koreatech.koin.domain.order.model.Payment;
 import in.koreatech.koin.domain.order.shop.model.entity.shop.OrderableShop;
 import in.koreatech.koin.domain.shop.model.shop.Shop;
+import in.koreatech.payment.model.domain.TemporaryMenuItems;
+import in.koreatech.payment.model.domain.TemporaryMenuOption;
 import io.swagger.v3.oas.annotations.media.Schema;
 
 @JsonNaming(value = SnakeCaseStrategy.class)
@@ -64,7 +62,7 @@ public record PaymentConfirmResponse(
 ) {
 
     @JsonNaming(value = SnakeCaseStrategy.class)
-    public record InnerCartItemResponse (
+    public record InnerCartItemResponse(
         @Schema(description = "메뉴 이름", example = "허니콤보", requiredMode = REQUIRED)
         String name,
 
@@ -74,39 +72,36 @@ public record PaymentConfirmResponse(
         @Schema(description = "선택한 옵션 목록", requiredMode = NOT_REQUIRED)
         List<InnerMenuOptionResponse> options
     ) {
-        public static InnerCartItemResponse from(CartMenuItem cartMenuItem) {
-            List<InnerMenuOptionResponse> optionResponses = cartMenuItem.getCartMenuItemOptions().stream()
+        public static InnerCartItemResponse from(TemporaryMenuItems temporaryMenuItems) {
+            List<InnerMenuOptionResponse> optionResponses = temporaryMenuItems.options().stream()
                 .map(InnerMenuOptionResponse::from)
-                .collect(Collectors.toList());
+                .toList();
 
             return new InnerCartItemResponse(
-                cartMenuItem.getOrderableShopMenu().getName(),
-                cartMenuItem.getQuantity(),
+                temporaryMenuItems.name(),
+                temporaryMenuItems.quantity(),
                 optionResponses
             );
         }
     }
 
     @JsonNaming(value = SnakeCaseStrategy.class)
-    public record InnerMenuOptionResponse (
+    public record InnerMenuOptionResponse(
         @Schema(description = "옵션 그룹 이름", example = "소스 추가", requiredMode = NOT_REQUIRED)
         String optionGroupName,
         @Schema(description = "옵션 이름", example = "레드디핑 소스", requiredMode = REQUIRED)
         String optionName
     ) {
-        public static InnerMenuOptionResponse from(CartMenuItemOption cartMenuItemOption) {
-            String groupName = cartMenuItemOption.getOrderableShopMenuOption()
-                .getOptionGroup()
-                .getName();
-
+        public static InnerMenuOptionResponse from(TemporaryMenuOption temporaryMenuOption) {
             return new InnerMenuOptionResponse(
-                groupName,
-                cartMenuItemOption.getOptionName()
+                temporaryMenuOption.optionGroupName(),
+                temporaryMenuOption.optionName()
             );
         }
     }
 
-    public static PaymentConfirmResponse takeOut(Payment payment, Order order, Cart cart) {
+    public static PaymentConfirmResponse takeOut(Payment payment, Order order,
+        List<TemporaryMenuItems> temporaryMenuItems) {
         OrderableShop orderableShop = order.getOrderableShop();
         Shop shop = orderableShop.getShop();
         OrderTakeout orderTakeout = order.getOrderTakeout();
@@ -119,7 +114,7 @@ public record PaymentConfirmResponse(
             null,
             payment.getAmount(),
             shop.getName(),
-            cart.getCartMenuItems().stream()
+            temporaryMenuItems.stream()
                 .map(InnerCartItemResponse::from)
                 .toList(),
             order.getOrderType().name(),
@@ -129,7 +124,8 @@ public record PaymentConfirmResponse(
         );
     }
 
-    public static PaymentConfirmResponse delivery(Payment payment, Order order, Cart cart) {
+    public static PaymentConfirmResponse delivery(Payment payment, Order order,
+        List<TemporaryMenuItems> temporaryMenuItems) {
         OrderableShop orderableShop = order.getOrderableShop();
         Shop shop = orderableShop.getShop();
         OrderDelivery orderDelivery = order.getOrderDelivery();
@@ -142,7 +138,7 @@ public record PaymentConfirmResponse(
             orderDelivery.getToRider(),
             payment.getAmount(),
             shop.getName(),
-            cart.getCartMenuItems().stream()
+            temporaryMenuItems.stream()
                 .map(InnerCartItemResponse::from)
                 .toList(),
             order.getOrderType().name(),
