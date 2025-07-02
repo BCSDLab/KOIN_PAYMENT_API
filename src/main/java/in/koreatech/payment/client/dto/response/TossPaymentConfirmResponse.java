@@ -8,7 +8,7 @@ import in.koreatech.koin.domain.order.model.Payment;
 import in.koreatech.koin.domain.order.model.PaymentMethod;
 import in.koreatech.koin.domain.order.model.PaymentStatus;
 
-public record PaymentConfirmResponse(
+public record TossPaymentConfirmResponse(
     String paymentKey,
     Integer totalAmount,
     String status,

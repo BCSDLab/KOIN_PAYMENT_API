@@ -55,9 +55,8 @@ public class PaymentsController implements PaymentsApi {
         @RequestBody @Valid final PaymentConfirmRequest request,
         @AccessToken final String accessToken
     ) {
-        Payment payment = paymentService.confirmPayment(accessToken, request.paymentKey(), request.orderId(),
+        PaymentConfirmResponse response = paymentService.confirmPayment(accessToken, request.paymentKey(), request.orderId(),
             request.amount());
-        PaymentConfirmResponse response = PaymentConfirmResponse.from(payment);
         return ResponseEntity.ok(response);
     }
 

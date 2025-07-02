@@ -17,7 +17,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import in.koreatech.payment.client.dto.request.PaymentCancelRequest;
 import in.koreatech.payment.client.dto.request.PaymentConfirmRequest;
 import in.koreatech.payment.client.dto.response.PaymentCancelResponse;
-import in.koreatech.payment.client.dto.response.PaymentConfirmResponse;
+import in.koreatech.payment.client.dto.response.TossPaymentConfirmResponse;
 import in.koreatech.payment.client.exception.TossPaymentErrorCode;
 import in.koreatech.payment.client.exception.TossPaymentErrorResponse;
 import in.koreatech.payment.client.exception.TossPaymentException;
@@ -47,7 +47,7 @@ public class TossPaymentClient {
             .build();
     }
 
-    public PaymentConfirmResponse requestConfirm(String paymentKey, String orderId, Integer amount) {
+    public TossPaymentConfirmResponse requestConfirm(String paymentKey, String orderId, Integer amount) {
         PaymentConfirmRequest request = new PaymentConfirmRequest(paymentKey, orderId, amount);
 
         try {
@@ -55,7 +55,7 @@ public class TossPaymentClient {
                 .uri("/confirm")
                 .bodyValue(request)
                 .retrieve()
-                .bodyToMono(PaymentConfirmResponse.class)
+                .bodyToMono(TossPaymentConfirmResponse.class)
                 .block();
 
         } catch (WebClientResponseException e) {
