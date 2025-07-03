@@ -23,10 +23,11 @@ import in.koreatech.koin.domain.user.model.User;
 import in.koreatech.koin.domain.user.repository.UserRepository;
 import in.koreatech.payment.client.TossPaymentClient;
 import in.koreatech.payment.client.dto.response.PaymentCancelResponse;
-import in.koreatech.payment.client.dto.response.PaymentConfirmResponse;
+import in.koreatech.payment.client.dto.response.TossPaymentConfirmResponse;
 import in.koreatech.payment.common.auth.JwtTokenResolver;
 import in.koreatech.payment.dto.request.TemporaryDeliveryPaymentSaveRequest;
 import in.koreatech.payment.dto.request.TemporaryTakeoutPaymentSaveRequest;
+import in.koreatech.payment.dto.response.PaymentConfirmResponse;
 import in.koreatech.payment.exception.OrderPriceMismatchException;
 import in.koreatech.payment.exception.PaymentAlreadyCanceledException;
 import in.koreatech.payment.exception.PaymentCancelException;
@@ -113,7 +114,7 @@ public class TossService implements PaymentService {
         if (!request.totalMenuPrice().equals(totalProductPrice)
             || !request.totalAmount().equals(finalAmount)
         ) {
-            throw OrderPriceMismatchException.withDetail("totalProductPrice : " + totalProductPrice + "totalAmount : " + totalProductPrice + "finalAmount : " + finalAmount);
+            throw OrderPriceMismatchException.withDetail("totalProductPrice : " + totalProductPrice + "finalAmount : " + finalAmount);
         }
 
         String orderId = orderIdGenerator.generateOrderId();
@@ -134,16 +135,16 @@ public class TossService implements PaymentService {
     }
 
     @Transactional(transactionManager = "koinTransactionManager")
-    public Payment confirmPayment(String accessToken, String paymentKey, String orderId, Integer amount) {
+    public PaymentConfirmResponse confirmPayment(String accessToken, String paymentKey, String orderId, Integer amount) {
         Integer userId = jwtTokenResolver.getUserId(accessToken);
         User user = userRepository.getById(userId);
         TemporaryPayment temporaryPayment = temporaryPaymentRedisRepository.getById(orderId);
         temporaryPayment.validateMatches(orderId, user.getId(), amount);
 
-        PaymentConfirmResponse response = tossPaymentClient.requestConfirm(paymentKey, orderId, amount);
-        PaymentStatus paymentStatus = PaymentStatus.valueOf(response.status());
+        TossPaymentConfirmResponse tossPaymentResponse = tossPaymentClient.requestConfirm(paymentKey, orderId, amount);
+        PaymentStatus paymentStatus = PaymentStatus.valueOf(tossPaymentResponse.status());
         if (!paymentStatus.isDone()) {
-            throw PaymentConfirmException.withDetail("paymentStatus : " + response.status());
+            throw PaymentConfirmException.withDetail("paymentStatus : " + tossPaymentResponse.status());
         }
 
         OrderableShop orderableShop = orderableShopRepository.getById(temporaryPayment.getOrderableShopId());
@@ -155,11 +156,12 @@ public class TossService implements PaymentService {
             .toList();
         orderMenuRepository.saveAll(orderMenus);
 
-        Payment payment = response.toEntity(order);
+        Payment payment = tossPaymentResponse.toEntity(order);
         paymentRepository.save(payment);
+        final PaymentConfirmResponse response = PaymentConfirmResponse.of(payment, order, temporaryPayment.getTemporaryMenuItems());
         temporaryPaymentRedisRepository.deleteById(orderId);
         cartRepository.deleteByUserId(user.getId());
-        return payment;
+        return response;
     }
 
     @Transactional

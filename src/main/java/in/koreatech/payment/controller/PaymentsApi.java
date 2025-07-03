@@ -16,6 +16,10 @@ import in.koreatech.payment.dto.response.PaymentConfirmResponse;
 import in.koreatech.payment.dto.response.TemporaryPaymentResponse;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.ExampleObject;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 
@@ -70,6 +74,66 @@ public interface PaymentsApi {
         @AccessToken final String accessToken
     );
 
+    @ApiResponses(value = {
+        @ApiResponse(responseCode = "200", description = "결제 승인 성공",
+            content = @Content(mediaType = "application/json", examples = {
+                @ExampleObject(name = "배달", value = """
+                    {
+                      "id": 1,
+                      "delivery_address": "충청남도 천안시 동남구 병천면 충절로 1600 은솔관 422호",
+                      "shop_address": "충청남도 천안시 동남구 병천면 충절로 1600 은솔관 422호",
+                      "to_owner": "리뷰 이벤트 감사합니다.",
+                      "to_rider": "문 앞에 놔주세요.",
+                      "amount": 1000,
+                      "shop_name": "굿모닝 살로만 치킨",
+                      "menus": [
+                        {
+                          "name": "허니콤보",
+                          "quantity": 1,
+                          "options": [
+                            {
+                              "option_group_name": "소스 추가",
+                              "option_name": "레드디핑 소스"
+                            }
+                          ]
+                        }
+                      ],
+                      "order_type": "DELIVERY",
+                      "requested_at": "2025-07-02T13:07:07.359Z",
+                      "approved_at": "2025-07-02T13:07:07.360Z",
+                      "payment_method": "카드"
+                    }
+                    """),
+                @ExampleObject(name = "포장", value = """
+                    {
+                      "id": 1,
+                      "delivery_address": null,
+                      "shop_address": "충청남도 천안시 동남구 병천면 충절로 1600 은솔관 422호",
+                      "to_owner": "리뷰 이벤트 감사합니다.",
+                      "to_rider": null,
+                      "amount": 1000,
+                      "shop_name": "굿모닝 살로만 치킨",
+                      "menus": [
+                        {
+                          "name": "허니콤보",
+                          "quantity": 1,
+                          "options": [
+                            {
+                              "option_group_name": "소스 추가",
+                              "option_name": "레드디핑 소스"
+                            }
+                          ]
+                        }
+                      ],
+                      "order_type": "TAKE_OUT",
+                      "requested_at": "2025-07-02T13:07:07.359Z",
+                      "approved_at": "2025-07-02T13:07:07.360Z",
+                      "payment_method": "카드"
+                    }
+                    """)
+            })
+        )}
+    )
     @Operation(
         summary = "결제 승인을 한다.",
         description = """
