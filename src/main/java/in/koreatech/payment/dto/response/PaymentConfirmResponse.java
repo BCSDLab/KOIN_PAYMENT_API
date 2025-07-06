@@ -7,6 +7,7 @@ import static io.swagger.v3.oas.annotations.media.Schema.RequiredMode.NOT_REQUIR
 import static io.swagger.v3.oas.annotations.media.Schema.RequiredMode.REQUIRED;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
@@ -75,9 +76,13 @@ public record PaymentConfirmResponse(
         List<InnerMenuOptionResponse> options
     ) {
         public static InnerCartItemResponse from(TemporaryMenuItems temporaryMenuItems) {
-            List<InnerMenuOptionResponse> optionResponses = temporaryMenuItems.options().stream()
-                .map(InnerMenuOptionResponse::from)
-                .toList();
+            List<InnerMenuOptionResponse> optionResponses = new ArrayList<>();
+
+            if (temporaryMenuItems.options() != null && !temporaryMenuItems.options().isEmpty()) {
+                optionResponses = temporaryMenuItems.options().stream()
+                    .map(InnerMenuOptionResponse::from)
+                    .toList();
+            }
 
             return new InnerCartItemResponse(
                 temporaryMenuItems.name(),
