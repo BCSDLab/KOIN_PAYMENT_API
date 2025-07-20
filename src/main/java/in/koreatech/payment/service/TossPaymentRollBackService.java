@@ -25,7 +25,7 @@ import in.koreatech.koin.domain.user.model.User;
 import in.koreatech.koin.domain.user.repository.UserRepository;
 import in.koreatech.payment.client.TossPaymentClient;
 import in.koreatech.payment.client.dto.response.PaymentCancelResponse;
-import in.koreatech.payment.event.PaymentRollBackEvent;
+import in.koreatech.payment.event.TossPaymentRollBackEvent;
 import in.koreatech.payment.model.redis.TemporaryPayment;
 import in.koreatech.payment.repository.redis.TemporaryPaymentRedisRepository;
 import lombok.RequiredArgsConstructor;
@@ -50,7 +50,7 @@ public class TossPaymentRollBackService implements PaymentRollBackService {
 
     @TransactionalEventListener(phase = AFTER_ROLLBACK)
     @Transactional(propagation = REQUIRES_NEW, transactionManager = "koinTransactionManager")
-    public void paymentRollback(PaymentRollBackEvent event) {
+    public void paymentRollback(TossPaymentRollBackEvent event) {
         TemporaryPayment temporaryPayment = event.temporaryPayment();
         User user = userRepository.getById(temporaryPayment.getUserId());
         PaymentIdempotencyKey paymentIdempotencyKey = paymentIdempotencyKeyRepository

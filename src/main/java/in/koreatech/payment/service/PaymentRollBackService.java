@@ -1,7 +1,7 @@
 package in.koreatech.payment.service;
 
-import in.koreatech.payment.event.PaymentRollBackEvent;
+import in.koreatech.payment.event.TossPaymentRollBackEvent;
 
 public interface PaymentRollBackService {
-    void paymentRollback(PaymentRollBackEvent event);
+    void paymentRollback(TossPaymentRollBackEvent event);
 }
