@@ -1,7 +1,10 @@
 package in.koreatech.payment.event;
 
+import in.koreatech.payment.model.redis.TemporaryPayment;
+
 public record PaymentRollBackEvent(
-    String paymentKey
-){
+    String paymentKey,
+    TemporaryPayment temporaryPayment
+) {
 
 }
