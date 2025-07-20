@@ -1,4 +1,4 @@
-package in.koreatech.payment.repository;
+package in.koreatech.koin.domain.order.repository;
 
 import java.util.Optional;
 

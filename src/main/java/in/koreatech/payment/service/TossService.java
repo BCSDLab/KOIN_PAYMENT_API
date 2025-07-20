@@ -35,7 +35,7 @@ import in.koreatech.payment.exception.PaymentConfirmException;
 import in.koreatech.payment.model.domain.TemporaryMenuItems;
 import in.koreatech.koin.domain.order.model.PaymentIdempotencyKey;
 import in.koreatech.payment.model.redis.TemporaryPayment;
-import in.koreatech.payment.repository.PaymentIdempotencyKeyRepository;
+import in.koreatech.koin.domain.order.repository.PaymentIdempotencyKeyRepository;
 import in.koreatech.payment.repository.redis.TemporaryPaymentRedisRepository;
 import in.koreatech.payment.util.OrderIdGenerator;
 import in.koreatech.payment.util.TemporaryMenuItemConverter;
