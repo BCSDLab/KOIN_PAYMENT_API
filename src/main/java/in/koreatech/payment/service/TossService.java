@@ -164,7 +164,7 @@ public class TossService implements PaymentService {
         return response;
     }
 
-    @Transactional
+    @Transactional(transactionManager = "koinTransactionManager")
     public List<PaymentCancel> cancelPayment(String accessToken, String paymentKey, String cancelReason) {
         Integer userId = jwtTokenResolver.getUserId(accessToken);
         User user = userRepository.getById(userId);
