@@ -35,7 +35,7 @@ public class TemporaryPayment {
 
     private String phoneNumber;
 
-    private in.koreatech.koin.domain.order.model.OrderType orderType;
+    private OrderType orderType;
 
     private String address;
 
