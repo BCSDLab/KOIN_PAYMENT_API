@@ -1,4 +1,4 @@
-package in.koreatech.payment.model.entity;
+package in.koreatech.koin.domain.order.model;
 
 import static jakarta.persistence.GenerationType.IDENTITY;
 import static lombok.AccessLevel.PROTECTED;

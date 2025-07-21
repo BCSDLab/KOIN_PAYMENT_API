@@ -3,6 +3,7 @@ package in.koreatech.payment.service;
 import java.util.List;
 import java.util.UUID;
 
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -28,14 +29,15 @@ import in.koreatech.payment.common.auth.JwtTokenResolver;
 import in.koreatech.payment.dto.request.TemporaryDeliveryPaymentSaveRequest;
 import in.koreatech.payment.dto.request.TemporaryTakeoutPaymentSaveRequest;
 import in.koreatech.payment.dto.response.PaymentConfirmResponse;
+import in.koreatech.payment.event.TossPaymentRollBackEvent;
 import in.koreatech.payment.exception.OrderPriceMismatchException;
 import in.koreatech.payment.exception.PaymentAlreadyCanceledException;
 import in.koreatech.payment.exception.PaymentCancelException;
 import in.koreatech.payment.exception.PaymentConfirmException;
 import in.koreatech.payment.model.domain.TemporaryMenuItems;
-import in.koreatech.payment.model.entity.PaymentIdempotencyKey;
+import in.koreatech.koin.domain.order.model.PaymentIdempotencyKey;
 import in.koreatech.payment.model.redis.TemporaryPayment;
-import in.koreatech.payment.repository.PaymentIdempotencyKeyRepository;
+import in.koreatech.koin.domain.order.repository.PaymentIdempotencyKeyRepository;
 import in.koreatech.payment.repository.redis.TemporaryPaymentRedisRepository;
 import in.koreatech.payment.util.OrderIdGenerator;
 import in.koreatech.payment.util.TemporaryMenuItemConverter;
@@ -58,6 +60,7 @@ public class TossService implements PaymentService {
     private final OrderableShopRepository orderableShopRepository;
     private final OrderRepository orderRepository;
     private final OrderMenuRepository orderMenuRepository;
+    private final ApplicationEventPublisher applicationEventPublisher;
 
     @Transactional
     public String createTemporaryDeliveryPayment(String accessToken, TemporaryDeliveryPaymentSaveRequest request) {
@@ -147,6 +150,9 @@ public class TossService implements PaymentService {
             throw PaymentConfirmException.withDetail("paymentStatus : " + tossPaymentResponse.status());
         }
 
+        applicationEventPublisher.publishEvent(
+            TossPaymentRollBackEvent.from(paymentKey, temporaryPayment, tossPaymentResponse));
+
         OrderableShop orderableShop = orderableShopRepository.getById(temporaryPayment.getOrderableShopId());
         Order order = temporaryPayment.toOrder(user, orderableShop);
         orderRepository.save(order);
@@ -164,7 +170,7 @@ public class TossService implements PaymentService {
         return response;
     }
 
-    @Transactional
+    @Transactional(transactionManager = "koinTransactionManager")
     public List<PaymentCancel> cancelPayment(String accessToken, String paymentKey, String cancelReason) {
         Integer userId = jwtTokenResolver.getUserId(accessToken);
         User user = userRepository.getById(userId);
