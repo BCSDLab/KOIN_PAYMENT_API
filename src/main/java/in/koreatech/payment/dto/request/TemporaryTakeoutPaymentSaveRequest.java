@@ -27,9 +27,5 @@ public record TemporaryTakeoutPaymentSaveRequest(
     @NotNull(message = "결제 금액은 필수 입력사항입니다.")
     Integer totalAmount
 ) {
-    public TemporaryTakeoutPaymentSaveRequest {
-        if (toOwner == null) {
-            toOwner = "";
-        }
-    }
+
 }
