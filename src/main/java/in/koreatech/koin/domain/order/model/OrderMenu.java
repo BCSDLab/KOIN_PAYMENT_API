@@ -33,24 +33,23 @@ public class OrderMenu {
     @GeneratedValue(strategy = IDENTITY)
     private Integer id;
 
-    @NotNull
+    @NotBlank
     @Column(name = "menu_name", nullable = false, updatable = false)
     private String menuName;
 
     @NotNull
-    @Column(name = "menu_option_name", nullable = false, updatable = false)
-    private String menuOptionName;
-
-    @NotNull
     @Column(name = "menu_price", nullable = false, updatable = false)
     private Integer menuPrice;
+
+    @Column(name = "menu_price_name", updatable = false)
+    private String menuPriceName;
 
     @NotNull
     @Column(name = "quantity", nullable = false, updatable = false)
     private Integer quantity;
 
     @ManyToOne(fetch = LAZY)
-    @JoinColumn(name = "order_id", nullable = false)
+    @JoinColumn(name = "order_id", nullable = false, updatable = false)
     private Order order;
 
     @OneToMany(mappedBy = "orderMenu", cascade = ALL, orphanRemoval = true)
@@ -59,13 +58,13 @@ public class OrderMenu {
     @Builder
     private OrderMenu(
         String menuName,
-        String menuOptionName,
+        String menuPriceName,
         Integer menuPrice,
         Integer quantity,
         Order order
     ) {
         this.menuName = menuName;
-        this.menuOptionName = menuOptionName;
+        this.menuPriceName = menuPriceName;
         this.menuPrice = menuPrice;
         this.quantity = quantity;
         this.order = order;

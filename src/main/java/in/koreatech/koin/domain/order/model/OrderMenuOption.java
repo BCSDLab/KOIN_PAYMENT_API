@@ -28,7 +28,11 @@ public class OrderMenuOption {
     @Column(name = "id", nullable = false, updatable = false)
     private Integer id;
 
-    @NotNull
+    @NotBlank
+    @Column(name = "option_group_name", nullable = false, updatable = false)
+    private String optionGroupName;
+
+    @NotBlank
     @Column(name = "option_name", nullable = false, updatable = false)
     private String optionName;
 
@@ -46,11 +50,13 @@ public class OrderMenuOption {
 
     @Builder
     private OrderMenuOption(
+        String optionGroupName,
         String optionName,
         Integer optionPrice,
         Integer quantity,
         OrderMenu orderMenu
     ) {
+        this.optionGroupName = optionGroupName;
         this.optionName = optionName;
         this.optionPrice = optionPrice;
         this.quantity = quantity;
