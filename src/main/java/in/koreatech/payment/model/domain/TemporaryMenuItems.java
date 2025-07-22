@@ -16,10 +16,10 @@ public record TemporaryMenuItems(
 ) {
     public OrderMenu toOrderMenu(Order order) {
         OrderMenu orderMenu = OrderMenu.builder()
-            .menuName(Objects.requireNonNullElse(name, ""))
+            .menuName(name)
             .quantity(quantity)
-            .menuOptionName(Objects.requireNonNullElse(price.name(), ""))
             .menuPrice(price.price())
+            .menuPriceName(price.name())
             .order(order)
             .build();
 

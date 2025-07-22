@@ -13,7 +13,8 @@ public record TemporaryMenuOption(
 ) {
     public OrderMenuOption toOrderMenuOption(OrderMenu orderMenu) {
         return OrderMenuOption.builder()
-            .optionName(Objects.requireNonNullElse(optionName, ""))
+            .optionGroupName(optionGroupName)
+            .optionName(optionName)
             .optionPrice(optionPrice)
             .quantity(quantity)
             .orderMenu(orderMenu)
