@@ -137,7 +137,7 @@ public class TossService implements PaymentService {
         return orderId;
     }
 
-    @Transactional(transactionManager = "koinTransactionManager")
+    @Transactional
     public PaymentConfirmResponse confirmPayment(String accessToken, String paymentKey, String orderId, Integer amount) {
         Integer userId = jwtTokenResolver.getUserId(accessToken);
         User user = userRepository.getById(userId);
@@ -170,7 +170,7 @@ public class TossService implements PaymentService {
         return response;
     }
 
-    @Transactional(transactionManager = "koinTransactionManager")
+    @Transactional
     public List<PaymentCancel> cancelPayment(String accessToken, String paymentKey, String cancelReason) {
         Integer userId = jwtTokenResolver.getUserId(accessToken);
         User user = userRepository.getById(userId);
