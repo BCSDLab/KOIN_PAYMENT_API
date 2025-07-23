@@ -164,10 +164,9 @@ public class TossService implements PaymentService {
 
         Payment payment = tossPaymentResponse.toEntity(order);
         paymentRepository.save(payment);
-        final PaymentConfirmResponse response = PaymentConfirmResponse.of(payment, order, temporaryPayment.getTemporaryMenuItems());
         temporaryPaymentRedisRepository.deleteById(orderId);
         cartRepository.deleteByUserId(user.getId());
-        return response;
+        return PaymentConfirmResponse.of(payment, order, orderMenus);
     }
 
     @Transactional
