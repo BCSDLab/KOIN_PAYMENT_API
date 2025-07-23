@@ -15,12 +15,12 @@ import com.fasterxml.jackson.databind.annotation.JsonNaming;
 
 import in.koreatech.koin.domain.order.model.Order;
 import in.koreatech.koin.domain.order.model.OrderDelivery;
+import in.koreatech.koin.domain.order.model.OrderMenu;
+import in.koreatech.koin.domain.order.model.OrderMenuOption;
 import in.koreatech.koin.domain.order.model.OrderTakeout;
 import in.koreatech.koin.domain.order.model.Payment;
 import in.koreatech.koin.domain.order.shop.model.entity.shop.OrderableShop;
 import in.koreatech.koin.domain.shop.model.shop.Shop;
-import in.koreatech.payment.model.domain.TemporaryMenuItems;
-import in.koreatech.payment.model.domain.TemporaryMenuOption;
 import io.swagger.v3.oas.annotations.media.Schema;
 
 @JsonNaming(value = SnakeCaseStrategy.class)
@@ -34,7 +34,7 @@ public record PaymentConfirmResponse(
     @Schema(description = "가게 주소", example = "충청남도 천안시 동남구 병천면 충절로 1600 은솔관 422호", requiredMode = NOT_REQUIRED)
     String shopAddress,
 
-    @Schema(description = "사장님에게", example = "리뷰 이벤트 감사합니다.", requiredMode = REQUIRED)
+    @Schema(description = "사장님에게", example = "리뷰 이벤트 감사합니다.", requiredMode = NOT_REQUIRED)
     String toOwner,
 
     @Schema(description = "라이더에게", example = "문 앞에 놔주세요.", requiredMode = NOT_REQUIRED)
@@ -75,18 +75,18 @@ public record PaymentConfirmResponse(
         @Schema(description = "선택한 옵션 목록", requiredMode = NOT_REQUIRED)
         List<InnerMenuOptionResponse> options
     ) {
-        public static InnerCartItemResponse from(TemporaryMenuItems temporaryMenuItems) {
+        public static InnerCartItemResponse from(OrderMenu orderMenu) {
             List<InnerMenuOptionResponse> optionResponses = new ArrayList<>();
 
-            if (temporaryMenuItems.options() != null && !temporaryMenuItems.options().isEmpty()) {
-                optionResponses = temporaryMenuItems.options().stream()
+            if (orderMenu.getOrderMenuOptions() != null && !orderMenu.getOrderMenuOptions().isEmpty()) {
+                optionResponses = orderMenu.getOrderMenuOptions().stream()
                     .map(InnerMenuOptionResponse::from)
                     .toList();
             }
 
             return new InnerCartItemResponse(
-                temporaryMenuItems.name(),
-                temporaryMenuItems.quantity(),
+                orderMenu.getMenuName(),
+                orderMenu.getQuantity(),
                 optionResponses
             );
         }
@@ -99,10 +99,10 @@ public record PaymentConfirmResponse(
         @Schema(description = "옵션 이름", example = "레드디핑 소스", requiredMode = REQUIRED)
         String optionName
     ) {
-        public static InnerMenuOptionResponse from(TemporaryMenuOption temporaryMenuOption) {
+        public static InnerMenuOptionResponse from(OrderMenuOption orderMenuOption) {
             return new InnerMenuOptionResponse(
-                temporaryMenuOption.optionGroupName(),
-                temporaryMenuOption.optionName()
+                orderMenuOption.getOptionGroupName(),
+                orderMenuOption.getOptionName()
             );
         }
     }
@@ -110,7 +110,7 @@ public record PaymentConfirmResponse(
     public static PaymentConfirmResponse of(
         Payment payment,
         Order order,
-        List<TemporaryMenuItems> temporaryMenuItems
+        List<OrderMenu> orderMenus
     ) {
         OrderableShop orderableShop = order.getOrderableShop();
         Shop shop = orderableShop.getShop();
@@ -137,7 +137,7 @@ public record PaymentConfirmResponse(
             toRider,
             payment.getAmount(),
             shop.getName(),
-            temporaryMenuItems.stream()
+            orderMenus.stream()
                 .map(InnerCartItemResponse::from)
                 .toList(),
             order.getOrderType().name(),
