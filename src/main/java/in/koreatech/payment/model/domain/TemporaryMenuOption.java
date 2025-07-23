@@ -1,7 +1,5 @@
 package in.koreatech.payment.model.domain;
 
-import java.util.Objects;
-
 import in.koreatech.koin.domain.order.model.OrderMenu;
 import in.koreatech.koin.domain.order.model.OrderMenuOption;
 
