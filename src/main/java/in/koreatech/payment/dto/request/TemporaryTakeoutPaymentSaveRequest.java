@@ -9,11 +9,13 @@ import com.fasterxml.jackson.databind.annotation.JsonNaming;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Pattern;
 
 @JsonNaming(value = SnakeCaseStrategy.class)
 public record TemporaryTakeoutPaymentSaveRequest(
     @Schema(description = "연락처", example = "01012345678", requiredMode = REQUIRED)
     @NotBlank(message = "연락처는 필수 입력사항입니다.")
+    @Pattern(regexp = "^\\d{11}$", message = "전화번호 형식이 올바르지 않습니다. 11자리 숫자로 입력해 주세요.")
     String phoneNumber,
 
     @Schema(description = "사장님에게", example = "리뷰 이벤트 감사합니다.", requiredMode = NOT_REQUIRED)
