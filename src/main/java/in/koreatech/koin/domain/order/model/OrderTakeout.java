@@ -41,9 +41,11 @@ public class OrderTakeout {
     @Builder
     private OrderTakeout(
         Order order,
-        String toOwner
+        String toOwner,
+        Boolean provideCutlery
     ) {
         this.order = order;
         this.toOwner = toOwner;
+        this.provideCutlery = provideCutlery;
     }
 }

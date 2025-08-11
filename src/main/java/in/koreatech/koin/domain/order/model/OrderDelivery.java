@@ -58,12 +58,14 @@ public class OrderDelivery {
         String address,
         String toOwner,
         String toRider,
+        Boolean provideCutlery,
         Integer deliveryTip
     ) {
         this.order = order;
         this.address = address;
         this.toOwner = toOwner;
         this.toRider = toRider;
+        this.provideCutlery = provideCutlery;
         this.deliveryTip = deliveryTip;
     }
 }

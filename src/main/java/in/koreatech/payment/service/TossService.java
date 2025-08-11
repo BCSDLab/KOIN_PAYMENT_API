@@ -92,6 +92,7 @@ public class TossService implements PaymentService {
             request.address(),
             request.toOwner(),
             request.toRider(),
+            request.provideCutlery(),
             totalProductPrice,
             deliveryFee,
             finalAmount,
@@ -128,6 +129,7 @@ public class TossService implements PaymentService {
             orderableShop.getId(),
             request.phoneNumber(),
             request.toOwner(),
+            request.provideCutlery(),
             totalProductPrice,
             finalAmount,
             temporaryMenuItems
