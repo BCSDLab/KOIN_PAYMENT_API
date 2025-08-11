@@ -21,6 +21,10 @@ public record TemporaryTakeoutPaymentSaveRequest(
     @Schema(description = "사장님에게", example = "리뷰 이벤트 감사합니다.", requiredMode = NOT_REQUIRED)
     String toOwner,
 
+    @Schema(description = "수저, 포크 수령 여부", example = "true", requiredMode = REQUIRED)
+    @NotNull(message = "수저, 포크 수령 여부는 필수 입력사항입니다.")
+    Boolean provideCutlery,
+
     @Schema(description = "메뉴 총 금액", example = "1234", requiredMode = REQUIRED)
     @NotNull(message = "메뉴 총 금액은 필수 입력사항입니다.")
     Integer totalMenuPrice,
