@@ -29,6 +29,7 @@ import in.koreatech.payment.common.auth.JwtTokenResolver;
 import in.koreatech.payment.dto.request.TemporaryDeliveryPaymentSaveRequest;
 import in.koreatech.payment.dto.request.TemporaryTakeoutPaymentSaveRequest;
 import in.koreatech.payment.dto.response.PaymentConfirmResponse;
+import in.koreatech.payment.dto.response.PaymentResponse;
 import in.koreatech.payment.event.TossPaymentRollBackEvent;
 import in.koreatech.payment.exception.OrderPriceMismatchException;
 import in.koreatech.payment.exception.PaymentAlreadyCanceledException;
@@ -206,5 +207,17 @@ public class TossService implements PaymentService {
         List<PaymentCancel> paymentCancels = response.getPaymentCancels(payment);
         paymentCancelRepository.saveAll(paymentCancels);
         return paymentCancels;
+    }
+
+    public PaymentResponse getPayment(String accessToken, Integer paymentId) {
+        Integer userId = jwtTokenResolver.getUserId(accessToken);
+        User user = userRepository.getById(userId);
+        Payment payment = paymentRepository.getById(paymentId);
+        payment.validateUserIdMatches(user.getId());
+
+        Order order = payment.getOrder();
+        List<OrderMenu> orderMenus = orderMenuRepository.findAllByOrderId(order.getId());
+
+        return PaymentResponse.of(payment, order, orderMenus);
     }
 }
