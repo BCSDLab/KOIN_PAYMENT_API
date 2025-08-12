@@ -43,6 +43,8 @@ public class TemporaryPayment {
 
     private String toRider;
 
+    private Boolean provideCutlery;
+
     private Integer totalProductPrice;
 
     private Integer deliveryFee;
@@ -65,6 +67,7 @@ public class TemporaryPayment {
         String address,
         String toOwner,
         String toRider,
+        Boolean provideCutlery,
         Integer totalProductPrice,
         Integer deliveryFee,
         Integer totalPrice,
@@ -78,6 +81,7 @@ public class TemporaryPayment {
         this.address = address;
         this.toOwner = toOwner;
         this.toRider = toRider;
+        this.provideCutlery = provideCutlery;
         this.totalProductPrice = totalProductPrice;
         this.deliveryFee = deliveryFee;
         this.totalPrice = totalPrice;
@@ -94,6 +98,7 @@ public class TemporaryPayment {
         String address,
         String toOwner,
         String toRider,
+        Boolean provideCutlery,
         Integer totalProductPrice,
         Integer deliveryFee,
         Integer totalPrice,
@@ -108,6 +113,7 @@ public class TemporaryPayment {
             address,
             toOwner,
             toRider,
+            provideCutlery,
             totalProductPrice,
             deliveryFee,
             totalPrice,
@@ -121,6 +127,7 @@ public class TemporaryPayment {
         Integer orderableShopId,
         String phoneNumber,
         String toOwner,
+        Boolean provideCutlery,
         Integer totalProductPrice,
         Integer totalPrice,
         List<TemporaryMenuItems> temporaryMenuItems
@@ -134,6 +141,7 @@ public class TemporaryPayment {
             null,
             toOwner,
             null,
+            provideCutlery,
             totalProductPrice,
             null,
             totalPrice,
@@ -159,12 +167,14 @@ public class TemporaryPayment {
                 .address(address)
                 .toOwner(toOwner)
                 .toRider(toRider)
+                .provideCutlery(provideCutlery)
                 .deliveryTip(deliveryFee)
                 .build());
         } else if (orderType == TAKE_OUT) {
             order.setOrderTakeout(OrderTakeout.builder()
                 .order(order)
                 .toOwner(toOwner)
+                .provideCutlery(provideCutlery)
                 .build());
         }
 

@@ -24,7 +24,7 @@ import in.koreatech.koin.domain.shop.model.shop.Shop;
 import io.swagger.v3.oas.annotations.media.Schema;
 
 @JsonNaming(value = SnakeCaseStrategy.class)
-public record PaymentConfirmResponse(
+public record PaymentResponse(
     @Schema(description = "결제 고유 id", example = "1", requiredMode = REQUIRED)
     Integer id,
 
@@ -110,7 +110,7 @@ public record PaymentConfirmResponse(
         }
     }
 
-    public static PaymentConfirmResponse of(
+    public static PaymentResponse of(
         Payment payment,
         Order order,
         List<OrderMenu> orderMenus
@@ -135,7 +135,7 @@ public record PaymentConfirmResponse(
             provideCutlery = takeout.getProvideCutlery();
         }
 
-        return new PaymentConfirmResponse(
+        return new PaymentResponse(
             payment.getId(),
             deliveryAddress,
             shop.getAddress(),

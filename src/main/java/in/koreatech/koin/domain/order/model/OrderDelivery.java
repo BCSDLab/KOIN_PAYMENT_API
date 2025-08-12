@@ -48,18 +48,24 @@ public class OrderDelivery {
     @Column(name = "delivery_tip", nullable = false, updatable = false)
     private Integer deliveryTip;
 
+    @NotNull
+    @Column(name = "provide_cutlery", nullable = false, updatable = false, columnDefinition = "TINYINT(1)")
+    private Boolean provideCutlery;
+
     @Builder
     public OrderDelivery(
         Order order,
         String address,
         String toOwner,
         String toRider,
+        Boolean provideCutlery,
         Integer deliveryTip
     ) {
         this.order = order;
         this.address = address;
         this.toOwner = toOwner;
         this.toRider = toRider;
+        this.provideCutlery = provideCutlery;
         this.deliveryTip = deliveryTip;
     }
 }

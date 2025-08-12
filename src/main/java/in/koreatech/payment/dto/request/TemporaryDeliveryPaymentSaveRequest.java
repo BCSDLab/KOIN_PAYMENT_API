@@ -36,6 +36,10 @@ public record TemporaryDeliveryPaymentSaveRequest(
     @NotNull(message = "배달 팁은 필수 입력사항입니다.")
     Integer deliveryTip,
 
+    @Schema(description = "수저, 포크 수령 여부", example = "true", requiredMode = REQUIRED)
+    @NotNull(message = "수저, 포크 수령 여부는 필수 입력사항입니다.")
+    Boolean provideCutlery,
+
     @Schema(description = "결제 금액", example = "10000", requiredMode = REQUIRED)
     @NotNull(message = "결제 금액은 필수 입력사항입니다.")
     Integer totalAmount

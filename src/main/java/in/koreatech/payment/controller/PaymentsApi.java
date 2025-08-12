@@ -1,6 +1,7 @@
 package in.koreatech.payment.controller;
 
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -13,6 +14,7 @@ import in.koreatech.payment.dto.request.TemporaryDeliveryPaymentSaveRequest;
 import in.koreatech.payment.dto.request.TemporaryTakeoutPaymentSaveRequest;
 import in.koreatech.payment.dto.response.PaymentCancelResponse;
 import in.koreatech.payment.dto.response.PaymentConfirmResponse;
+import in.koreatech.payment.dto.response.PaymentResponse;
 import in.koreatech.payment.dto.response.TemporaryPaymentResponse;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -170,6 +172,14 @@ public interface PaymentsApi {
         @Parameter(description = "결제 키", example = "5EnNZRJGvaBX7zk2yd8ydw26XvwXkLrx9POLqKQjmAw4b0e1")
         @PathVariable(value = "paymentKey") final String paymentKey,
         @RequestBody @Valid final PaymentCancelRequest request,
+        @AccessToken final String accessToken
+    );
+
+    @Operation(summary = "결제 단건 조회를 한다.")
+    @GetMapping("/{paymentId}")
+    ResponseEntity<PaymentResponse> getPayment(
+        @Parameter(description = "결제 고유 ID", example = "1")
+        @PathVariable(value = "paymentId") final Integer paymentId,
         @AccessToken final String accessToken
     );
 }

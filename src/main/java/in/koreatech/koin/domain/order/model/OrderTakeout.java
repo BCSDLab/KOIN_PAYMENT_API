@@ -34,12 +34,18 @@ public class OrderTakeout {
     @Column(name = "to_owner", length = 50, updatable = false)
     private String toOwner;
 
+    @NotNull
+    @Column(name = "provide_cutlery", nullable = false, updatable = false, columnDefinition = "TINYINT(1)")
+    private Boolean provideCutlery;
+
     @Builder
     private OrderTakeout(
         Order order,
-        String toOwner
+        String toOwner,
+        Boolean provideCutlery
     ) {
         this.order = order;
         this.toOwner = toOwner;
+        this.provideCutlery = provideCutlery;
     }
 }

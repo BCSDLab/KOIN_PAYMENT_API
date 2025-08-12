@@ -3,13 +3,13 @@ package in.koreatech.payment.controller;
 import java.util.List;
 
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import in.koreatech.koin.domain.order.model.Payment;
 import in.koreatech.koin.domain.order.model.PaymentCancel;
 import in.koreatech.payment.common.auth.AccessToken;
 import in.koreatech.payment.dto.request.PaymentCancelRequest;
@@ -18,6 +18,7 @@ import in.koreatech.payment.dto.request.TemporaryDeliveryPaymentSaveRequest;
 import in.koreatech.payment.dto.request.TemporaryTakeoutPaymentSaveRequest;
 import in.koreatech.payment.dto.response.PaymentCancelResponse;
 import in.koreatech.payment.dto.response.PaymentConfirmResponse;
+import in.koreatech.payment.dto.response.PaymentResponse;
 import in.koreatech.payment.dto.response.TemporaryPaymentResponse;
 import in.koreatech.payment.service.PaymentService;
 import jakarta.validation.Valid;
@@ -69,6 +70,15 @@ public class PaymentsController implements PaymentsApi {
         List<PaymentCancel> paymentCancels = paymentService.cancelPayment(accessToken, paymentKey,
             request.cancelReason());
         PaymentCancelResponse response = PaymentCancelResponse.from(paymentCancels);
+        return ResponseEntity.ok(response);
+    }
+
+    @GetMapping("/{paymentId}")
+    public ResponseEntity<PaymentResponse> getPayment(
+        @PathVariable(value = "paymentId") final Integer paymentId,
+        @AccessToken final String accessToken
+    ) {
+        PaymentResponse response = paymentService.getPayment(accessToken, paymentId);
         return ResponseEntity.ok(response);
     }
 }
