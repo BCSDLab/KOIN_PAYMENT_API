@@ -40,6 +40,9 @@ public record PaymentResponse(
     @Schema(description = "라이더에게", example = "문 앞에 놔주세요.", requiredMode = NOT_REQUIRED)
     String toRider,
 
+    @Schema(description = "수저, 포크 수령 여부", example = "true", requiredMode = REQUIRED)
+    Boolean provideCutlery,
+
     @Schema(description = "결제 금액", example = "1000", requiredMode = REQUIRED)
     Integer amount,
 
@@ -118,15 +121,18 @@ public record PaymentResponse(
         String deliveryAddress = null;
         String toOwner = null;
         String toRider = null;
+        Boolean provideCutlery = null;
 
         if (order.getOrderType() == DELIVERY) {
             OrderDelivery delivery = order.getOrderDelivery();
             deliveryAddress = delivery.getAddress();
             toOwner = delivery.getToOwner();
             toRider = delivery.getToRider();
+            provideCutlery = delivery.getProvideCutlery();
         } else if (order.getOrderType() == TAKE_OUT) {
             OrderTakeout takeout = order.getOrderTakeout();
             toOwner = takeout.getToOwner();
+            provideCutlery = takeout.getProvideCutlery();
         }
 
         return new PaymentResponse(
@@ -135,6 +141,7 @@ public record PaymentResponse(
             shop.getAddress(),
             toOwner,
             toRider,
+            provideCutlery,
             payment.getAmount(),
             shop.getName(),
             orderMenus.stream()
