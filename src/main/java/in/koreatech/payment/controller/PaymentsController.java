@@ -10,7 +10,6 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import in.koreatech.koin.domain.order.model.Payment;
 import in.koreatech.koin.domain.order.model.PaymentCancel;
 import in.koreatech.payment.common.auth.AccessToken;
 import in.koreatech.payment.dto.request.PaymentCancelRequest;
@@ -22,7 +21,6 @@ import in.koreatech.payment.dto.response.PaymentConfirmResponse;
 import in.koreatech.payment.dto.response.PaymentResponse;
 import in.koreatech.payment.dto.response.TemporaryPaymentResponse;
 import in.koreatech.payment.service.PaymentService;
-import io.swagger.v3.oas.annotations.Parameter;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 

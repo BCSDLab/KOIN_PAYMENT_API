@@ -13,10 +13,12 @@ import in.koreatech.koin.domain.order.model.Order;
 import in.koreatech.koin.domain.order.model.OrderMenu;
 import in.koreatech.koin.domain.order.model.Payment;
 import in.koreatech.koin.domain.order.model.PaymentCancel;
+import in.koreatech.koin.domain.order.model.PaymentIdempotencyKey;
 import in.koreatech.koin.domain.order.model.PaymentStatus;
 import in.koreatech.koin.domain.order.repository.OrderMenuRepository;
 import in.koreatech.koin.domain.order.repository.OrderRepository;
 import in.koreatech.koin.domain.order.repository.PaymentCancelRepository;
+import in.koreatech.koin.domain.order.repository.PaymentIdempotencyKeyRepository;
 import in.koreatech.koin.domain.order.repository.PaymentRepository;
 import in.koreatech.koin.domain.order.shop.model.entity.shop.OrderableShop;
 import in.koreatech.koin.domain.order.shop.repository.OrderableShopRepository;
@@ -36,9 +38,7 @@ import in.koreatech.payment.exception.PaymentAlreadyCanceledException;
 import in.koreatech.payment.exception.PaymentCancelException;
 import in.koreatech.payment.exception.PaymentConfirmException;
 import in.koreatech.payment.model.domain.TemporaryMenuItems;
-import in.koreatech.koin.domain.order.model.PaymentIdempotencyKey;
 import in.koreatech.payment.model.redis.TemporaryPayment;
-import in.koreatech.koin.domain.order.repository.PaymentIdempotencyKeyRepository;
 import in.koreatech.payment.repository.redis.TemporaryPaymentRedisRepository;
 import in.koreatech.payment.util.OrderIdGenerator;
 import in.koreatech.payment.util.TemporaryMenuItemConverter;
@@ -80,7 +80,9 @@ public class TossService implements PaymentService {
             || !request.deliveryTip().equals(deliveryFee)
             || !request.totalAmount().equals(finalAmount)
         ) {
-            throw OrderPriceMismatchException.withDetail("totalProductPrice : " + totalProductPrice + "deliveryFee : " + deliveryFee + "totalAmount : " + totalProductPrice + "finalAmount : " + finalAmount);
+            throw OrderPriceMismatchException.withDetail(
+                "totalProductPrice : " + totalProductPrice + "deliveryFee : " + deliveryFee + "totalAmount : "
+                    + totalProductPrice + "finalAmount : " + finalAmount);
         }
 
         String orderId = orderIdGenerator.generateOrderId();
@@ -119,7 +121,8 @@ public class TossService implements PaymentService {
         if (!request.totalMenuPrice().equals(totalProductPrice)
             || !request.totalAmount().equals(finalAmount)
         ) {
-            throw OrderPriceMismatchException.withDetail("totalProductPrice : " + totalProductPrice + "finalAmount : " + finalAmount);
+            throw OrderPriceMismatchException.withDetail(
+                "totalProductPrice : " + totalProductPrice + "finalAmount : " + finalAmount);
         }
 
         String orderId = orderIdGenerator.generateOrderId();
@@ -141,7 +144,8 @@ public class TossService implements PaymentService {
     }
 
     @Transactional
-    public PaymentConfirmResponse confirmPayment(String accessToken, String paymentKey, String orderId, Integer amount) {
+    public PaymentConfirmResponse confirmPayment(String accessToken, String paymentKey, String orderId,
+        Integer amount) {
         Integer userId = jwtTokenResolver.getUserId(accessToken);
         User user = userRepository.getById(userId);
         TemporaryPayment temporaryPayment = temporaryPaymentRedisRepository.getById(orderId);
