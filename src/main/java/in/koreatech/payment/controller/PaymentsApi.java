@@ -164,13 +164,13 @@ public interface PaymentsApi {
             취소 사유는 요청 본문에 포함됩니다.
             
             ## Path Variable
-            - `paymentKey`: PG사에서 받은 결제 키
+            - `paymentId`: 결제 고유 ID
             """
     )
-    @PostMapping("/{paymentKey}/cancel")
+    @PostMapping("/{paymentId}/cancel")
     ResponseEntity<PaymentCancelResponse> cancelPayment(
-        @Parameter(description = "결제 키", example = "5EnNZRJGvaBX7zk2yd8ydw26XvwXkLrx9POLqKQjmAw4b0e1")
-        @PathVariable(value = "paymentKey") final String paymentKey,
+        @Parameter(description = "결제 고유 ID", example = "1")
+        @PathVariable(value = "paymentId") final Integer paymentId,
         @RequestBody @Valid final PaymentCancelRequest request,
         @AccessToken final String accessToken
     );
