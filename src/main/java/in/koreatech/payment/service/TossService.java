@@ -177,10 +177,10 @@ public class TossService implements PaymentService {
     }
 
     @Transactional
-    public List<PaymentCancel> cancelPayment(String accessToken, String paymentKey, String cancelReason) {
+    public List<PaymentCancel> cancelPayment(String accessToken, Integer paymentId, String cancelReason) {
         Integer userId = jwtTokenResolver.getUserId(accessToken);
         User user = userRepository.getById(userId);
-        Payment payment = paymentRepository.getByPaymentKey(paymentKey);
+        Payment payment = paymentRepository.getById(paymentId);
         if (payment.getPaymentStatus().isCanceled()) {
             throw PaymentAlreadyCanceledException.withDetail("paymentId : " + payment.getId());
         }
@@ -201,7 +201,7 @@ public class TossService implements PaymentService {
                     .build()
             ));
 
-        PaymentCancelResponse response = tossPaymentClient.requestCancel(paymentKey, cancelReason,
+        PaymentCancelResponse response = tossPaymentClient.requestCancel(payment.getPaymentKey(), cancelReason,
             paymentIdempotencyKey.getIdempotencyKey());
         if (!PaymentStatus.valueOf(response.status()).isCanceled()) {
             throw PaymentCancelException.withDetail("paymentStatus : " + response.status());

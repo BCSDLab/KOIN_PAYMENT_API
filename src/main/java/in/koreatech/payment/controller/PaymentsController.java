@@ -61,13 +61,13 @@ public class PaymentsController implements PaymentsApi {
         return ResponseEntity.ok(response);
     }
 
-    @PostMapping("/{paymentKey}/cancel")
+    @PostMapping("/{paymentId}/cancel")
     public ResponseEntity<PaymentCancelResponse> cancelPayment(
-        @PathVariable(value = "paymentKey") final String paymentKey,
+        @PathVariable(value = "paymentId") final Integer paymentId,
         @RequestBody @Valid final PaymentCancelRequest request,
         @AccessToken final String accessToken
     ) {
-        List<PaymentCancel> paymentCancels = paymentService.cancelPayment(accessToken, paymentKey,
+        List<PaymentCancel> paymentCancels = paymentService.cancelPayment(accessToken, paymentId,
             request.cancelReason());
         PaymentCancelResponse response = PaymentCancelResponse.from(paymentCancels);
         return ResponseEntity.ok(response);

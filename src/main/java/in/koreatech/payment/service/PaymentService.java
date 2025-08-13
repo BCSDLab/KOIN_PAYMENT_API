@@ -12,6 +12,6 @@ public interface PaymentService {
     String createTemporaryDeliveryPayment(String accessToken, TemporaryDeliveryPaymentSaveRequest request);
     String createTemporaryTakeoutPayment(String accessToken, TemporaryTakeoutPaymentSaveRequest request);
     PaymentConfirmResponse confirmPayment(String accessToken, String paymentKey, String orderId, Integer amount);
-    List<PaymentCancel> cancelPayment(String accessToken, String paymentKey, String cancelReason);
+    List<PaymentCancel> cancelPayment(String accessToken, Integer paymentId, String cancelReason);
     PaymentResponse getPayment(String accessToken, Integer paymentId);
 }
