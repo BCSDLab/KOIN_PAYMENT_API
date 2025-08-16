@@ -1,11 +1,10 @@
 package in.koreatech.payment.unit.client;
 
+import static java.nio.charset.StandardCharsets.UTF_8;
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.AssertionsForClassTypes.assertThatThrownBy;
 import static org.junit.jupiter.api.Assertions.assertAll;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
-import java.nio.charset.StandardCharsets;
 import java.util.Base64;
 import java.util.stream.Stream;
 
@@ -80,9 +79,8 @@ public class TossPaymentClientTest {
             RecordedRequest request = mockHttpServer.takeRequest();
             assertThat(request.getPath()).isEqualTo("/confirm");
             assertThat(request.getMethod()).isEqualTo("POST");
-
-            String expectedAuth = "Basic " + Base64.getEncoder()
-                .encodeToString("test_sk:".getBytes(StandardCharsets.UTF_8));
+            assertThat(request.getHeader("Content-Type")).startsWith("application/json");
+            String expectedAuth = "Basic " + Base64.getEncoder().encodeToString("test_sk:".getBytes(UTF_8));
             assertThat(request.getHeader("Authorization")).isEqualTo(expectedAuth);
         }
     }
