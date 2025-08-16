@@ -2,6 +2,7 @@ package in.koreatech.payment.acceptance;
 
 import static org.junit.jupiter.api.TestInstance.Lifecycle.PER_CLASS;
 
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.TestInstance;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
@@ -16,6 +17,8 @@ import org.testcontainers.containers.MySQLContainer;
 import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.utility.DockerImageName;
 
+import in.koreatech.payment.acceptance.support.DBInitializer;
+
 @SpringBootTest
 @AutoConfigureMockMvc
 @ActiveProfiles("test")
@@ -28,6 +31,9 @@ public abstract class AcceptanceTest {
 
     @Autowired
     private MockMvc mockMvc;
+
+    @Autowired
+    private DBInitializer dbInitializer;
 
     @Container
     static final MySQLContainer<?> mySqlContainer = new MySQLContainer<>("mysql:8.0.29")
@@ -54,5 +60,11 @@ public abstract class AcceptanceTest {
     static {
         mySqlContainer.start();
         redisContainer.start();
+    }
+
+    @BeforeEach
+    void clear() {
+        dbInitializer.initIncrement();
+        dbInitializer.clearRedis();
     }
 }
