@@ -82,6 +82,12 @@ public class TossPaymentClientTest {
             assertThat(request.getHeader("Content-Type")).startsWith("application/json");
             String expectedAuth = "Basic " + Base64.getEncoder().encodeToString("test_sk:".getBytes(UTF_8));
             assertThat(request.getHeader("Authorization")).isEqualTo(expectedAuth);
+
+
+            String body = request.getBody().readUtf8();
+            assertThat(body).contains("\"paymentKey\":\"pay_123\"");
+            assertThat(body).contains("\"orderId\":\"a4CWyWY5m89PNh7xJwhk1\"");
+            assertThat(body).contains("\"amount\":15000");
         }
     }
 
