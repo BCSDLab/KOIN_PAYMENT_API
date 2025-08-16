@@ -46,7 +46,7 @@ public class TossPaymentClientTest {
     }
 
     @Nested
-    class PaymentSuccess {
+    class PaymentConfirmSuccess {
 
         @Test
         void 결제_승인_요청에_성공한다() throws Exception {
@@ -96,7 +96,7 @@ public class TossPaymentClientTest {
     }
 
     @Nested
-    class PaymentFailure {
+    class PaymentConfirmFailure {
 
         @ParameterizedTest
         @MethodSource("invalidParams")
