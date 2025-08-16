@@ -79,10 +79,14 @@ public class TossPaymentClientTest {
             RecordedRequest request = mockHttpServer.takeRequest();
             assertThat(request.getPath()).isEqualTo("/confirm");
             assertThat(request.getMethod()).isEqualTo("POST");
+
             assertThat(request.getHeader("Content-Type")).startsWith("application/json");
             String expectedAuth = "Basic " + Base64.getEncoder().encodeToString("test_sk:".getBytes(UTF_8));
-            assertThat(request.getHeader("Authorization")).isEqualTo(expectedAuth);
-
+            assertThat(request.getHeader("Authorization"))
+                .isEqualTo(expectedAuth)
+                .startsWith("Basic ")
+                .doesNotContain("\n")
+                .doesNotContain("\r");
 
             String body = request.getBody().readUtf8();
             assertThat(body).contains("\"paymentKey\":\"pay_123\"");
