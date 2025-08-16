@@ -1,11 +1,13 @@
 package in.koreatech.payment.unit.client;
 
+import static in.koreatech.payment.client.dto.response.PaymentCancelResponse.CancelInfo;
 import static java.nio.charset.StandardCharsets.UTF_8;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertAll;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import java.util.Base64;
+import java.util.List;
 import java.util.stream.Stream;
 
 import org.junit.jupiter.api.AfterEach;
@@ -19,6 +21,7 @@ import org.junit.jupiter.params.provider.MethodSource;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import in.koreatech.payment.client.TossPaymentClient;
+import in.koreatech.payment.client.dto.response.PaymentCancelResponse;
 import in.koreatech.payment.client.dto.response.TossPaymentConfirmResponse;
 import in.koreatech.payment.client.exception.TossPaymentException;
 import in.koreatech.payment.unit.support.MockHttpServer;
@@ -131,6 +134,62 @@ public class TossPaymentClientTest {
                 Arguments.of("pay_123", null, 99999),
                 Arguments.of("pay_123", "a4CWyWY5m89PNh7xJwhk1", null)
             );
+        }
+    }
+
+    @Nested
+    class PaymentCancelSuccess {
+
+        @Test
+        void 결제_취소_요청을_성공한다() throws Exception {
+            // given
+            PaymentCancelResponse dto = new PaymentCancelResponse(
+                "pay_123",
+                "a4CWyWY5m89PNh7xJwhk1",
+                "CANCELED",
+                List.of(new CancelInfo(
+                    10000,
+                    "단순 변심이에요",
+                    "2024-01-01T10:00:00+09:00",
+                    "txrd_123"
+                ))
+            );
+            mockHttpServer.enqueueJson(objectMapper.writeValueAsString(dto), 200);
+
+            // when
+            PaymentCancelResponse response = tossPaymentClient.requestCancel(
+                "pay_123",
+                "단순 변심이에요",
+                "91b0343a-423d-431d-832c-031d9391afae"
+            );
+
+            // then
+            assertAll(
+                () -> assertThat(response.paymentKey()).isEqualTo("pay_123"),
+                () -> assertThat(response.orderId()).isEqualTo("a4CWyWY5m89PNh7xJwhk1"),
+                () -> assertThat(response.status()).isEqualTo("CANCELED"),
+                () -> assertThat(response.cancels()).hasSize(1),
+                () -> assertThat(response.cancels().get(0).cancelAmount()).isEqualTo(10000),
+                () -> assertThat(response.cancels().get(0).cancelReason()).isEqualTo("단순 변심이에요"),
+                () -> assertThat(response.cancels().get(0).canceledAt()).isEqualTo("2024-01-01T10:00:00+09:00"),
+                () -> assertThat(response.cancels().get(0).transactionKey()).isEqualTo("txrd_123")
+            );
+
+            RecordedRequest request = mockHttpServer.takeRequest();
+            assertThat(request.getPath()).isEqualTo("/pay_123/cancel");
+            assertThat(request.getMethod()).isEqualTo("POST");
+
+            assertThat(request.getHeader("Content-Type")).startsWith("application/json");
+            assertThat(request.getHeader("Idempotency-Key")).isEqualTo("91b0343a-423d-431d-832c-031d9391afae");
+            String expectedAuth = "Basic " + Base64.getEncoder().encodeToString("test_sk:".getBytes(UTF_8));
+            assertThat(request.getHeader("Authorization"))
+                .isEqualTo(expectedAuth)
+                .startsWith("Basic ")
+                .doesNotContain("\n")
+                .doesNotContain("\r");
+
+            String body = request.getBody().readUtf8();
+            assertThat(body).contains("\"cancelReason\":\"단순 변심이에요\"");
         }
     }
 }
