@@ -192,4 +192,38 @@ public class TossPaymentClientTest {
             assertThat(body).contains("\"cancelReason\":\"단순 변심이에요\"");
         }
     }
+
+    @Nested
+    class PaymentCancelFailure {
+
+        @Test
+        void 결제_취소_요청_실패시_INVALID_REQUEST_예외를_던진다() throws Exception {
+            // given
+            String errorJson = """
+                {
+                  "code": "INVALID_REQUEST",
+                  "message": "잘못된 요청입니다."
+                }
+                """;
+            mockHttpServer.enqueueJson(errorJson, 400);
+
+            // when
+            TossPaymentException exception = assertThrows(
+                TossPaymentException.class,
+                () -> tossPaymentClient.requestCancel(
+                    "pay_123",
+                    null,
+                    "91b0343a-423d-431d-832c-031d9391afae"
+                )
+            );
+
+            // then
+            assertThat(exception.getErrorCode()).isEqualTo("INVALID_REQUEST");
+            assertThat(exception).hasMessage("잘못된 요청입니다.");
+
+            RecordedRequest request = mockHttpServer.takeRequest();
+            assertThat(request.getPath()).isEqualTo("/pay_123/cancel");
+            assertThat(request.getMethod()).isEqualTo("POST");
+        }
+    }
 }
