@@ -1,20 +1,27 @@
 package in.koreatech.payment.unit.client;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.AssertionsForClassTypes.assertThatThrownBy;
 import static org.junit.jupiter.api.Assertions.assertAll;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import java.nio.charset.StandardCharsets;
 import java.util.Base64;
+import java.util.stream.Stream;
 
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.MethodSource;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import in.koreatech.payment.client.TossPaymentClient;
 import in.koreatech.payment.client.dto.response.TossPaymentConfirmResponse;
+import in.koreatech.payment.client.exception.TossPaymentException;
 import in.koreatech.payment.unit.support.MockHttpServer;
 import okhttp3.mockwebserver.RecordedRequest;
 
@@ -77,6 +84,45 @@ public class TossPaymentClientTest {
             String expectedAuth = "Basic " + Base64.getEncoder()
                 .encodeToString("test_sk:".getBytes(StandardCharsets.UTF_8));
             assertThat(request.getHeader("Authorization")).isEqualTo(expectedAuth);
+        }
+    }
+
+    @Nested
+    class PaymentFailure {
+
+        @ParameterizedTest
+        @MethodSource("invalidParams")
+        void 결제_승인_과정에서_필수값이_누락되면_INVALID_REQUEST_예외를_던진다(
+            String paymentKey, String orderId, Integer amount
+        ) throws Exception {
+            // given
+            String errorJson = """
+                {
+                  "code": "INVALID_REQUEST",
+                  "message": "잘못된 요청입니다."
+                }
+                """;
+            mockHttpServer.enqueueJson(errorJson, 400);
+
+            // when & then
+            TossPaymentException exception = assertThrows(
+                TossPaymentException.class,
+                () -> tossPaymentClient.requestConfirm(paymentKey, orderId, amount)
+            );
+            assertThat(exception.getErrorCode()).isEqualTo("INVALID_REQUEST");
+            assertThat(exception).hasMessage("잘못된 요청입니다.");
+
+            RecordedRequest request = mockHttpServer.takeRequest();
+            assertThat(request.getPath()).isEqualTo("/confirm");
+            assertThat(request.getMethod()).isEqualTo("POST");
+        }
+
+        static Stream<Arguments> invalidParams() {
+            return Stream.of(
+                Arguments.of(null, "a4CWyWY5m89PNh7xJwhk1", 99999),
+                Arguments.of("pay_123", null, 99999),
+                Arguments.of("pay_123", "a4CWyWY5m89PNh7xJwhk1", null)
+            );
         }
     }
 }
