@@ -50,7 +50,7 @@ public class TossPaymentClientTest {
     class PaymentSuccess {
 
         @Test
-        void 결제를_승인한다() throws Exception {
+        void 결제_승인_요청에_성공한다() throws Exception {
             // given
             TossPaymentConfirmResponse dto = new TossPaymentConfirmResponse(
                 "pay_123",
@@ -92,7 +92,7 @@ public class TossPaymentClientTest {
 
         @ParameterizedTest
         @MethodSource("invalidParams")
-        void 결제_승인_과정에서_필수값이_누락되면_INVALID_REQUEST_예외를_던진다(
+        void 결제_승인_요청_과정에서_필수값이_누락되면_INVALID_REQUEST_예외를_던진다(
             String paymentKey, String orderId, Integer amount
         ) throws Exception {
             // given
