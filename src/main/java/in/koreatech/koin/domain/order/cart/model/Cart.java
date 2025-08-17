@@ -22,6 +22,7 @@ import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -51,5 +52,11 @@ public class Cart extends BaseEntity {
         return this.cartMenuItems.stream()
             .mapToInt(CartMenuItem::calculateTotalAmount)
             .sum();
+    }
+
+    @Builder
+    public Cart(User user, OrderableShop orderableShop) {
+        this.user = user;
+        this.orderableShop = orderableShop;
     }
 }
