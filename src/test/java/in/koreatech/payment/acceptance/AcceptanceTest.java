@@ -30,7 +30,7 @@ public abstract class AcceptanceTest {
     private static final String ROOT_PASSWORD = "1234";
 
     @Autowired
-    private MockMvc mockMvc;
+    public MockMvc mockMvc;
 
     @Autowired
     private DBInitializer dbInitializer;
