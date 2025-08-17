@@ -11,7 +11,6 @@ import in.koreatech.payment.common.auth.JwtProvider;
 public class UserFixture {
 
     private final UserRepository userRepository;
-
     private final JwtProvider jwtProvider;
 
     public UserFixture(UserRepository userRepository, JwtProvider jwtProvider) {
