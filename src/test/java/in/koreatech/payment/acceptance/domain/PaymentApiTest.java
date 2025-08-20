@@ -123,6 +123,7 @@ public class PaymentApiTest extends AcceptanceTest {
     }
 
     @Nested
+    @DisplayName("임시 결제 정보 저장 API - 성공")
     class TemporaryPaymentSuccess {
 
         @Test
@@ -218,6 +219,11 @@ public class PaymentApiTest extends AcceptanceTest {
                 }
             );
         }
+    }
+
+    @Nested
+    @DisplayName("결제 API - 성공")
+    class PaymentSuccess {
 
         @Test
         void 배달_결제_승인에_성공한다() throws Exception {
