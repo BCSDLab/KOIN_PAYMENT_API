@@ -1,5 +1,6 @@
 package in.koreatech.payment.acceptance.domain;
 
+import static in.koreatech.payment.client.dto.response.PaymentCancelResponse.*;
 import static org.mockito.Mockito.eq;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
@@ -7,6 +8,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import java.util.List;
+import java.util.UUID;
 
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Nested;
@@ -16,6 +18,7 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
 
 import in.koreatech.koin.domain.order.cart.model.Cart;
+import in.koreatech.koin.domain.order.model.PaymentIdempotencyKey;
 import in.koreatech.koin.domain.order.shop.model.entity.menu.OrderableShopMenu;
 import in.koreatech.koin.domain.order.shop.model.entity.menu.OrderableShopMenuPrice;
 import in.koreatech.koin.domain.order.shop.model.entity.shop.OrderableShop;
@@ -26,9 +29,11 @@ import in.koreatech.payment.acceptance.fixture.CartFixture;
 import in.koreatech.payment.acceptance.fixture.OrderableShopFixture;
 import in.koreatech.payment.acceptance.fixture.OrderableShopMenuFixture;
 import in.koreatech.payment.acceptance.fixture.OrderableShopMenuPriceFixture;
+import in.koreatech.payment.acceptance.fixture.PaymentIdempotencyKeyFixture;
 import in.koreatech.payment.acceptance.fixture.ShopFixture;
 import in.koreatech.payment.acceptance.fixture.UserFixture;
 import in.koreatech.payment.client.TossPaymentClient;
+import in.koreatech.payment.client.dto.response.PaymentCancelResponse;
 import in.koreatech.payment.client.dto.response.TossPaymentConfirmResponse;
 import in.koreatech.payment.common.auth.JwtProvider;
 import in.koreatech.payment.service.PaymentRollBackService;
@@ -56,6 +61,9 @@ public class PaymentApiTest extends AcceptanceTest {
     @Autowired
     private OrderableShopMenuPriceFixture orderableShopMenuPriceFixture;
 
+    @Autowired
+    private PaymentIdempotencyKeyFixture paymentIdempotencyKeyFixture;
+
     @MockBean
     private TossPaymentClient tossPaymentClient;
 
@@ -64,6 +72,7 @@ public class PaymentApiTest extends AcceptanceTest {
 
     private User user;
     private String token;
+    private PaymentIdempotencyKey paymentIdempotencyKey;
     private Shop shop;
     private OrderableShop orderableShop;
     private Cart cart;
@@ -73,6 +82,8 @@ public class PaymentApiTest extends AcceptanceTest {
     @BeforeAll
     void setUp() {
         user = userFixture.코인_유저();
+        // TODO. 프로덕션 리펙토링 이후 생성 객체로 부터 주입받도록 수정
+        paymentIdempotencyKey = paymentIdempotencyKeyFixture.결제_멱등_키(user, UUID.randomUUID().toString());
         token = jwtProvider.createToken(user);
         shop = shopFixture.김밥천국();
         orderableShop = orderableShopFixture.주문_가능_김밥천국(shop);
@@ -279,6 +290,117 @@ public class PaymentApiTest extends AcceptanceTest {
                       "requested_at": "2024.01.01 10:00",
                       "approved_at": "2024.01.01 10:00",
                       "payment_method": "카드"
+                    }
+                    """));
+        }
+
+        @Test
+        void 결제_취소에_성공한다() throws Exception {
+            TossPaymentConfirmResponse confirmDto = new TossPaymentConfirmResponse(
+                "pay_123",
+                24000,
+                "DONE",
+                "카드",
+                "2024-01-01T10:00:00+09:00",
+                "2024-01-01T10:00:05+09:00"
+            );
+            when(tossPaymentClient.requestConfirm(eq("pay_123"), eq("FAKE_ORDER_123"), eq(24000)))
+                .thenReturn(confirmDto);
+
+            PaymentCancelResponse cancelDto = new PaymentCancelResponse(
+                "pay_123",
+                "FAKE_ORDER_123",
+                "CANCELED",
+                List.of(new CancelInfo(
+                    10000,
+                    "단순 변심이에요",
+                    "2024-01-01T10:00:05+10:00",
+                    "txrd_123"
+                ))
+            );
+            when(tossPaymentClient.requestCancel(eq("pay_123"), eq("단순 변심"), eq(paymentIdempotencyKey.getIdempotencyKey())))
+                .thenReturn(cancelDto);
+
+            mockMvc.perform(
+                    post("/payments/takeout/temporary")
+                        .header("Authorization", "Bearer " + token)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("""
+                            {
+                              "phone_number": "01012345678",
+                              "to_owner": "리뷰 이벤트 감사합니다.",
+                              "total_menu_price": 24000,
+                              "provide_cutlery": true,
+                              "total_amount": 24000
+                            }
+                            """)
+                )
+                .andExpect(status().isOk())
+                .andExpect(content().json("""
+                      {
+                        "order_id": "FAKE_ORDER_123"
+                      }
+                    """));
+
+            mockMvc.perform(
+                    post("/payments/confirm")
+                        .header("Authorization", "Bearer " + token)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("""
+                            {
+                              "payment_key": "pay_123",
+                              "order_id": "FAKE_ORDER_123",
+                              "amount": 24000
+                            }
+                            """)
+                )
+                .andExpect(status().isOk())
+                .andExpect(content().json("""
+                    {
+                      "id": 1,
+                      "delivery_address": null,
+                      "shop_address": "천안시 동남구 병천면 1600",
+                      "to_owner": "리뷰 이벤트 감사합니다.",
+                      "to_rider": null,
+                      "provide_cutlery": true,
+                      "amount": 24000,
+                      "shop_name": "김밥천국",
+                      "menus": [
+                        {
+                          "name": "김밥",
+                          "quantity": 4,
+                          "options": []
+                        }
+                      ],
+                      "order_type": "TAKE_OUT",
+                      "requested_at": "2024.01.01 10:00",
+                      "approved_at": "2024.01.01 10:00",
+                      "payment_method": "카드"
+                    }
+                    """));
+
+            mockMvc.perform(
+                    post("/payments/1/cancel")
+                        .header("Authorization", "Bearer " + token)
+                        .header("Idempotency-Key", paymentIdempotencyKey.getIdempotencyKey())
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("""
+                            {
+                              "cancel_reason": "단순 변심"
+                            }
+                            """)
+                )
+                .andExpect(status().isOk())
+                .andExpect(content().json("""
+                    {
+                      "payment_cancels": [
+                        {
+                          "id": 1,
+                          "cancel_reason": "단순 변심이에요",
+                          "cancel_amount": 10000,
+                          "canceled_at": "2024.01.01 10:00"
+                        }
+                      ]
                     }
                     """));
         }
