@@ -1,10 +1,15 @@
 package in.koreatech.payment.acceptance.util;
 
+import org.springframework.context.annotation.Primary;
+import org.springframework.stereotype.Component;
+
 import in.koreatech.payment.util.OrderIdGenerator;
 
-public class FakeOrderIdGenerator implements OrderIdGenerator {
+@Component
+@Primary
+class FakeOrderIdGenerator implements OrderIdGenerator {
     @Override
     public String generateOrderId() {
-        return "a4CWyWY5m89PNh7xJwhk1";
+        return "FAKE_ORDER_123";
     }
 }
