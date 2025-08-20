@@ -210,5 +210,77 @@ public class PaymentApiTest extends AcceptanceTest {
                     }
                     """));
         }
+
+        @Test
+        void 포장_결제_승인에_성공한다() throws Exception {
+            TossPaymentConfirmResponse confirmDto = new TossPaymentConfirmResponse(
+                "pay_123",
+                24000,
+                "DONE",
+                "카드",
+                "2024-01-01T10:00:00+09:00",
+                "2024-01-01T10:00:05+09:00"
+            );
+            when(tossPaymentClient.requestConfirm(eq("pay_123"), eq("FAKE_ORDER_123"), eq(24000)))
+                .thenReturn(confirmDto);
+
+            mockMvc.perform(
+                    post("/payments/takeout/temporary")
+                        .header("Authorization", "Bearer " + token)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("""
+                            {
+                              "phone_number": "01012345678",
+                              "to_owner": "리뷰 이벤트 감사합니다.",
+                              "total_menu_price": 24000,
+                              "provide_cutlery": true,
+                              "total_amount": 24000
+                            }
+                            """)
+                )
+                .andExpect(status().isOk())
+                .andExpect(content().json("""
+                      {
+                        "order_id": "FAKE_ORDER_123"
+                      }
+                    """));
+
+            mockMvc.perform(
+                    post("/payments/confirm")
+                        .header("Authorization", "Bearer " + token)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("""
+                            {
+                              "payment_key": "pay_123",
+                              "order_id": "FAKE_ORDER_123",
+                              "amount": 24000
+                            }
+                            """)
+                )
+                .andExpect(status().isOk())
+                .andExpect(content().json("""
+                    {
+                      "id": 1,
+                      "delivery_address": null,
+                      "shop_address": "천안시 동남구 병천면 1600",
+                      "to_owner": "리뷰 이벤트 감사합니다.",
+                      "to_rider": null,
+                      "provide_cutlery": true,
+                      "amount": 24000,
+                      "shop_name": "김밥천국",
+                      "menus": [
+                        {
+                          "name": "김밥",
+                          "quantity": 4,
+                          "options": []
+                        }
+                      ],
+                      "order_type": "TAKE_OUT",
+                      "requested_at": "2024.01.01 10:00",
+                      "approved_at": "2024.01.01 10:00",
+                      "payment_method": "카드"
+                    }
+                    """));
+        }
     }
 }
