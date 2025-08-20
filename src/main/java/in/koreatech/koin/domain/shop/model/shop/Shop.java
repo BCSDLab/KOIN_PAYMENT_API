@@ -199,4 +199,8 @@ public class Shop extends BaseEntity {
         this.shopMainCategory = shopMainCategory;
         this.shopOperation = shopOperation;
     }
+
+    public void setShopOperation(ShopOperation shopOperation) {
+        this.shopOperation = shopOperation;
+    }
 }

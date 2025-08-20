@@ -27,7 +27,7 @@ import in.koreatech.koin.domain.user.repository.UserRepository;
 import in.koreatech.payment.client.TossPaymentClient;
 import in.koreatech.payment.client.dto.response.PaymentCancelResponse;
 import in.koreatech.payment.client.dto.response.TossPaymentConfirmResponse;
-import in.koreatech.payment.common.auth.JwtTokenResolver;
+import in.koreatech.payment.common.auth.JwtProvider;
 import in.koreatech.payment.dto.request.TemporaryDeliveryPaymentSaveRequest;
 import in.koreatech.payment.dto.request.TemporaryTakeoutPaymentSaveRequest;
 import in.koreatech.payment.dto.response.PaymentConfirmResponse;
@@ -50,7 +50,7 @@ import lombok.RequiredArgsConstructor;
 public class TossService implements PaymentService {
 
     private final OrderIdGenerator orderIdGenerator;
-    private final JwtTokenResolver jwtTokenResolver;
+    private final JwtProvider jwtProvider;
     private final UserRepository userRepository;
     private final TossPaymentClient tossPaymentClient;
     private final PaymentRepository paymentRepository;
@@ -65,7 +65,7 @@ public class TossService implements PaymentService {
 
     @Transactional
     public String createTemporaryDeliveryPayment(String accessToken, TemporaryDeliveryPaymentSaveRequest request) {
-        Integer userId = jwtTokenResolver.getUserId(accessToken);
+        Integer userId = jwtProvider.getUserId(accessToken);
         User user = userRepository.getById(userId);
 
         Cart cart = cartRepository.getCartByUserId(user.getId());
@@ -108,7 +108,7 @@ public class TossService implements PaymentService {
 
     @Transactional
     public String createTemporaryTakeoutPayment(String accessToken, TemporaryTakeoutPaymentSaveRequest request) {
-        Integer userId = jwtTokenResolver.getUserId(accessToken);
+        Integer userId = jwtProvider.getUserId(accessToken);
         User user = userRepository.getById(userId);
 
         Cart cart = cartRepository.getCartByUserId(user.getId());
@@ -146,7 +146,7 @@ public class TossService implements PaymentService {
     @Transactional
     public PaymentConfirmResponse confirmPayment(String accessToken, String paymentKey, String orderId,
         Integer amount) {
-        Integer userId = jwtTokenResolver.getUserId(accessToken);
+        Integer userId = jwtProvider.getUserId(accessToken);
         User user = userRepository.getById(userId);
         TemporaryPayment temporaryPayment = temporaryPaymentRedisRepository.getById(orderId);
         temporaryPayment.validateMatches(orderId, user.getId(), amount);
@@ -178,7 +178,7 @@ public class TossService implements PaymentService {
 
     @Transactional
     public List<PaymentCancel> cancelPayment(String accessToken, Integer paymentId, String cancelReason) {
-        Integer userId = jwtTokenResolver.getUserId(accessToken);
+        Integer userId = jwtProvider.getUserId(accessToken);
         User user = userRepository.getById(userId);
         Payment payment = paymentRepository.getById(paymentId);
         if (payment.getPaymentStatus().isCanceled()) {
@@ -214,7 +214,7 @@ public class TossService implements PaymentService {
     }
 
     public PaymentResponse getPayment(String accessToken, Integer paymentId) {
-        Integer userId = jwtTokenResolver.getUserId(accessToken);
+        Integer userId = jwtProvider.getUserId(accessToken);
         User user = userRepository.getById(userId);
         Payment payment = paymentRepository.getById(paymentId);
         payment.validateUserIdMatches(user.getId());
