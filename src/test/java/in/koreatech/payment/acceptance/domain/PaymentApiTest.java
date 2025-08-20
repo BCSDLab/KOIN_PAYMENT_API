@@ -2,6 +2,7 @@ package in.koreatech.payment.acceptance.domain;
 
 import static in.koreatech.payment.client.dto.response.PaymentCancelResponse.CancelInfo;
 import static org.assertj.core.api.SoftAssertions.assertSoftly;
+import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.eq;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
@@ -53,6 +54,7 @@ import in.koreatech.payment.common.auth.JwtProvider;
 import in.koreatech.payment.model.redis.TemporaryPayment;
 import in.koreatech.payment.repository.redis.TemporaryPaymentRedisRepository;
 import in.koreatech.payment.service.PaymentRollBackService;
+import in.koreatech.payment.util.OrderIdGenerator;
 
 public class PaymentApiTest extends AcceptanceTest {
 
@@ -98,6 +100,9 @@ public class PaymentApiTest extends AcceptanceTest {
     @MockBean
     private PaymentRollBackService paymentRollBackService;
 
+    @MockBean
+    private OrderIdGenerator orderIdGenerator;
+
     private User user;
     private String token;
     private PaymentIdempotencyKey paymentIdempotencyKey;
@@ -127,6 +132,8 @@ public class PaymentApiTest extends AcceptanceTest {
 
         @Test
         void 임시_배달_결제_정보_저장에_성공한다() throws Exception {
+            given(orderIdGenerator.generateOrderId()).willReturn("FAKE_ORDER_123");
+
             mockMvc.perform(
                     post("/payments/delivery/temporary")
                         .header("Authorization", "Bearer " + token)
@@ -176,6 +183,8 @@ public class PaymentApiTest extends AcceptanceTest {
 
         @Test
         void 임시_포장_결제_정보_저장에_성공한다() throws Exception {
+            given(orderIdGenerator.generateOrderId()).willReturn("FAKE_ORDER_123");
+
             mockMvc.perform(
                     post("/payments/takeout/temporary")
                         .header("Authorization", "Bearer " + token)
@@ -236,6 +245,7 @@ public class PaymentApiTest extends AcceptanceTest {
             );
             when(tossPaymentClient.requestConfirm(eq("pay_123"), eq("FAKE_ORDER_123"), eq(24000)))
                 .thenReturn(confirmDto);
+            given(orderIdGenerator.generateOrderId()).willReturn("FAKE_ORDER_123");
 
             mockMvc.perform(
                     post("/payments/delivery/temporary")
@@ -350,6 +360,7 @@ public class PaymentApiTest extends AcceptanceTest {
             );
             when(tossPaymentClient.requestConfirm(eq("pay_123"), eq("FAKE_ORDER_123"), eq(24000)))
                 .thenReturn(confirmDto);
+            given(orderIdGenerator.generateOrderId()).willReturn("FAKE_ORDER_123");
 
             mockMvc.perform(
                     post("/payments/takeout/temporary")
@@ -457,6 +468,7 @@ public class PaymentApiTest extends AcceptanceTest {
             );
             when(tossPaymentClient.requestConfirm(eq("pay_123"), eq("FAKE_ORDER_123"), eq(24000)))
                 .thenReturn(confirmDto);
+            given(orderIdGenerator.generateOrderId()).willReturn("FAKE_ORDER_123");
 
             PaymentCancelResponse cancelDto = new PaymentCancelResponse(
                 "pay_123",
