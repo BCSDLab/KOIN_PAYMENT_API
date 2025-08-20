@@ -1,4 +1,4 @@
-package in.koreatech.payment.acceptance.util;
+package in.koreatech.payment.acceptance.mock;
 
 import org.springframework.context.annotation.Primary;
 import org.springframework.stereotype.Component;
