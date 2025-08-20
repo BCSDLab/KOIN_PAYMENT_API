@@ -99,5 +99,29 @@ public class PaymentApiTest extends AcceptanceTest {
                       }
                     """));
         }
+
+        @Test
+        void 임시_포장_결제_정보_저장에_성공한다() throws Exception {
+            mockMvc.perform(
+                    post("/payments/takeout/temporary")
+                        .header("Authorization", "Bearer " + token)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("""
+                            {
+                              "phone_number": "01012345678",
+                              "to_owner": "리뷰 이벤트 감사합니다.",
+                              "total_menu_price": 24000,
+                              "provide_cutlery": true,
+                              "total_amount": 24000
+                            }
+                            """)
+                )
+                .andExpect(status().isOk())
+                .andExpect(content().json("""
+                      {
+                        "order_id": "FAKE_ORDER_123"
+                      }
+                    """));
+        }
     }
 }
