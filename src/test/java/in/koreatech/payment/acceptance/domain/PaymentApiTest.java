@@ -1,6 +1,7 @@
 package in.koreatech.payment.acceptance.domain;
 
-import static in.koreatech.payment.client.dto.response.PaymentCancelResponse.*;
+import static in.koreatech.payment.client.dto.response.PaymentCancelResponse.CancelInfo;
+import static org.assertj.core.api.SoftAssertions.assertSoftly;
 import static org.mockito.Mockito.eq;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
@@ -11,6 +12,7 @@ import java.util.List;
 import java.util.UUID;
 
 import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,7 +20,20 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
 
 import in.koreatech.koin.domain.order.cart.model.Cart;
+import in.koreatech.koin.domain.order.model.Order;
+import in.koreatech.koin.domain.order.model.OrderDelivery;
+import in.koreatech.koin.domain.order.model.OrderMenu;
+import in.koreatech.koin.domain.order.model.OrderTakeout;
+import in.koreatech.koin.domain.order.model.OrderType;
+import in.koreatech.koin.domain.order.model.Payment;
+import in.koreatech.koin.domain.order.model.PaymentCancel;
 import in.koreatech.koin.domain.order.model.PaymentIdempotencyKey;
+import in.koreatech.koin.domain.order.model.PaymentMethod;
+import in.koreatech.koin.domain.order.model.PaymentStatus;
+import in.koreatech.koin.domain.order.repository.OrderMenuRepository;
+import in.koreatech.koin.domain.order.repository.PaymentCancelRepository;
+import in.koreatech.koin.domain.order.repository.PaymentIdempotencyKeyRepository;
+import in.koreatech.koin.domain.order.repository.PaymentRepository;
 import in.koreatech.koin.domain.order.shop.model.entity.menu.OrderableShopMenu;
 import in.koreatech.koin.domain.order.shop.model.entity.menu.OrderableShopMenuPrice;
 import in.koreatech.koin.domain.order.shop.model.entity.shop.OrderableShop;
@@ -36,15 +51,29 @@ import in.koreatech.payment.client.TossPaymentClient;
 import in.koreatech.payment.client.dto.response.PaymentCancelResponse;
 import in.koreatech.payment.client.dto.response.TossPaymentConfirmResponse;
 import in.koreatech.payment.common.auth.JwtProvider;
+import in.koreatech.payment.model.redis.TemporaryPayment;
+import in.koreatech.payment.repository.redis.TemporaryPaymentRedisRepository;
 import in.koreatech.payment.service.PaymentRollBackService;
 
 public class PaymentApiTest extends AcceptanceTest {
 
     @Autowired
-    private UserFixture userFixture;
+    private JwtProvider jwtProvider;
 
     @Autowired
-    private JwtProvider jwtProvider;
+    private TemporaryPaymentRedisRepository temporaryPaymentRedisRepository;
+
+    @Autowired
+    private OrderMenuRepository orderMenuRepository;
+
+    @Autowired
+    private PaymentCancelRepository paymentCancelRepository;
+
+    @Autowired
+    private PaymentRepository paymentRepository;
+
+    @Autowired
+    private UserFixture userFixture;
 
     @Autowired
     private CartFixture cartFixture;
@@ -120,7 +149,29 @@ public class PaymentApiTest extends AcceptanceTest {
                       {
                         "order_id": "FAKE_ORDER_123"
                       }
-                    """));
+                    """)
+                );
+
+            TemporaryPayment temporaryPayment = temporaryPaymentRedisRepository.getById("FAKE_ORDER_123");
+            assertSoftly(
+                softly -> {
+                    softly.assertThat(temporaryPayment.getOrderId()).isEqualTo("FAKE_ORDER_123");
+                    softly.assertThat(temporaryPayment.getUserId()).isEqualTo(user.getId());
+                    softly.assertThat(temporaryPayment.getOrderableShopId()).isEqualTo(orderableShop.getId());
+                    softly.assertThat(temporaryPayment.getPhoneNumber()).isEqualTo("01012345678");
+                    softly.assertThat(temporaryPayment.getOrderType()).isEqualTo(OrderType.DELIVERY);
+                    softly.assertThat(temporaryPayment.getAddress()).isEqualTo("충청남도 천안시 동남구 병천면 충절로 1600 은솔관 422호");
+                    softly.assertThat(temporaryPayment.getToOwner()).isEqualTo("리뷰 이벤트 감사합니다.");
+                    softly.assertThat(temporaryPayment.getToRider()).isEqualTo("문 앞에 놔주세요.");
+                    softly.assertThat(temporaryPayment.getProvideCutlery()).isEqualTo(true);
+                    softly.assertThat(temporaryPayment.getTotalProductPrice()).isEqualTo(24000);
+                    softly.assertThat(temporaryPayment.getDeliveryFee()).isEqualTo(0);
+                    softly.assertThat(temporaryPayment.getTotalPrice()).isEqualTo(24000);
+                    softly.assertThat(temporaryPayment.getTemporaryMenuItems().get(0).name()).isEqualTo("김밥");
+                    softly.assertThat(temporaryPayment.getTemporaryMenuItems().get(0).quantity()).isEqualTo(4);
+                    softly.assertThat(temporaryPayment.getTemporaryMenuItems().get(0).options()).isNull();
+                }
+            );
         }
 
         @Test
@@ -145,6 +196,27 @@ public class PaymentApiTest extends AcceptanceTest {
                         "order_id": "FAKE_ORDER_123"
                       }
                     """));
+
+            TemporaryPayment temporaryPayment = temporaryPaymentRedisRepository.getById("FAKE_ORDER_123");
+            assertSoftly(
+                softly -> {
+                    softly.assertThat(temporaryPayment.getOrderId()).isEqualTo("FAKE_ORDER_123");
+                    softly.assertThat(temporaryPayment.getUserId()).isEqualTo(user.getId());
+                    softly.assertThat(temporaryPayment.getOrderableShopId()).isEqualTo(orderableShop.getId());
+                    softly.assertThat(temporaryPayment.getPhoneNumber()).isEqualTo("01012345678");
+                    softly.assertThat(temporaryPayment.getOrderType()).isEqualTo(OrderType.TAKE_OUT);
+                    softly.assertThat(temporaryPayment.getAddress()).isNull();
+                    softly.assertThat(temporaryPayment.getToOwner()).isEqualTo("리뷰 이벤트 감사합니다.");
+                    softly.assertThat(temporaryPayment.getToRider()).isNull();
+                    softly.assertThat(temporaryPayment.getProvideCutlery()).isEqualTo(true);
+                    softly.assertThat(temporaryPayment.getTotalProductPrice()).isEqualTo(24000);
+                    softly.assertThat(temporaryPayment.getDeliveryFee()).isNull();
+                    softly.assertThat(temporaryPayment.getTotalPrice()).isEqualTo(24000);
+                    softly.assertThat(temporaryPayment.getTemporaryMenuItems().get(0).name()).isEqualTo("김밥");
+                    softly.assertThat(temporaryPayment.getTemporaryMenuItems().get(0).quantity()).isEqualTo(4);
+                    softly.assertThat(temporaryPayment.getTemporaryMenuItems().get(0).options()).isNull();
+                }
+            );
         }
 
         @Test
@@ -182,7 +254,8 @@ public class PaymentApiTest extends AcceptanceTest {
                       {
                         "order_id": "FAKE_ORDER_123"
                       }
-                    """));
+                    """)
+                );
 
             mockMvc.perform(
                     post("/payments/confirm")
@@ -219,7 +292,45 @@ public class PaymentApiTest extends AcceptanceTest {
                       "approved_at": "2024.01.01 10:00",
                       "payment_method": "카드"
                     }
-                    """));
+                    """)
+                );
+
+            Payment payment = paymentRepository.getById(user.getId());
+            Order order = payment.getOrder();
+            OrderTakeout orderTakeout = order.getOrderTakeout();
+            OrderDelivery orderDelivery = order.getOrderDelivery();
+            List<OrderMenu> orderMenus = orderMenuRepository.findAllByOrderId(order.getId());
+
+            assertSoftly(
+                softly -> {
+                    softly.assertThat(payment.getId()).isEqualTo(1);
+                    softly.assertThat(payment.getPaymentKey()).isEqualTo("pay_123");
+                    softly.assertThat(payment.getAmount()).isEqualTo(24000);
+                    softly.assertThat(payment.getPaymentStatus()).isEqualTo(PaymentStatus.DONE);
+                    softly.assertThat(payment.getPaymentMethod()).isEqualTo(PaymentMethod.CARD);
+
+                    softly.assertThat(order.getId()).isEqualTo("FAKE_ORDER_123");
+                    softly.assertThat(order.getOrderType()).isEqualTo(OrderType.DELIVERY);
+                    softly.assertThat(order.getPhoneNumber()).isEqualTo("01012345678");
+                    softly.assertThat(order.getTotalProductPrice()).isEqualTo(24000);
+                    softly.assertThat(order.getTotalPrice()).isEqualTo(24000);
+
+                    softly.assertThat(orderTakeout).isNull();
+
+                    softly.assertThat(orderDelivery.getToOwner()).isEqualTo("리뷰 이벤트 감사합니다.");
+                    softly.assertThat(orderDelivery.getToRider()).isEqualTo("문 앞에 놔주세요.");
+                    softly.assertThat(orderDelivery.getDeliveryTip()).isEqualTo(0);
+                    softly.assertThat(orderDelivery.getProvideCutlery()).isEqualTo(true);
+
+                    softly.assertThat(orderMenus).hasSize(1);
+                    softly.assertThat(orderMenus.get(0).getMenuName()).isEqualTo("김밥");
+                    softly.assertThat(orderMenus.get(0).getMenuPrice()).isEqualTo(6000);
+                    softly.assertThat(orderMenus.get(0).getMenuPriceName()).isEqualTo("소고기 김밥");
+                    softly.assertThat(orderMenus.get(0).getId()).isEqualTo(1);
+                    softly.assertThat(orderMenus.get(0).getQuantity()).isEqualTo(4);
+                    softly.assertThat(orderMenus.get(0).getOrderMenuOptions()).isEmpty();
+                }
+            );
         }
 
         @Test
@@ -292,6 +403,41 @@ public class PaymentApiTest extends AcceptanceTest {
                       "payment_method": "카드"
                     }
                     """));
+
+            Payment payment = paymentRepository.getById(user.getId());
+            Order order = payment.getOrder();
+            OrderTakeout orderTakeout = order.getOrderTakeout();
+            OrderDelivery orderDelivery = order.getOrderDelivery();
+            List<OrderMenu> orderMenus = orderMenuRepository.findAllByOrderId(order.getId());
+
+            assertSoftly(
+                softly -> {
+                    softly.assertThat(payment.getId()).isEqualTo(1);
+                    softly.assertThat(payment.getPaymentKey()).isEqualTo("pay_123");
+                    softly.assertThat(payment.getAmount()).isEqualTo(24000);
+                    softly.assertThat(payment.getPaymentStatus()).isEqualTo(PaymentStatus.DONE);
+                    softly.assertThat(payment.getPaymentMethod()).isEqualTo(PaymentMethod.CARD);
+
+                    softly.assertThat(order.getId()).isEqualTo("FAKE_ORDER_123");
+                    softly.assertThat(order.getOrderType()).isEqualTo(OrderType.TAKE_OUT);
+                    softly.assertThat(order.getPhoneNumber()).isEqualTo("01012345678");
+                    softly.assertThat(order.getTotalProductPrice()).isEqualTo(24000);
+                    softly.assertThat(order.getTotalPrice()).isEqualTo(24000);
+
+                    softly.assertThat(orderTakeout.getToOwner()).isEqualTo("리뷰 이벤트 감사합니다.");
+                    softly.assertThat(orderTakeout.getProvideCutlery()).isEqualTo(true);
+
+                    softly.assertThat(orderDelivery).isNull();
+
+                    softly.assertThat(orderMenus).hasSize(1);
+                    softly.assertThat(orderMenus.get(0).getMenuName()).isEqualTo("김밥");
+                    softly.assertThat(orderMenus.get(0).getMenuPrice()).isEqualTo(6000);
+                    softly.assertThat(orderMenus.get(0).getMenuPriceName()).isEqualTo("소고기 김밥");
+                    softly.assertThat(orderMenus.get(0).getId()).isEqualTo(1);
+                    softly.assertThat(orderMenus.get(0).getQuantity()).isEqualTo(4);
+                    softly.assertThat(orderMenus.get(0).getOrderMenuOptions()).isEmpty();
+                }
+            );
         }
 
         @Test
@@ -318,7 +464,8 @@ public class PaymentApiTest extends AcceptanceTest {
                     "txrd_123"
                 ))
             );
-            when(tossPaymentClient.requestCancel(eq("pay_123"), eq("단순 변심"), eq(paymentIdempotencyKey.getIdempotencyKey())))
+            when(tossPaymentClient.requestCancel(eq("pay_123"), eq("단순 변심"),
+                eq(paymentIdempotencyKey.getIdempotencyKey())))
                 .thenReturn(cancelDto);
 
             mockMvc.perform(
@@ -403,6 +550,24 @@ public class PaymentApiTest extends AcceptanceTest {
                       ]
                     }
                     """));
+
+            Payment payment = paymentRepository.getById(user.getId());
+            List<PaymentCancel> paymentCancels = paymentCancelRepository.findAllByPaymentId(payment.getId());
+
+            assertSoftly(
+                softly -> {
+                    softly.assertThat(payment.getId()).isEqualTo(1);
+                    softly.assertThat(payment.getPaymentKey()).isEqualTo("pay_123");
+                    softly.assertThat(payment.getAmount()).isEqualTo(24000);
+                    softly.assertThat(payment.getPaymentStatus()).isEqualTo(PaymentStatus.CANCELED);
+                    softly.assertThat(payment.getPaymentMethod()).isEqualTo(PaymentMethod.CARD);
+
+                    softly.assertThat(paymentCancels.size()).isEqualTo(1);
+                    softly.assertThat(paymentCancels.get(0).getId()).isEqualTo(1);
+                    softly.assertThat(paymentCancels.get(0).getCancelReason()).isEqualTo("단순 변심이에요");
+                    softly.assertThat(paymentCancels.get(0).getCancelAmount()).isEqualTo(10000);
+                }
+            );
         }
     }
 }
