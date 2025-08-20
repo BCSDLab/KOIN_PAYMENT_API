@@ -32,7 +32,6 @@ import in.koreatech.koin.domain.order.model.PaymentMethod;
 import in.koreatech.koin.domain.order.model.PaymentStatus;
 import in.koreatech.koin.domain.order.repository.OrderMenuRepository;
 import in.koreatech.koin.domain.order.repository.PaymentCancelRepository;
-import in.koreatech.koin.domain.order.repository.PaymentIdempotencyKeyRepository;
 import in.koreatech.koin.domain.order.repository.PaymentRepository;
 import in.koreatech.koin.domain.order.shop.model.entity.menu.OrderableShopMenu;
 import in.koreatech.koin.domain.order.shop.model.entity.menu.OrderableShopMenuPrice;
