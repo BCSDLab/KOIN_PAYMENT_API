@@ -64,4 +64,23 @@ public class OrderableShop extends BaseEntity {
     public Integer calculateDeliveryFee(Integer orderAmount) {
         return this.shop.getBaseDeliveryTips().calculateDeliveryTip(orderAmount);
     }
+
+    @Builder
+    private OrderableShop(
+        Shop shop,
+        boolean delivery,
+        boolean takeout,
+        boolean serviceEvent,
+        Integer minimumOrderAmount,
+        boolean isDeleted,
+        List<OrderableShopMenuGroup> menuGroups
+    ) {
+        this.shop = shop;
+        this.delivery = delivery;
+        this.takeout = takeout;
+        this.serviceEvent = serviceEvent;
+        this.minimumOrderAmount = minimumOrderAmount;
+        this.isDeleted = isDeleted;
+        this.menuGroups = menuGroups;
+    }
 }

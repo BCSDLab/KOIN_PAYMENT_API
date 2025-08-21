@@ -20,4 +20,6 @@ public interface CartRepository extends Repository<Cart, Integer> {
     }
 
     void deleteByUserId(Integer userId);
+
+    Cart save(Cart cart);
 }

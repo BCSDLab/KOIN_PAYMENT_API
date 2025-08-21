@@ -7,6 +7,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import in.koreatech.koin.domain.order.shop.model.entity.menu.OrderableShopMenu;
+import in.koreatech.koin.domain.order.shop.model.entity.menu.OrderableShopMenuOption;
 import in.koreatech.koin.domain.order.shop.model.entity.menu.OrderableShopMenuPrice;
 import in.koreatech.payment.common.model.BaseEntity;
 import jakarta.persistence.CascadeType;
@@ -55,11 +56,55 @@ public class CartMenuItem extends BaseEntity {
     @OneToMany(mappedBy = "cartMenuItem", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<CartMenuItemOption> cartMenuItemOptions = new ArrayList<>();
 
+    @Builder
+    private CartMenuItem(
+        Cart cart,
+        OrderableShopMenu orderableShopMenu,
+        OrderableShopMenuPrice orderableShopMenuPrice,
+        Integer quantity,
+        Boolean isModified
+    ) {
+        this.cart = cart;
+        this.orderableShopMenu = orderableShopMenu;
+        this.orderableShopMenuPrice = orderableShopMenuPrice;
+        this.quantity = quantity;
+        this.isModified = isModified;
+    }
+
     public Integer calculateTotalAmount() {
         int totalOptionPrice = this.cartMenuItemOptions.stream()
             .mapToInt(CartMenuItemOption::getOptionPrice)
             .sum();
 
         return (this.orderableShopMenuPrice.getPrice() + totalOptionPrice) * this.quantity;
+    }
+
+    public void increaseQuantity(Integer amount) {
+        this.quantity += amount;
+    }
+
+    public boolean isSameItem(OrderableShopMenu menu, OrderableShopMenuPrice price, List<OrderableShopMenuOption> options) {
+        // 메뉴와 가격 ID가 다른 경우
+        if (!this.orderableShopMenu.getId().equals(menu.getId()) || !this.orderableShopMenuPrice.getId().equals(price.getId())) {
+            return false;
+        }
+
+        // 선택한 옵션의 개수가 다른 경우
+        if (this.cartMenuItemOptions.size() != options.size()) {
+            return false;
+        }
+
+        // 선택한 옵션의 구성이 다른 경우 (정렬 후 비교)
+        List<Integer> existingOptionIds = this.cartMenuItemOptions.stream()
+            .map(opt -> opt.getOrderableShopMenuOption().getId())
+            .sorted()
+            .toList();
+
+        List<Integer> newOptionIds = options.stream()
+            .map(OrderableShopMenuOption::getId)
+            .sorted()
+            .toList();
+
+        return existingOptionIds.equals(newOptionIds);
     }
 }

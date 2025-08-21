@@ -5,18 +5,16 @@ import static jakarta.persistence.GenerationType.IDENTITY;
 import static lombok.AccessLevel.PROTECTED;
 
 import java.util.ArrayList;
-import java.util.Comparator;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Optional;
 import java.util.Set;
 
 import org.hibernate.annotations.Where;
 
 import in.koreatech.koin.domain.order.shop.model.domain.ShopBaseDeliveryTips;
 import in.koreatech.koin.domain.order.shop.model.domain.ShopMenuOrigins;
-import in.koreatech.koin.domain.order.shop.model.entity.delivery.ShopBaseDeliveryTip;
 import in.koreatech.koin.domain.order.shop.model.entity.shop.ShopOperation;
+import in.koreatech.koin.domain.owner.model.Owner;
 import in.koreatech.koin.domain.shop.model.event.EventArticle;
 import in.koreatech.koin.domain.shop.model.menu.Menu;
 import in.koreatech.koin.domain.shop.model.menu.MenuCategory;
@@ -36,6 +34,7 @@ import jakarta.persistence.Table;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.PositiveOrZero;
 import jakarta.validation.constraints.Size;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -49,6 +48,10 @@ public class Shop extends BaseEntity {
     @Id
     @GeneratedValue(strategy = IDENTITY)
     private Integer id;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "owner_id", referencedColumnName = "user_id")
+    private Owner owner;
 
     @Size(max = 50)
     @NotNull
@@ -153,4 +156,51 @@ public class Shop extends BaseEntity {
 
     @Column(name = "notice", columnDefinition = "text")
     private String notice;
+
+    @Builder
+    private Shop(
+        Owner owner,
+        String name,
+        String internalName,
+        String chosung,
+        String phone,
+        String address,
+        String description,
+        boolean delivery,
+        Integer deliveryPrice,
+        boolean payCard,
+        boolean payBank,
+        boolean isDeleted,
+        boolean isEvent,
+        String remarks,
+        Integer hit,
+        String bank,
+        String accountNumber,
+        ShopCategory shopMainCategory,
+        ShopOperation shopOperation
+    ) {
+        this.owner = owner;
+        this.name = name;
+        this.internalName = internalName;
+        this.chosung = chosung;
+        this.phone = phone;
+        this.address = address;
+        this.description = description;
+        this.delivery = delivery;
+        this.deliveryPrice = deliveryPrice;
+        this.payCard = payCard;
+        this.payBank = payBank;
+        this.isDeleted = isDeleted;
+        this.isEvent = isEvent;
+        this.remarks = remarks;
+        this.hit = hit;
+        this.bank = bank;
+        this.accountNumber = accountNumber;
+        this.shopMainCategory = shopMainCategory;
+        this.shopOperation = shopOperation;
+    }
+
+    public void setShopOperation(ShopOperation shopOperation) {
+        this.shopOperation = shopOperation;
+    }
 }

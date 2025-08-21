@@ -49,7 +49,7 @@ public class TossPaymentRollBackService implements PaymentRollBackService {
     private static final String PAYMENT_CANCEL_REASON = "코인 서버 오류로 인한 결제 취소";
 
     @TransactionalEventListener(phase = AFTER_ROLLBACK)
-    @Transactional(propagation = REQUIRES_NEW, transactionManager = "koinTransactionManager")
+    @Transactional(propagation = REQUIRES_NEW)
     public void paymentRollback(TossPaymentRollBackEvent event) {
         TemporaryPayment temporaryPayment = event.temporaryPayment();
         User user = userRepository.getById(temporaryPayment.getUserId());
