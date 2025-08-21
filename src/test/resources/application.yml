@@ -1,0 +1,26 @@
+jwt:
+  secret-key: EXAMPLE7A3E4F37B3DAD9CD8KEY6AA4B1AF7123!@#
+  access-token:
+    expiration-time: 600000
+
+spring:
+  flyway:
+    enabled: false
+  jpa:
+    properties:
+      hibernate:
+        show_sql: true
+        format_sql: true
+    hibernate:
+      ddl-auto: create
+
+toss-payment:
+  secret-key: test_sk
+  api-base-url: https://api.tosspayments.com
+
+swagger:
+  server-url: http://localhost:8080
+
+cors:
+  allowedOrigins:
+    - http://localhost:3000

@@ -15,4 +15,6 @@ public interface UserRepository extends Repository<User, Integer> {
         return findById(userId)
             .orElseThrow(() -> UserNotFoundException.withDetail("userId: " + userId));
     }
+
+    User save(User user);
 }

@@ -64,4 +64,25 @@ public class OrderableShopMenu extends BaseEntity {
 
     @OneToMany(mappedBy = "menu", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<OrderableShopMenuImage> menuImages = new ArrayList<>();
+
+    @Builder
+    private OrderableShopMenu(
+        OrderableShop orderableShop,
+        String name,
+        String description,
+        Boolean isSoldOut,
+        Boolean isDeleted,
+        List<OrderableShopMenuOptionGroupMap> menuOptionGroupMap,
+        List<OrderableShopMenuPrice> menuPrices,
+        List<OrderableShopMenuImage> menuImages
+    ) {
+        this.orderableShop = orderableShop;
+        this.name = name;
+        this.description = description;
+        this.isSoldOut = isSoldOut;
+        this.isDeleted = isDeleted;
+        this.menuOptionGroupMap = menuOptionGroupMap;
+        this.menuPrices = menuPrices;
+        this.menuImages = menuImages;
+    }
 }
