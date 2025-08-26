@@ -51,43 +51,43 @@ public class TossPaymentRollBackService implements PaymentRollBackService {
     @TransactionalEventListener(phase = AFTER_ROLLBACK)
     @Transactional(propagation = REQUIRES_NEW)
     public void paymentRollback(TossPaymentRollBackEvent event) {
-        TemporaryPayment temporaryPayment = event.temporaryPayment();
-        User user = userRepository.getById(temporaryPayment.getUserId());
-        PaymentIdempotencyKey paymentIdempotencyKey = paymentIdempotencyKeyRepository
-            .findByUserId(user.getId())
-            .map(idempotencyKey -> {
-                if (idempotencyKey.isOlderThanExpireDays()) {
-                    idempotencyKey.updateIdempotencyKey(UUID.randomUUID().toString());
-                }
-                return idempotencyKey;
-            })
-            .orElseGet(() -> paymentIdempotencyKeyRepository.save(
-                PaymentIdempotencyKey.builder()
-                    .userId(user.getId())
-                    .idempotencyKey(UUID.randomUUID().toString())
-                    .build()
-            ));
-
-        PaymentCancelResponse response = tossPaymentClient.requestCancel(event.paymentKey(),
-            PAYMENT_CANCEL_REASON, paymentIdempotencyKey.getIdempotencyKey());
-
-        try {
-            OrderableShop orderableShop = orderableShopRepository.getById(temporaryPayment.getOrderableShopId());
-            Order order = temporaryPayment.toOrder(user, orderableShop);
-            orderRepository.save(order);
-
-            Payment payment = event.tossPaymentConfirmResponse().toEntity(order);
-            payment.cancel();
-            paymentRepository.save(payment);
-
-            List<PaymentCancel> paymentCancels = response.getPaymentCancels(payment);
-            paymentCancelRepository.saveAll(paymentCancels);
-
-            temporaryPaymentRedisRepository.deleteById(order.getPgOrderId());
-            cartRepository.deleteByUserId(user.getId());
-        } catch (Exception e) {
-            log.error("결제 취소 과정에서 오류 발생 - paymentId: {}, userId: {}, orderId: {}", event.paymentKey(),
-                temporaryPayment.getUserId(), temporaryPayment.getPgOrderId());
-        }
+        // TemporaryPayment temporaryPayment = event.temporaryPayment();
+        // User user = userRepository.getById(temporaryPayment.getUserId());
+        // PaymentIdempotencyKey paymentIdempotencyKey = paymentIdempotencyKeyRepository
+        //     .findByUserId(user.getId())
+        //     .map(idempotencyKey -> {
+        //         if (idempotencyKey.isOlderThanExpireDays()) {
+        //             idempotencyKey.updateIdempotencyKey(UUID.randomUUID().toString());
+        //         }
+        //         return idempotencyKey;
+        //     })
+        //     .orElseGet(() -> paymentIdempotencyKeyRepository.save(
+        //         PaymentIdempotencyKey.builder()
+        //             .userId(user.getId())
+        //             .idempotencyKey(UUID.randomUUID().toString())
+        //             .build()
+        //     ));
+        //
+        // PaymentCancelResponse response = tossPaymentClient.requestCancel(event.paymentKey(),
+        //     PAYMENT_CANCEL_REASON, paymentIdempotencyKey.getIdempotencyKey());
+        //
+        // try {
+        //     OrderableShop orderableShop = orderableShopRepository.getById(temporaryPayment.getOrderableShopId());
+        //     Order order = temporaryPayment.toOrder(user, orderableShop);
+        //     orderRepository.save(order);
+        //
+        //     Payment payment = event.tossPaymentConfirmResponse().toEntity(order);
+        //     payment.cancel();
+        //     paymentRepository.save(payment);
+        //
+        //     List<PaymentCancel> paymentCancels = response.getPaymentCancels(payment);
+        //     paymentCancelRepository.saveAll(paymentCancels);
+        //
+        //     temporaryPaymentRedisRepository.deleteById(order.getPgOrderId());
+        //     cartRepository.deleteByUserId(user.getId());
+        // } catch (Exception e) {
+        //     log.error("결제 취소 과정에서 오류 발생 - paymentId: {}, userId: {}, orderId: {}", event.paymentKey(),
+        //         temporaryPayment.getUserId(), temporaryPayment.getPgOrderId());
+        // }
     }
 }
