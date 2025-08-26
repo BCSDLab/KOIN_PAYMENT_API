@@ -1,4 +1,4 @@
-package in.koreatech.payment.util;
+package in.koreatech.payment.gateway.pg;
 
 public interface PgOrderIdGenerator {
     String generatePgOrderId();

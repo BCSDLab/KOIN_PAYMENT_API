@@ -4,6 +4,8 @@ import java.security.SecureRandom;
 
 import org.springframework.stereotype.Component;
 
+import in.koreatech.payment.gateway.pg.PgOrderIdGenerator;
+
 @Component
 public class TossPaymentOrderIdGenerator implements PgOrderIdGenerator {
 
