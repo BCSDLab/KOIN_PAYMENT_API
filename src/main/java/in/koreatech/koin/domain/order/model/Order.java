@@ -3,6 +3,7 @@ package in.koreatech.koin.domain.order.model;
 import static jakarta.persistence.CascadeType.ALL;
 import static jakarta.persistence.EnumType.STRING;
 import static jakarta.persistence.FetchType.LAZY;
+import static jakarta.persistence.GenerationType.IDENTITY;
 import static java.lang.Boolean.FALSE;
 import static lombok.AccessLevel.PROTECTED;
 
@@ -14,6 +15,7 @@ import in.koreatech.payment.common.model.BaseEntity;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Enumerated;
+import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
@@ -34,10 +36,13 @@ import lombok.NoArgsConstructor;
 public class Order extends BaseEntity {
 
     @Id
+    @GeneratedValue(strategy = IDENTITY)
+    private Integer id;
+
     @NotBlank
     @Size(min = 6, max = 64)
-    @Column(name = "id", length = 64, nullable = false, updatable = false)
-    private String id;
+    @Column(name = "pg_order_id", length = 64, nullable = false, updatable = false)
+    private String pgOrderId;
 
     @NotNull
     @Enumerated(STRING)
@@ -76,17 +81,21 @@ public class Order extends BaseEntity {
     private OrderTakeout orderTakeout;
 
     @Builder
-    public Order(
-        String id,
+    private Order(
+        Integer id,
+        String pgOrderId,
         OrderType orderType,
         String phoneNumber,
         Integer totalProductPrice,
         Integer totalPrice,
         Boolean isDeleted,
         OrderableShop orderableShop,
-        User user
+        User user,
+        OrderDelivery orderDelivery,
+        OrderTakeout orderTakeout
     ) {
         this.id = id;
+        this.pgOrderId = pgOrderId;
         this.orderType = orderType;
         this.phoneNumber = phoneNumber;
         this.totalProductPrice = totalProductPrice;
@@ -94,6 +103,8 @@ public class Order extends BaseEntity {
         this.isDeleted = isDeleted;
         this.orderableShop = orderableShop;
         this.user = user;
+        this.orderDelivery = orderDelivery;
+        this.orderTakeout = orderTakeout;
     }
 
     public void setOrderDelivery(OrderDelivery orderDelivery) {
