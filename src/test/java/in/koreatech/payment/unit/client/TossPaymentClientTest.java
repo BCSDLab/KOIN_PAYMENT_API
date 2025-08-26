@@ -20,7 +20,7 @@ import org.junit.jupiter.params.provider.MethodSource;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-import in.koreatech.payment.client.TossPaymentClient;
+import in.koreatech.payment.gateway.toss.TossPaymentClient;
 import in.koreatech.payment.client.dto.response.PaymentCancelResponse;
 import in.koreatech.payment.client.dto.response.TossPaymentConfirmResponse;
 import in.koreatech.payment.client.exception.TossPaymentException;

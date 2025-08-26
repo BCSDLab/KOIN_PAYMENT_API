@@ -47,7 +47,7 @@ import in.koreatech.payment.acceptance.fixture.OrderableShopMenuPriceFixture;
 import in.koreatech.payment.acceptance.fixture.PaymentIdempotencyKeyFixture;
 import in.koreatech.payment.acceptance.fixture.ShopFixture;
 import in.koreatech.payment.acceptance.fixture.UserFixture;
-import in.koreatech.payment.client.TossPaymentClient;
+import in.koreatech.payment.gateway.toss.TossPaymentClient;
 import in.koreatech.payment.client.dto.response.PaymentCancelResponse;
 import in.koreatech.payment.client.dto.response.TossPaymentConfirmResponse;
 import in.koreatech.payment.common.auth.JwtProvider;

@@ -1,4 +1,4 @@
-package in.koreatech.payment.client;
+package in.koreatech.payment.gateway.toss;
 
 import static java.nio.charset.StandardCharsets.UTF_8;
 import static org.springframework.http.HttpHeaders.AUTHORIZATION;
