@@ -24,7 +24,9 @@ import in.koreatech.koin.domain.order.shop.model.entity.shop.OrderableShop;
 import in.koreatech.koin.domain.order.shop.repository.OrderableShopRepository;
 import in.koreatech.koin.domain.user.model.User;
 import in.koreatech.koin.domain.user.repository.UserRepository;
+import in.koreatech.payment.gateway.pg.dto.PaymentConfirmationResponse;
 import in.koreatech.payment.gateway.toss.TossPaymentClient;
+import in.koreatech.payment.gateway.toss.TossPaymentGatewayService;
 import in.koreatech.payment.gateway.toss.dto.response.PaymentCancelResponse;
 import in.koreatech.payment.gateway.toss.dto.response.TossPaymentConfirmResponse;
 import in.koreatech.payment.common.auth.JwtProvider;
@@ -62,6 +64,7 @@ public class TossService implements PaymentService {
     private final OrderRepository orderRepository;
     private final OrderMenuRepository orderMenuRepository;
     private final ApplicationEventPublisher applicationEventPublisher;
+    private final TossPaymentGatewayService tossPaymentGatewayService;
 
     @Transactional
     public String createTemporaryDeliveryPayment(String accessToken, TemporaryDeliveryPaymentSaveRequest request) {
@@ -151,14 +154,12 @@ public class TossService implements PaymentService {
         TemporaryPayment temporaryPayment = temporaryPaymentRedisRepository.getById(orderId);
         temporaryPayment.validateMatches(orderId, user.getId(), amount);
 
-        TossPaymentConfirmResponse tossPaymentResponse = tossPaymentClient.requestConfirm(paymentKey, orderId, amount);
-        PaymentStatus paymentStatus = PaymentStatus.valueOf(tossPaymentResponse.status());
-        if (!paymentStatus.isDone()) {
-            throw PaymentConfirmException.withDetail("paymentStatus : " + tossPaymentResponse.status());
-        }
+        PaymentConfirmationResponse paymentConfirmResponse = tossPaymentGatewayService.confirmPayment(paymentKey,
+            orderId, amount);
 
-        applicationEventPublisher.publishEvent(
-            TossPaymentRollBackEvent.from(paymentKey, temporaryPayment, tossPaymentResponse));
+        // TODO. 롤백 로직 수정
+        // applicationEventPublisher.publishEvent(
+        //     TossPaymentRollBackEvent.from(paymentKey, temporaryPayment, paymentConfirmResponse));
 
         OrderableShop orderableShop = orderableShopRepository.getById(temporaryPayment.getOrderableShopId());
         Order order = temporaryPayment.toOrder(user, orderableShop);
@@ -169,7 +170,7 @@ public class TossService implements PaymentService {
             .toList();
         orderMenuRepository.saveAll(orderMenus);
 
-        Payment payment = tossPaymentResponse.toEntity(order);
+        Payment payment = paymentConfirmResponse.toEntity(order);
         paymentRepository.save(payment);
         temporaryPaymentRedisRepository.deleteById(orderId);
         cartRepository.deleteByUserId(user.getId());

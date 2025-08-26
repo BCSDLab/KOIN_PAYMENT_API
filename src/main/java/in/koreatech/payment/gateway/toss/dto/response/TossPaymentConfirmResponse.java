@@ -11,6 +11,7 @@ import in.koreatech.koin.domain.order.model.PaymentStatus;
 public record TossPaymentConfirmResponse(
     String paymentKey,
     Integer totalAmount,
+    String orderId,
     String status,
     String method,
     String requestedAt,
