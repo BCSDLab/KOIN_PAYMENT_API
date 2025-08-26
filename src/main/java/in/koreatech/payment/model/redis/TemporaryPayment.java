@@ -27,7 +27,7 @@ public class TemporaryPayment {
     private static final Long CACHE_EXPIRE_SECOND = 60 * 10L;
 
     @Id
-    private String orderId;
+    private String pgOrderId;
 
     private Integer userId;
 
@@ -59,7 +59,7 @@ public class TemporaryPayment {
     private LocalDateTime createdAt;
 
     private TemporaryPayment(
-        String orderId,
+        String pgOrderId,
         Integer userId,
         Integer orderableShopId,
         String phoneNumber,
@@ -73,7 +73,7 @@ public class TemporaryPayment {
         Integer totalPrice,
         List<TemporaryMenuItems> temporaryMenuItems
     ) {
-        this.orderId = orderId;
+        this.pgOrderId = pgOrderId;
         this.userId = userId;
         this.orderableShopId = orderableShopId;
         this.phoneNumber = phoneNumber;
@@ -91,7 +91,7 @@ public class TemporaryPayment {
     }
 
     public static TemporaryPayment toDeliveryEntity(
-        String orderId,
+        String pgOrderId,
         Integer userId,
         Integer orderableShopId,
         String phoneNumber,
@@ -105,7 +105,7 @@ public class TemporaryPayment {
         List<TemporaryMenuItems> temporaryMenuItems
     ) {
         return new TemporaryPayment(
-            orderId,
+            pgOrderId,
             userId,
             orderableShopId,
             phoneNumber,
@@ -122,7 +122,7 @@ public class TemporaryPayment {
     }
 
     public static TemporaryPayment toTakeOutEntity(
-        String orderId,
+        String pgOrderId,
         Integer userId,
         Integer orderableShopId,
         String phoneNumber,
@@ -133,7 +133,7 @@ public class TemporaryPayment {
         List<TemporaryMenuItems> temporaryMenuItems
     ) {
         return new TemporaryPayment(
-            orderId,
+            pgOrderId,
             userId,
             orderableShopId,
             phoneNumber,
@@ -151,7 +151,7 @@ public class TemporaryPayment {
 
     public Order toOrder(User user, OrderableShop orderableShop) {
         Order order = Order.builder()
-            .id(orderId)
+            .pgOrderId(pgOrderId)
             .orderType(orderType)
             .phoneNumber(phoneNumber)
             .totalProductPrice(totalProductPrice)
@@ -181,15 +181,15 @@ public class TemporaryPayment {
         return order;
     }
 
-    public void validateMatches(String orderId, Integer userId, Integer amount) {
-        validateOrderIdMatches(orderId);
+    public void validateMatches(String pgOrderId, Integer userId, Integer amount) {
+        validatePgOrderIdMatches(pgOrderId);
         validateUserIdMatches(userId);
         validateAmountMatches(amount);
     }
 
-    private void validateOrderIdMatches(String orderId) {
-        if (!orderId.equals(this.orderId)) {
-            throw InvalidTemporaryPaymentException.withDetail("orderId : " + orderId);
+    private void validatePgOrderIdMatches(String pgOrderId) {
+        if (!pgOrderId.equals(this.pgOrderId)) {
+            throw InvalidTemporaryPaymentException.withDetail("orderId : " + pgOrderId);
         }
     }
 

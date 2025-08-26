@@ -11,12 +11,12 @@ public interface TemporaryPaymentRedisRepository extends Repository<TemporaryPay
 
     void save(TemporaryPayment temporaryPayment);
 
-    Optional<TemporaryPayment> findById(String orderId);
+    Optional<TemporaryPayment> findById(String pgOrderId);
 
-    default TemporaryPayment getById(String orderId) {
-        return findById(orderId)
-            .orElseThrow(() -> TemporaryPaymentNotFoundException.withDetail("orderId : " + orderId));
+    default TemporaryPayment getById(String pgOrderId) {
+        return findById(pgOrderId)
+            .orElseThrow(() -> TemporaryPaymentNotFoundException.withDetail("pgOrderId : " + pgOrderId));
     }
 
-    void deleteById(String orderId);
+    void deleteById(String pgOrderId);
 }
