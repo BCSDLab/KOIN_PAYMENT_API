@@ -5,7 +5,7 @@ import java.security.SecureRandom;
 import org.springframework.stereotype.Component;
 
 @Component
-public class TossPaymentPgOrderIdGenerator implements PgOrderIdGenerator {
+public class TossPaymentOrderIdGenerator implements PgOrderIdGenerator {
 
     private static final String ORDER_ID_CHARACTERS = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789-_";
     private static final int ORDER_ID_MIN_LENGTH = 6;
