@@ -39,6 +39,7 @@ import in.koreatech.payment.exception.OrderPriceMismatchException;
 import in.koreatech.payment.exception.PaymentAlreadyCanceledException;
 import in.koreatech.payment.exception.PaymentCancelException;
 import in.koreatech.payment.exception.PaymentConfirmException;
+import in.koreatech.payment.mapper.PaymentMapper;
 import in.koreatech.payment.model.domain.TemporaryMenuItems;
 import in.koreatech.payment.model.redis.TemporaryPayment;
 import in.koreatech.payment.repository.redis.TemporaryPaymentRedisRepository;
@@ -65,6 +66,7 @@ public class TossService implements PaymentService {
     private final OrderMenuRepository orderMenuRepository;
     private final ApplicationEventPublisher applicationEventPublisher;
     private final TossPaymentGatewayService tossPaymentGatewayService;
+    private final PaymentMapper paymentMapper;
 
     @Transactional
     public String createTemporaryDeliveryPayment(String accessToken, TemporaryDeliveryPaymentSaveRequest request) {
@@ -170,7 +172,7 @@ public class TossService implements PaymentService {
             .toList();
         orderMenuRepository.saveAll(orderMenus);
 
-        Payment payment = paymentConfirmResponse.toEntity(order);
+        Payment payment = paymentMapper.toEntity(order, paymentConfirmResponse);
         paymentRepository.save(payment);
         temporaryPaymentRedisRepository.deleteById(orderId);
         cartRepository.deleteByUserId(user.getId());
