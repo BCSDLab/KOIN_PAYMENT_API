@@ -1,4 +1,4 @@
-package in.koreatech.payment.client.dto.request;
+package in.koreatech.payment.gateway.toss.dto.request;
 
 public record PaymentCancelRequest(
     String cancelReason

@@ -1,6 +1,6 @@
 package in.koreatech.payment.acceptance.domain;
 
-import static in.koreatech.payment.client.dto.response.PaymentCancelResponse.CancelInfo;
+import static in.koreatech.payment.gateway.toss.dto.response.PaymentCancelResponse.CancelInfo;
 import static org.assertj.core.api.SoftAssertions.assertSoftly;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.eq;
@@ -48,8 +48,8 @@ import in.koreatech.payment.acceptance.fixture.PaymentIdempotencyKeyFixture;
 import in.koreatech.payment.acceptance.fixture.ShopFixture;
 import in.koreatech.payment.acceptance.fixture.UserFixture;
 import in.koreatech.payment.gateway.toss.TossPaymentClient;
-import in.koreatech.payment.client.dto.response.PaymentCancelResponse;
-import in.koreatech.payment.client.dto.response.TossPaymentConfirmResponse;
+import in.koreatech.payment.gateway.toss.dto.response.PaymentCancelResponse;
+import in.koreatech.payment.gateway.toss.dto.response.TossPaymentConfirmResponse;
 import in.koreatech.payment.common.auth.JwtProvider;
 import in.koreatech.payment.model.redis.TemporaryPayment;
 import in.koreatech.payment.repository.redis.TemporaryPaymentRedisRepository;

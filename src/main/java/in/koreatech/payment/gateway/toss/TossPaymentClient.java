@@ -14,10 +14,10 @@ import org.springframework.web.reactive.function.client.WebClientResponseExcepti
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-import in.koreatech.payment.client.dto.request.PaymentCancelRequest;
-import in.koreatech.payment.client.dto.request.PaymentConfirmRequest;
-import in.koreatech.payment.client.dto.response.PaymentCancelResponse;
-import in.koreatech.payment.client.dto.response.TossPaymentConfirmResponse;
+import in.koreatech.payment.gateway.toss.dto.request.PaymentCancelRequest;
+import in.koreatech.payment.gateway.toss.dto.request.PaymentConfirmRequest;
+import in.koreatech.payment.gateway.toss.dto.response.PaymentCancelResponse;
+import in.koreatech.payment.gateway.toss.dto.response.TossPaymentConfirmResponse;
 import in.koreatech.payment.client.exception.TossPaymentErrorCode;
 import in.koreatech.payment.client.exception.TossPaymentErrorResponse;
 import in.koreatech.payment.client.exception.TossPaymentException;

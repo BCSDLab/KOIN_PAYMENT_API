@@ -1,6 +1,6 @@
 package in.koreatech.payment.unit.client;
 
-import static in.koreatech.payment.client.dto.response.PaymentCancelResponse.CancelInfo;
+import static in.koreatech.payment.gateway.toss.dto.response.PaymentCancelResponse.CancelInfo;
 import static java.nio.charset.StandardCharsets.UTF_8;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertAll;
@@ -21,8 +21,8 @@ import org.junit.jupiter.params.provider.MethodSource;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import in.koreatech.payment.gateway.toss.TossPaymentClient;
-import in.koreatech.payment.client.dto.response.PaymentCancelResponse;
-import in.koreatech.payment.client.dto.response.TossPaymentConfirmResponse;
+import in.koreatech.payment.gateway.toss.dto.response.PaymentCancelResponse;
+import in.koreatech.payment.gateway.toss.dto.response.TossPaymentConfirmResponse;
 import in.koreatech.payment.client.exception.TossPaymentException;
 import in.koreatech.payment.unit.support.MockHttpServer;
 import okhttp3.mockwebserver.RecordedRequest;

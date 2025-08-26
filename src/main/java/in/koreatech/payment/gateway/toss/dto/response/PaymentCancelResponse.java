@@ -1,4 +1,4 @@
-package in.koreatech.payment.client.dto.response;
+package in.koreatech.payment.gateway.toss.dto.response;
 
 import java.time.LocalDateTime;
 import java.time.OffsetDateTime;
