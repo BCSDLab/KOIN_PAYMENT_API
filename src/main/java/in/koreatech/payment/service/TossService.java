@@ -12,7 +12,6 @@ import in.koreatech.koin.domain.order.model.Order;
 import in.koreatech.koin.domain.order.model.OrderMenu;
 import in.koreatech.koin.domain.order.model.Payment;
 import in.koreatech.koin.domain.order.model.PaymentCancel;
-import in.koreatech.koin.domain.order.model.PaymentStatus;
 import in.koreatech.koin.domain.order.repository.OrderMenuRepository;
 import in.koreatech.koin.domain.order.repository.OrderRepository;
 import in.koreatech.koin.domain.order.repository.PaymentCancelRepository;
@@ -27,13 +26,10 @@ import in.koreatech.payment.dto.request.TemporaryTakeoutPaymentSaveRequest;
 import in.koreatech.payment.dto.response.PaymentResponse;
 import in.koreatech.payment.exception.OrderPriceMismatchException;
 import in.koreatech.payment.exception.PaymentAlreadyCanceledException;
-import in.koreatech.payment.exception.PaymentCancelException;
+import in.koreatech.payment.gateway.pg.PaymentGatewayService;
 import in.koreatech.payment.gateway.pg.PgOrderIdGenerator;
 import in.koreatech.payment.gateway.pg.dto.PaymentCancelResponse;
 import in.koreatech.payment.gateway.pg.dto.PaymentConfirmResponse;
-import in.koreatech.payment.gateway.toss.TossPaymentClient;
-import in.koreatech.payment.gateway.toss.TossPaymentGatewayService;
-import in.koreatech.payment.gateway.toss.dto.response.TossPaymentCancelResponse;
 import in.koreatech.payment.mapper.PaymentCancelMapper;
 import in.koreatech.payment.mapper.PaymentMapper;
 import in.koreatech.payment.model.domain.TemporaryMenuItems;
@@ -59,7 +55,7 @@ public class TossService implements PaymentService {
     private final OrderRepository orderRepository;
     private final OrderMenuRepository orderMenuRepository;
     private final ApplicationEventPublisher applicationEventPublisher;
-    private final TossPaymentGatewayService tossPaymentGatewayService;
+    private final PaymentGatewayService paymentGatewayService;
     private final PaymentMapper paymentMapper;
     private final PaymentCancelMapper paymentCancelMappers;
 
@@ -151,7 +147,7 @@ public class TossService implements PaymentService {
         TemporaryPayment temporaryPayment = temporaryPaymentRedisRepository.getById(orderId);
         temporaryPayment.validateMatches(orderId, user.getId(), amount);
 
-        PaymentConfirmResponse paymentConfirmResponse = tossPaymentGatewayService.confirmPayment(paymentKey,
+        PaymentConfirmResponse paymentConfirmResponse = paymentGatewayService.confirmPayment(paymentKey,
             orderId, amount);
 
         // TODO. 롤백 로직 수정
@@ -185,7 +181,7 @@ public class TossService implements PaymentService {
         payment.validateUserIdMatches(user.getId());
 
         String paymentIdempotencyKey = paymentIdempotencyKeyService.getOrCreate(user.getId());
-        PaymentCancelResponse response = tossPaymentGatewayService.cancelPayment(payment.getPaymentKey(), cancelReason, paymentIdempotencyKey);
+        PaymentCancelResponse response = paymentGatewayService.cancelPayment(payment.getPaymentKey(), cancelReason, paymentIdempotencyKey);
         payment.cancel();
 
         List<PaymentCancel> paymentCancels = paymentCancelMappers.toEntity(payment, response);

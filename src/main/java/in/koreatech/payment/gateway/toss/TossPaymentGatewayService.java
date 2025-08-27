@@ -2,8 +2,6 @@ package in.koreatech.payment.gateway.toss;
 
 import static in.koreatech.payment.gateway.pg.dto.PaymentCancelResponse.CancelInfo;
 
-import java.util.List;
-
 import org.springframework.stereotype.Service;
 
 import in.koreatech.koin.domain.order.model.PaymentStatus;
