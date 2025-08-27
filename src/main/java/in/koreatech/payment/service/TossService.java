@@ -12,6 +12,7 @@ import in.koreatech.koin.domain.order.model.Order;
 import in.koreatech.koin.domain.order.model.OrderMenu;
 import in.koreatech.koin.domain.order.model.Payment;
 import in.koreatech.koin.domain.order.model.PaymentCancel;
+import in.koreatech.koin.domain.order.model.PaymentStatus;
 import in.koreatech.koin.domain.order.repository.OrderMenuRepository;
 import in.koreatech.koin.domain.order.repository.OrderRepository;
 import in.koreatech.koin.domain.order.repository.PaymentCancelRepository;
@@ -27,6 +28,8 @@ import in.koreatech.payment.dto.response.PaymentConfirmResponse;
 import in.koreatech.payment.dto.response.PaymentResponse;
 import in.koreatech.payment.exception.OrderPriceMismatchException;
 import in.koreatech.payment.exception.PaymentAlreadyCanceledException;
+import in.koreatech.payment.exception.PaymentCancelException;
+import in.koreatech.payment.exception.PaymentConfirmException;
 import in.koreatech.payment.gateway.pg.PaymentGatewayService;
 import in.koreatech.payment.gateway.pg.PgOrderIdGenerator;
 import in.koreatech.payment.gateway.pg.dto.PgPaymentCancelResponse;
@@ -148,6 +151,10 @@ public class TossService implements PaymentService {
         temporaryPayment.validateMatches(orderId, user.getId(), amount);
 
         PgPaymentConfirmResponse pgPaymentConfirmResponse = paymentGatewayService.confirmPayment(paymentKey, orderId, amount);
+        PaymentStatus paymentStatus = PaymentStatus.valueOf(pgPaymentConfirmResponse.status());
+        if (!paymentStatus.isDone()) {
+            throw PaymentConfirmException.withDetail("paymentStatus : " + pgPaymentConfirmResponse.status());
+        }
 
         // TODO. 롤백 로직 수정
         // applicationEventPublisher.publishEvent(
@@ -181,6 +188,10 @@ public class TossService implements PaymentService {
 
         String paymentIdempotencyKey = paymentIdempotencyKeyService.getOrCreate(user.getId());
         PgPaymentCancelResponse pgPaymentCancelResponse = paymentGatewayService.cancelPayment(payment.getPaymentKey(), cancelReason, paymentIdempotencyKey);
+        if (!PaymentStatus.valueOf(pgPaymentCancelResponse.status()).isCanceled()) {
+            throw PaymentCancelException.withDetail("paymentStatus : " + pgPaymentCancelResponse.status());
+        }
+        
         payment.cancel();
 
         List<PaymentCancel> paymentCancels = paymentCancelMappers.toEntity(payment, pgPaymentCancelResponse);
