@@ -20,7 +20,6 @@ import in.koreatech.payment.dto.response.PaymentCancelResponse;
 import in.koreatech.payment.dto.response.PaymentConfirmResponse;
 import in.koreatech.payment.dto.response.PaymentResponse;
 import in.koreatech.payment.dto.response.TemporaryPaymentResponse;
-import in.koreatech.payment.service.PaymentService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 

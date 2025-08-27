@@ -45,7 +45,7 @@ import lombok.RequiredArgsConstructor;
 @Service
 @RequiredArgsConstructor
 @Transactional(readOnly = true)
-public class TossService implements PaymentService {
+public class TossService {
 
     private final PgOrderIdGenerator pgOrderIdGenerator;
     private final JwtProvider jwtProvider;
