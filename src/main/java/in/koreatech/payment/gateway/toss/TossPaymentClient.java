@@ -14,9 +14,9 @@ import org.springframework.web.reactive.function.client.WebClientResponseExcepti
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-import in.koreatech.payment.client.exception.TossPaymentErrorCode;
-import in.koreatech.payment.client.exception.TossPaymentErrorResponse;
-import in.koreatech.payment.client.exception.TossPaymentException;
+import in.koreatech.payment.gateway.toss.exception.TossPaymentErrorCode;
+import in.koreatech.payment.gateway.toss.exception.TossPaymentErrorResponse;
+import in.koreatech.payment.gateway.toss.exception.TossPaymentException;
 import in.koreatech.payment.common.exception.custom.KoinIllegalStateException;
 import in.koreatech.payment.gateway.toss.dto.request.TossPaymentCancelRequest;
 import in.koreatech.payment.gateway.toss.dto.request.TossPaymentConfirmRequest;

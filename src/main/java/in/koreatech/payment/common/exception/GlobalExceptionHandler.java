@@ -25,7 +25,7 @@ import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExcep
 import org.springframework.web.util.ContentCachingRequestWrapper;
 import org.springframework.web.util.WebUtils;
 
-import in.koreatech.payment.client.exception.TossPaymentException;
+import in.koreatech.payment.gateway.toss.exception.TossPaymentException;
 import in.koreatech.payment.common.exception.custom.AuthenticationException;
 import in.koreatech.payment.common.exception.custom.AuthorizationException;
 import in.koreatech.payment.common.exception.custom.DataNotFoundException;

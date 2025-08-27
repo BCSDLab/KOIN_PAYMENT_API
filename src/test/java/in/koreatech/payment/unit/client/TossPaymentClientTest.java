@@ -23,7 +23,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import in.koreatech.payment.gateway.toss.TossPaymentClient;
 import in.koreatech.payment.gateway.toss.dto.response.TossPaymentCancelResponse;
 import in.koreatech.payment.gateway.toss.dto.response.TossPaymentConfirmResponse;
-import in.koreatech.payment.client.exception.TossPaymentException;
+import in.koreatech.payment.gateway.toss.exception.TossPaymentException;
 import in.koreatech.payment.unit.support.MockHttpServer;
 import okhttp3.mockwebserver.RecordedRequest;
 
