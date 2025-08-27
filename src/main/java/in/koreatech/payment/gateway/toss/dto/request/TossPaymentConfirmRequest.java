@@ -1,6 +1,6 @@
 package in.koreatech.payment.gateway.toss.dto.request;
 
-public record PaymentConfirmRequest(
+public record TossPaymentConfirmRequest(
     String paymentKey,
     String orderId,
     Integer amount

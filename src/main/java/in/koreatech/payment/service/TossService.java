@@ -24,16 +24,17 @@ import in.koreatech.koin.domain.user.repository.UserRepository;
 import in.koreatech.payment.common.auth.JwtProvider;
 import in.koreatech.payment.dto.request.TemporaryDeliveryPaymentSaveRequest;
 import in.koreatech.payment.dto.request.TemporaryTakeoutPaymentSaveRequest;
-import in.koreatech.payment.dto.response.PaymentConfirmResponse;
 import in.koreatech.payment.dto.response.PaymentResponse;
 import in.koreatech.payment.exception.OrderPriceMismatchException;
 import in.koreatech.payment.exception.PaymentAlreadyCanceledException;
 import in.koreatech.payment.exception.PaymentCancelException;
 import in.koreatech.payment.gateway.pg.PgOrderIdGenerator;
-import in.koreatech.payment.gateway.pg.dto.PaymentConfirmationResponse;
+import in.koreatech.payment.gateway.pg.dto.PaymentCancelResponse;
+import in.koreatech.payment.gateway.pg.dto.PaymentConfirmResponse;
 import in.koreatech.payment.gateway.toss.TossPaymentClient;
 import in.koreatech.payment.gateway.toss.TossPaymentGatewayService;
-import in.koreatech.payment.gateway.toss.dto.response.PaymentCancelResponse;
+import in.koreatech.payment.gateway.toss.dto.response.TossPaymentCancelResponse;
+import in.koreatech.payment.mapper.PaymentCancelMapper;
 import in.koreatech.payment.mapper.PaymentMapper;
 import in.koreatech.payment.model.domain.TemporaryMenuItems;
 import in.koreatech.payment.model.redis.TemporaryPayment;
@@ -49,7 +50,6 @@ public class TossService implements PaymentService {
     private final PgOrderIdGenerator pgOrderIdGenerator;
     private final JwtProvider jwtProvider;
     private final UserRepository userRepository;
-    private final TossPaymentClient tossPaymentClient;
     private final PaymentRepository paymentRepository;
     private final PaymentIdempotencyKeyService paymentIdempotencyKeyService;
     private final PaymentCancelRepository paymentCancelRepository;
@@ -61,6 +61,7 @@ public class TossService implements PaymentService {
     private final ApplicationEventPublisher applicationEventPublisher;
     private final TossPaymentGatewayService tossPaymentGatewayService;
     private final PaymentMapper paymentMapper;
+    private final PaymentCancelMapper paymentCancelMappers;
 
     @Transactional
     public String createTemporaryDeliveryPayment(String accessToken, TemporaryDeliveryPaymentSaveRequest request) {
@@ -143,14 +144,14 @@ public class TossService implements PaymentService {
     }
 
     @Transactional
-    public PaymentConfirmResponse confirmPayment(String accessToken, String paymentKey, String orderId,
+    public in.koreatech.payment.dto.response.PaymentConfirmResponse confirmPayment(String accessToken, String paymentKey, String orderId,
         Integer amount) {
         Integer userId = jwtProvider.getUserId(accessToken);
         User user = userRepository.getById(userId);
         TemporaryPayment temporaryPayment = temporaryPaymentRedisRepository.getById(orderId);
         temporaryPayment.validateMatches(orderId, user.getId(), amount);
 
-        PaymentConfirmationResponse paymentConfirmResponse = tossPaymentGatewayService.confirmPayment(paymentKey,
+        PaymentConfirmResponse paymentConfirmResponse = tossPaymentGatewayService.confirmPayment(paymentKey,
             orderId, amount);
 
         // TODO. 롤백 로직 수정
@@ -170,7 +171,7 @@ public class TossService implements PaymentService {
         paymentRepository.save(payment);
         temporaryPaymentRedisRepository.deleteById(orderId);
         cartRepository.deleteByUserId(user.getId());
-        return PaymentConfirmResponse.of(payment, order, orderMenus);
+        return in.koreatech.payment.dto.response.PaymentConfirmResponse.of(payment, order, orderMenus);
     }
 
     @Transactional
@@ -184,15 +185,10 @@ public class TossService implements PaymentService {
         payment.validateUserIdMatches(user.getId());
 
         String paymentIdempotencyKey = paymentIdempotencyKeyService.getOrCreate(user.getId());
-
-        PaymentCancelResponse response = tossPaymentClient.requestCancel(payment.getPaymentKey(), cancelReason,
-            paymentIdempotencyKey);
-        if (!PaymentStatus.valueOf(response.status()).isCanceled()) {
-            throw PaymentCancelException.withDetail("paymentStatus : " + response.status());
-        }
-
+        PaymentCancelResponse response = tossPaymentGatewayService.cancelPayment(payment.getPaymentKey(), cancelReason, paymentIdempotencyKey);
         payment.cancel();
-        List<PaymentCancel> paymentCancels = response.getPaymentCancels(payment);
+
+        List<PaymentCancel> paymentCancels = paymentCancelMappers.toEntity(payment, response);
         paymentCancelRepository.saveAll(paymentCancels);
         return paymentCancels;
     }

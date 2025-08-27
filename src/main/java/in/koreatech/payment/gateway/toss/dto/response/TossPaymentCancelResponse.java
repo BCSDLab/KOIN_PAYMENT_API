@@ -1,8 +1,8 @@
-package in.koreatech.payment.gateway.pg.dto;
+package in.koreatech.payment.gateway.toss.dto.response;
 
 import java.util.List;
 
-public record PaymentCancelResponse(
+public record TossPaymentCancelResponse(
     String paymentKey,
     String orderId,
     String status,
@@ -16,4 +16,5 @@ public record PaymentCancelResponse(
     ) {
 
     }
+
 }

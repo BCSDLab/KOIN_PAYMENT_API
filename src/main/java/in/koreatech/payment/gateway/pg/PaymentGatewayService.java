@@ -1,11 +1,9 @@
 package in.koreatech.payment.gateway.pg;
 
-import java.util.List;
-
 import in.koreatech.payment.gateway.pg.dto.PaymentCancelResponse;
-import in.koreatech.payment.gateway.pg.dto.PaymentConfirmationResponse;
+import in.koreatech.payment.gateway.pg.dto.PaymentConfirmResponse;
 
 public interface PaymentGatewayService {
-    PaymentConfirmationResponse confirmPayment(String paymentKey, String pgOrderId, Integer amount);
-    List<PaymentCancelResponse> cancelPayment(String paymentKey, String cancelReason);
+    PaymentConfirmResponse confirmPayment(String paymentKey, String pgOrderId, Integer amount);
+    PaymentCancelResponse cancelPayment(String paymentKey, String cancelReason, String idempotencyKey);
 }

@@ -3,30 +3,19 @@ package in.koreatech.payment.service;
 import static org.springframework.transaction.annotation.Propagation.REQUIRES_NEW;
 import static org.springframework.transaction.event.TransactionPhase.AFTER_ROLLBACK;
 
-import java.util.List;
-import java.util.UUID;
-
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.transaction.event.TransactionalEventListener;
 
 import in.koreatech.koin.domain.order.cart.repository.CartRepository;
-import in.koreatech.koin.domain.order.model.Order;
-import in.koreatech.koin.domain.order.model.Payment;
-import in.koreatech.koin.domain.order.model.PaymentCancel;
-import in.koreatech.koin.domain.order.model.PaymentIdempotencyKey;
 import in.koreatech.koin.domain.order.repository.OrderRepository;
 import in.koreatech.koin.domain.order.repository.PaymentCancelRepository;
 import in.koreatech.koin.domain.order.repository.PaymentIdempotencyKeyRepository;
 import in.koreatech.koin.domain.order.repository.PaymentRepository;
-import in.koreatech.koin.domain.order.shop.model.entity.shop.OrderableShop;
 import in.koreatech.koin.domain.order.shop.repository.OrderableShopRepository;
-import in.koreatech.koin.domain.user.model.User;
 import in.koreatech.koin.domain.user.repository.UserRepository;
 import in.koreatech.payment.gateway.toss.TossPaymentClient;
-import in.koreatech.payment.gateway.toss.dto.response.PaymentCancelResponse;
 import in.koreatech.payment.event.TossPaymentRollBackEvent;
-import in.koreatech.payment.model.redis.TemporaryPayment;
 import in.koreatech.payment.repository.redis.TemporaryPaymentRedisRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
