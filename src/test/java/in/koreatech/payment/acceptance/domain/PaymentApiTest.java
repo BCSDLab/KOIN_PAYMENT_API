@@ -53,7 +53,6 @@ import in.koreatech.payment.gateway.toss.dto.response.TossPaymentConfirmResponse
 import in.koreatech.payment.common.auth.JwtProvider;
 import in.koreatech.payment.model.redis.TemporaryPayment;
 import in.koreatech.payment.repository.redis.TemporaryPaymentRedisRepository;
-import in.koreatech.payment.service.PaymentRollBackService;
 import in.koreatech.payment.gateway.pg.PgOrderIdGenerator;
 
 public class PaymentApiTest extends AcceptanceTest {
