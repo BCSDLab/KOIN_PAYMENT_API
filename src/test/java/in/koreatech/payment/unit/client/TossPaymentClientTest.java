@@ -57,6 +57,7 @@ public class TossPaymentClientTest {
             TossPaymentConfirmResponse dto = new TossPaymentConfirmResponse(
                 "pay_123",
                 15000,
+                "FAKE_ORDER_123",
                 "DONE",
                 "CARD",
                 "2024-01-01T10:00:00+09:00",

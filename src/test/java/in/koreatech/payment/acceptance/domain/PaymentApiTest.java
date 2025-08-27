@@ -238,6 +238,7 @@ public class PaymentApiTest extends AcceptanceTest {
             TossPaymentConfirmResponse confirmDto = new TossPaymentConfirmResponse(
                 "pay_123",
                 24000,
+                "FAKE_ORDER_123",
                 "DONE",
                 "카드",
                 "2024-01-01T10:00:00+09:00",
@@ -354,6 +355,7 @@ public class PaymentApiTest extends AcceptanceTest {
             TossPaymentConfirmResponse confirmDto = new TossPaymentConfirmResponse(
                 "pay_123",
                 24000,
+                "FAKE_ORDER_123",
                 "DONE",
                 "카드",
                 "2024-01-01T10:00:00+09:00",
@@ -463,6 +465,7 @@ public class PaymentApiTest extends AcceptanceTest {
             TossPaymentConfirmResponse confirmDto = new TossPaymentConfirmResponse(
                 "pay_123",
                 24000,
+                "FAKE_ORDER_123",
                 "DONE",
                 "카드",
                 "2024-01-01T10:00:00+09:00",
