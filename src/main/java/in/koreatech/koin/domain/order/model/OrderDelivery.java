@@ -24,7 +24,7 @@ public class OrderDelivery {
 
     @Id
     @Column(name = "order_id", nullable = false, updatable = false)
-    private String id;
+    private Integer id;
 
     @MapsId
     @OneToOne

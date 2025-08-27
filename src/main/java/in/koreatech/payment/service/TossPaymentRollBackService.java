@@ -83,11 +83,11 @@ public class TossPaymentRollBackService implements PaymentRollBackService {
             List<PaymentCancel> paymentCancels = response.getPaymentCancels(payment);
             paymentCancelRepository.saveAll(paymentCancels);
 
-            temporaryPaymentRedisRepository.deleteById(order.getId());
+            temporaryPaymentRedisRepository.deleteById(order.getPgOrderId());
             cartRepository.deleteByUserId(user.getId());
         } catch (Exception e) {
             log.error("결제 취소 과정에서 오류 발생 - paymentId: {}, userId: {}, orderId: {}", event.paymentKey(),
-                temporaryPayment.getUserId(), temporaryPayment.getOrderId());
+                temporaryPayment.getUserId(), temporaryPayment.getPgOrderId());
         }
     }
 }

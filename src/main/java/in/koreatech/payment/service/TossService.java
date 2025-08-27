@@ -40,7 +40,7 @@ import in.koreatech.payment.exception.PaymentConfirmException;
 import in.koreatech.payment.model.domain.TemporaryMenuItems;
 import in.koreatech.payment.model.redis.TemporaryPayment;
 import in.koreatech.payment.repository.redis.TemporaryPaymentRedisRepository;
-import in.koreatech.payment.util.OrderIdGenerator;
+import in.koreatech.payment.util.PgOrderIdGenerator;
 import in.koreatech.payment.util.TemporaryMenuItemConverter;
 import lombok.RequiredArgsConstructor;
 
@@ -49,7 +49,7 @@ import lombok.RequiredArgsConstructor;
 @Transactional(readOnly = true)
 public class TossService implements PaymentService {
 
-    private final OrderIdGenerator orderIdGenerator;
+    private final PgOrderIdGenerator pgOrderIdGenerator;
     private final JwtProvider jwtProvider;
     private final UserRepository userRepository;
     private final TossPaymentClient tossPaymentClient;
@@ -85,10 +85,10 @@ public class TossService implements PaymentService {
                     + totalProductPrice + "finalAmount : " + finalAmount);
         }
 
-        String orderId = orderIdGenerator.generateOrderId();
+        String pgOrderId = pgOrderIdGenerator.generatePgOrderId();
 
         TemporaryPayment deliveryEntity = TemporaryPayment.toDeliveryEntity(
-            orderId,
+            pgOrderId,
             user.getId(),
             orderableShop.getId(),
             request.phoneNumber(),
@@ -103,7 +103,7 @@ public class TossService implements PaymentService {
         );
 
         temporaryPaymentRedisRepository.save(deliveryEntity);
-        return orderId;
+        return pgOrderId;
     }
 
     @Transactional
@@ -125,10 +125,10 @@ public class TossService implements PaymentService {
                 "totalProductPrice : " + totalProductPrice + "finalAmount : " + finalAmount);
         }
 
-        String orderId = orderIdGenerator.generateOrderId();
+        String pgOrderId = pgOrderIdGenerator.generatePgOrderId();
 
         TemporaryPayment deliveryEntity = TemporaryPayment.toTakeOutEntity(
-            orderId,
+            pgOrderId,
             user.getId(),
             orderableShop.getId(),
             request.phoneNumber(),
@@ -140,7 +140,7 @@ public class TossService implements PaymentService {
         );
 
         temporaryPaymentRedisRepository.save(deliveryEntity);
-        return orderId;
+        return pgOrderId;
     }
 
     @Transactional

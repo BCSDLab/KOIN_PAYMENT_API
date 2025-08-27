@@ -54,7 +54,7 @@ import in.koreatech.payment.common.auth.JwtProvider;
 import in.koreatech.payment.model.redis.TemporaryPayment;
 import in.koreatech.payment.repository.redis.TemporaryPaymentRedisRepository;
 import in.koreatech.payment.service.PaymentRollBackService;
-import in.koreatech.payment.util.OrderIdGenerator;
+import in.koreatech.payment.util.PgOrderIdGenerator;
 
 public class PaymentApiTest extends AcceptanceTest {
 
@@ -101,7 +101,7 @@ public class PaymentApiTest extends AcceptanceTest {
     private PaymentRollBackService paymentRollBackService;
 
     @MockBean
-    private OrderIdGenerator orderIdGenerator;
+    private PgOrderIdGenerator pgOrderIdGenerator;
 
     private User user;
     private String token;
@@ -132,7 +132,7 @@ public class PaymentApiTest extends AcceptanceTest {
 
         @Test
         void 임시_배달_결제_정보_저장에_성공한다() throws Exception {
-            given(orderIdGenerator.generateOrderId()).willReturn("FAKE_ORDER_123");
+            given(pgOrderIdGenerator.generatePgOrderId()).willReturn("FAKE_ORDER_123");
 
             mockMvc.perform(
                     post("/payments/delivery/temporary")
@@ -162,7 +162,7 @@ public class PaymentApiTest extends AcceptanceTest {
             TemporaryPayment temporaryPayment = temporaryPaymentRedisRepository.getById("FAKE_ORDER_123");
             assertSoftly(
                 softly -> {
-                    softly.assertThat(temporaryPayment.getOrderId()).isEqualTo("FAKE_ORDER_123");
+                    softly.assertThat(temporaryPayment.getPgOrderId()).isEqualTo("FAKE_ORDER_123");
                     softly.assertThat(temporaryPayment.getUserId()).isEqualTo(user.getId());
                     softly.assertThat(temporaryPayment.getOrderableShopId()).isEqualTo(orderableShop.getId());
                     softly.assertThat(temporaryPayment.getPhoneNumber()).isEqualTo("01012345678");
@@ -183,7 +183,7 @@ public class PaymentApiTest extends AcceptanceTest {
 
         @Test
         void 임시_포장_결제_정보_저장에_성공한다() throws Exception {
-            given(orderIdGenerator.generateOrderId()).willReturn("FAKE_ORDER_123");
+            given(pgOrderIdGenerator.generatePgOrderId()).willReturn("FAKE_ORDER_123");
 
             mockMvc.perform(
                     post("/payments/takeout/temporary")
@@ -209,7 +209,7 @@ public class PaymentApiTest extends AcceptanceTest {
             TemporaryPayment temporaryPayment = temporaryPaymentRedisRepository.getById("FAKE_ORDER_123");
             assertSoftly(
                 softly -> {
-                    softly.assertThat(temporaryPayment.getOrderId()).isEqualTo("FAKE_ORDER_123");
+                    softly.assertThat(temporaryPayment.getPgOrderId()).isEqualTo("FAKE_ORDER_123");
                     softly.assertThat(temporaryPayment.getUserId()).isEqualTo(user.getId());
                     softly.assertThat(temporaryPayment.getOrderableShopId()).isEqualTo(orderableShop.getId());
                     softly.assertThat(temporaryPayment.getPhoneNumber()).isEqualTo("01012345678");
@@ -245,7 +245,7 @@ public class PaymentApiTest extends AcceptanceTest {
             );
             when(tossPaymentClient.requestConfirm(eq("pay_123"), eq("FAKE_ORDER_123"), eq(24000)))
                 .thenReturn(confirmDto);
-            given(orderIdGenerator.generateOrderId()).willReturn("FAKE_ORDER_123");
+            given(pgOrderIdGenerator.generatePgOrderId()).willReturn("FAKE_ORDER_123");
 
             mockMvc.perform(
                     post("/payments/delivery/temporary")
@@ -324,11 +324,12 @@ public class PaymentApiTest extends AcceptanceTest {
                     softly.assertThat(payment.getPaymentStatus()).isEqualTo(PaymentStatus.DONE);
                     softly.assertThat(payment.getPaymentMethod()).isEqualTo(PaymentMethod.CARD);
 
-                    softly.assertThat(order.getId()).isEqualTo("FAKE_ORDER_123");
+                    softly.assertThat(order.getId()).isEqualTo(1);
                     softly.assertThat(order.getOrderType()).isEqualTo(OrderType.DELIVERY);
                     softly.assertThat(order.getPhoneNumber()).isEqualTo("01012345678");
                     softly.assertThat(order.getTotalProductPrice()).isEqualTo(24000);
                     softly.assertThat(order.getTotalPrice()).isEqualTo(24000);
+                    softly.assertThat(order.getPgOrderId()).isEqualTo("FAKE_ORDER_123");
 
                     softly.assertThat(orderTakeout).isNull();
 
@@ -360,7 +361,7 @@ public class PaymentApiTest extends AcceptanceTest {
             );
             when(tossPaymentClient.requestConfirm(eq("pay_123"), eq("FAKE_ORDER_123"), eq(24000)))
                 .thenReturn(confirmDto);
-            given(orderIdGenerator.generateOrderId()).willReturn("FAKE_ORDER_123");
+            given(pgOrderIdGenerator.generatePgOrderId()).willReturn("FAKE_ORDER_123");
 
             mockMvc.perform(
                     post("/payments/takeout/temporary")
@@ -434,11 +435,12 @@ public class PaymentApiTest extends AcceptanceTest {
                     softly.assertThat(payment.getPaymentStatus()).isEqualTo(PaymentStatus.DONE);
                     softly.assertThat(payment.getPaymentMethod()).isEqualTo(PaymentMethod.CARD);
 
-                    softly.assertThat(order.getId()).isEqualTo("FAKE_ORDER_123");
+                    softly.assertThat(order.getId()).isEqualTo(1);
                     softly.assertThat(order.getOrderType()).isEqualTo(OrderType.TAKE_OUT);
                     softly.assertThat(order.getPhoneNumber()).isEqualTo("01012345678");
                     softly.assertThat(order.getTotalProductPrice()).isEqualTo(24000);
                     softly.assertThat(order.getTotalPrice()).isEqualTo(24000);
+                    softly.assertThat(order.getPgOrderId()).isEqualTo("FAKE_ORDER_123");
 
                     softly.assertThat(orderTakeout.getToOwner()).isEqualTo("리뷰 이벤트 감사합니다.");
                     softly.assertThat(orderTakeout.getProvideCutlery()).isEqualTo(true);
@@ -468,7 +470,7 @@ public class PaymentApiTest extends AcceptanceTest {
             );
             when(tossPaymentClient.requestConfirm(eq("pay_123"), eq("FAKE_ORDER_123"), eq(24000)))
                 .thenReturn(confirmDto);
-            given(orderIdGenerator.generateOrderId()).willReturn("FAKE_ORDER_123");
+            given(pgOrderIdGenerator.generatePgOrderId()).willReturn("FAKE_ORDER_123");
 
             PaymentCancelResponse cancelDto = new PaymentCancelResponse(
                 "pay_123",
