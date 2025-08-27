@@ -23,7 +23,7 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 @Service
 @RequiredArgsConstructor
-public class TossPaymentRollBackService implements PaymentRollBackService {
+public class PaymentRollBackService {
 
     private final TossPaymentClient tossPaymentClient;
     private final PaymentIdempotencyKeyRepository paymentIdempotencyKeyRepository;
