@@ -2,7 +2,7 @@ package in.koreatech.payment.gateway.pg.dto;
 
 import java.util.List;
 
-public record PaymentCancelResponse(
+public record PgPaymentCancelResponse(
     String paymentKey,
     String orderId,
     String status,

@@ -9,16 +9,16 @@ import org.springframework.stereotype.Component;
 
 import in.koreatech.koin.domain.order.model.Payment;
 import in.koreatech.koin.domain.order.model.PaymentCancel;
-import in.koreatech.payment.gateway.pg.dto.PaymentCancelResponse;
+import in.koreatech.payment.gateway.pg.dto.PgPaymentCancelResponse;
 
 @Component
 public class PaymentCancelMapper {
 
-    public List<PaymentCancel> toEntity(Payment payment, PaymentCancelResponse paymentCancelResponse) {
+    public List<PaymentCancel> toEntity(Payment payment, PgPaymentCancelResponse pgPaymentCancelResponse) {
         List<PaymentCancel> paymentCancels = new ArrayList<>();
-        List<PaymentCancelResponse.CancelInfo> cancels = paymentCancelResponse.cancels();
+        List<PgPaymentCancelResponse.CancelInfo> cancels = pgPaymentCancelResponse.cancels();
 
-        for (PaymentCancelResponse.CancelInfo cancelInfo : cancels) {
+        for (PgPaymentCancelResponse.CancelInfo cancelInfo : cancels) {
             OffsetDateTime cancelOffsetDateTime = OffsetDateTime.parse(cancelInfo.canceledAt());
             LocalDateTime canceled = cancelOffsetDateTime.toLocalDateTime();
 

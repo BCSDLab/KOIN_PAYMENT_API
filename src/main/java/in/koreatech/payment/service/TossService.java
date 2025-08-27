@@ -23,13 +23,14 @@ import in.koreatech.koin.domain.user.repository.UserRepository;
 import in.koreatech.payment.common.auth.JwtProvider;
 import in.koreatech.payment.dto.request.TemporaryDeliveryPaymentSaveRequest;
 import in.koreatech.payment.dto.request.TemporaryTakeoutPaymentSaveRequest;
+import in.koreatech.payment.dto.response.PaymentConfirmResponse;
 import in.koreatech.payment.dto.response.PaymentResponse;
 import in.koreatech.payment.exception.OrderPriceMismatchException;
 import in.koreatech.payment.exception.PaymentAlreadyCanceledException;
 import in.koreatech.payment.gateway.pg.PaymentGatewayService;
 import in.koreatech.payment.gateway.pg.PgOrderIdGenerator;
-import in.koreatech.payment.gateway.pg.dto.PaymentCancelResponse;
-import in.koreatech.payment.gateway.pg.dto.PaymentConfirmResponse;
+import in.koreatech.payment.gateway.pg.dto.PgPaymentCancelResponse;
+import in.koreatech.payment.gateway.pg.dto.PgPaymentConfirmResponse;
 import in.koreatech.payment.mapper.PaymentCancelMapper;
 import in.koreatech.payment.mapper.PaymentMapper;
 import in.koreatech.payment.model.domain.TemporaryMenuItems;
@@ -140,15 +141,13 @@ public class TossService implements PaymentService {
     }
 
     @Transactional
-    public in.koreatech.payment.dto.response.PaymentConfirmResponse confirmPayment(String accessToken, String paymentKey, String orderId,
-        Integer amount) {
+    public PaymentConfirmResponse confirmPayment(String accessToken, String paymentKey, String orderId, Integer amount) {
         Integer userId = jwtProvider.getUserId(accessToken);
         User user = userRepository.getById(userId);
         TemporaryPayment temporaryPayment = temporaryPaymentRedisRepository.getById(orderId);
         temporaryPayment.validateMatches(orderId, user.getId(), amount);
 
-        PaymentConfirmResponse paymentConfirmResponse = paymentGatewayService.confirmPayment(paymentKey,
-            orderId, amount);
+        PgPaymentConfirmResponse pgPaymentConfirmResponse = paymentGatewayService.confirmPayment(paymentKey, orderId, amount);
 
         // TODO. 롤백 로직 수정
         // applicationEventPublisher.publishEvent(
@@ -163,11 +162,11 @@ public class TossService implements PaymentService {
             .toList();
         orderMenuRepository.saveAll(orderMenus);
 
-        Payment payment = paymentMapper.toEntity(order, paymentConfirmResponse);
+        Payment payment = paymentMapper.toEntity(order, pgPaymentConfirmResponse);
         paymentRepository.save(payment);
         temporaryPaymentRedisRepository.deleteById(orderId);
         cartRepository.deleteByUserId(user.getId());
-        return in.koreatech.payment.dto.response.PaymentConfirmResponse.of(payment, order, orderMenus);
+        return PaymentConfirmResponse.of(payment, order, orderMenus);
     }
 
     @Transactional
@@ -181,10 +180,10 @@ public class TossService implements PaymentService {
         payment.validateUserIdMatches(user.getId());
 
         String paymentIdempotencyKey = paymentIdempotencyKeyService.getOrCreate(user.getId());
-        PaymentCancelResponse response = paymentGatewayService.cancelPayment(payment.getPaymentKey(), cancelReason, paymentIdempotencyKey);
+        PgPaymentCancelResponse pgPaymentCancelResponse = paymentGatewayService.cancelPayment(payment.getPaymentKey(), cancelReason, paymentIdempotencyKey);
         payment.cancel();
 
-        List<PaymentCancel> paymentCancels = paymentCancelMappers.toEntity(payment, response);
+        List<PaymentCancel> paymentCancels = paymentCancelMappers.toEntity(payment, pgPaymentCancelResponse);
         paymentCancelRepository.saveAll(paymentCancels);
         return paymentCancels;
     }

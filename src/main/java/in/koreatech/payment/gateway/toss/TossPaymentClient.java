@@ -57,7 +57,6 @@ public class TossPaymentClient {
                 .retrieve()
                 .bodyToMono(TossPaymentConfirmResponse.class)
                 .block();
-
         } catch (WebClientResponseException e) {
             throw handleErrorResponse(e);
         } catch (Exception e) {
