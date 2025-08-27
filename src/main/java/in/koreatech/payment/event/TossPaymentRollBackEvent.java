@@ -1,6 +1,6 @@
 package in.koreatech.payment.event;
 
-import in.koreatech.payment.client.dto.response.TossPaymentConfirmResponse;
+import in.koreatech.payment.gateway.toss.dto.response.TossPaymentConfirmResponse;
 import in.koreatech.payment.model.redis.TemporaryPayment;
 
 public record TossPaymentRollBackEvent(

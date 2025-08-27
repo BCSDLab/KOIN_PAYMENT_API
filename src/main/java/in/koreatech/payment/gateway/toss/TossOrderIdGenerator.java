@@ -1,11 +1,13 @@
-package in.koreatech.payment.util;
+package in.koreatech.payment.gateway.toss;
 
 import java.security.SecureRandom;
 
 import org.springframework.stereotype.Component;
 
+import in.koreatech.payment.gateway.pg.PgOrderIdGenerator;
+
 @Component
-public class TossPaymentOrderIdGenerator implements PgOrderIdGenerator {
+public class TossOrderIdGenerator implements PgOrderIdGenerator {
 
     private static final String ORDER_ID_CHARACTERS = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789-_";
     private static final int ORDER_ID_MIN_LENGTH = 6;

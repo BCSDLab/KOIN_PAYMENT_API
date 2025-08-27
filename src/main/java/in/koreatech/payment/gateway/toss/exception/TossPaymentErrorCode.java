@@ -1,4 +1,4 @@
-package in.koreatech.payment.client.exception;
+package in.koreatech.payment.gateway.toss.exception;
 
 import java.util.Map;
 import java.util.stream.Collectors;

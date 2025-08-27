@@ -1,4 +1,4 @@
-package in.koreatech.payment.client.exception;
+package in.koreatech.payment.gateway.toss.exception;
 
 public class TossPaymentException extends RuntimeException {
 

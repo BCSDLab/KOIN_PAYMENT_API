@@ -1,6 +1,6 @@
 package in.koreatech.payment.acceptance.domain;
 
-import static in.koreatech.payment.client.dto.response.PaymentCancelResponse.CancelInfo;
+import static in.koreatech.payment.gateway.toss.dto.response.TossPaymentCancelResponse.CancelInfo;
 import static org.assertj.core.api.SoftAssertions.assertSoftly;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.eq;
@@ -47,14 +47,14 @@ import in.koreatech.payment.acceptance.fixture.OrderableShopMenuPriceFixture;
 import in.koreatech.payment.acceptance.fixture.PaymentIdempotencyKeyFixture;
 import in.koreatech.payment.acceptance.fixture.ShopFixture;
 import in.koreatech.payment.acceptance.fixture.UserFixture;
-import in.koreatech.payment.client.TossPaymentClient;
-import in.koreatech.payment.client.dto.response.PaymentCancelResponse;
-import in.koreatech.payment.client.dto.response.TossPaymentConfirmResponse;
+import in.koreatech.payment.gateway.toss.TossPaymentClient;
+import in.koreatech.payment.gateway.toss.dto.response.TossPaymentCancelResponse;
+import in.koreatech.payment.gateway.toss.dto.response.TossPaymentConfirmResponse;
 import in.koreatech.payment.common.auth.JwtProvider;
 import in.koreatech.payment.model.redis.TemporaryPayment;
 import in.koreatech.payment.repository.redis.TemporaryPaymentRedisRepository;
 import in.koreatech.payment.service.PaymentRollBackService;
-import in.koreatech.payment.util.PgOrderIdGenerator;
+import in.koreatech.payment.gateway.pg.PgOrderIdGenerator;
 
 public class PaymentApiTest extends AcceptanceTest {
 
@@ -238,6 +238,7 @@ public class PaymentApiTest extends AcceptanceTest {
             TossPaymentConfirmResponse confirmDto = new TossPaymentConfirmResponse(
                 "pay_123",
                 24000,
+                "FAKE_ORDER_123",
                 "DONE",
                 "카드",
                 "2024-01-01T10:00:00+09:00",
@@ -354,6 +355,7 @@ public class PaymentApiTest extends AcceptanceTest {
             TossPaymentConfirmResponse confirmDto = new TossPaymentConfirmResponse(
                 "pay_123",
                 24000,
+                "FAKE_ORDER_123",
                 "DONE",
                 "카드",
                 "2024-01-01T10:00:00+09:00",
@@ -463,6 +465,7 @@ public class PaymentApiTest extends AcceptanceTest {
             TossPaymentConfirmResponse confirmDto = new TossPaymentConfirmResponse(
                 "pay_123",
                 24000,
+                "FAKE_ORDER_123",
                 "DONE",
                 "카드",
                 "2024-01-01T10:00:00+09:00",
@@ -472,7 +475,7 @@ public class PaymentApiTest extends AcceptanceTest {
                 .thenReturn(confirmDto);
             given(pgOrderIdGenerator.generatePgOrderId()).willReturn("FAKE_ORDER_123");
 
-            PaymentCancelResponse cancelDto = new PaymentCancelResponse(
+            TossPaymentCancelResponse cancelDto = new TossPaymentCancelResponse(
                 "pay_123",
                 "FAKE_ORDER_123",
                 "CANCELED",

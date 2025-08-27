@@ -1,6 +1,6 @@
 package in.koreatech.payment.unit.client;
 
-import static in.koreatech.payment.client.dto.response.PaymentCancelResponse.CancelInfo;
+import static in.koreatech.payment.gateway.toss.dto.response.TossPaymentCancelResponse.CancelInfo;
 import static java.nio.charset.StandardCharsets.UTF_8;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertAll;
@@ -20,10 +20,10 @@ import org.junit.jupiter.params.provider.MethodSource;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-import in.koreatech.payment.client.TossPaymentClient;
-import in.koreatech.payment.client.dto.response.PaymentCancelResponse;
-import in.koreatech.payment.client.dto.response.TossPaymentConfirmResponse;
-import in.koreatech.payment.client.exception.TossPaymentException;
+import in.koreatech.payment.gateway.toss.TossPaymentClient;
+import in.koreatech.payment.gateway.toss.dto.response.TossPaymentCancelResponse;
+import in.koreatech.payment.gateway.toss.dto.response.TossPaymentConfirmResponse;
+import in.koreatech.payment.gateway.toss.exception.TossPaymentException;
 import in.koreatech.payment.unit.support.MockHttpServer;
 import okhttp3.mockwebserver.RecordedRequest;
 
@@ -57,6 +57,7 @@ public class TossPaymentClientTest {
             TossPaymentConfirmResponse dto = new TossPaymentConfirmResponse(
                 "pay_123",
                 15000,
+                "FAKE_ORDER_123",
                 "DONE",
                 "CARD",
                 "2024-01-01T10:00:00+09:00",
@@ -143,7 +144,7 @@ public class TossPaymentClientTest {
         @Test
         void 결제_취소_요청을_성공한다() throws Exception {
             // given
-            PaymentCancelResponse dto = new PaymentCancelResponse(
+            TossPaymentCancelResponse dto = new TossPaymentCancelResponse(
                 "pay_123",
                 "a4CWyWY5m89PNh7xJwhk1",
                 "CANCELED",
@@ -157,7 +158,7 @@ public class TossPaymentClientTest {
             mockHttpServer.enqueueJson(objectMapper.writeValueAsString(dto), 200);
 
             // when
-            PaymentCancelResponse response = tossPaymentClient.requestCancel(
+            TossPaymentCancelResponse response = tossPaymentClient.requestCancel(
                 "pay_123",
                 "단순 변심이에요",
                 "91b0343a-423d-431d-832c-031d9391afae"
