@@ -24,8 +24,10 @@ import in.koreatech.koin.domain.user.repository.UserRepository;
 import in.koreatech.payment.common.auth.JwtProvider;
 import in.koreatech.payment.dto.request.TemporaryDeliveryPaymentSaveRequest;
 import in.koreatech.payment.dto.request.TemporaryTakeoutPaymentSaveRequest;
+import in.koreatech.payment.dto.response.PaymentCancelResponse;
 import in.koreatech.payment.dto.response.PaymentConfirmResponse;
 import in.koreatech.payment.dto.response.PaymentResponse;
+import in.koreatech.payment.dto.response.TemporaryPaymentResponse;
 import in.koreatech.payment.exception.OrderPriceMismatchException;
 import in.koreatech.payment.exception.PaymentAlreadyCanceledException;
 import in.koreatech.payment.exception.PaymentCancelException;
@@ -45,7 +47,7 @@ import lombok.RequiredArgsConstructor;
 @Service
 @RequiredArgsConstructor
 @Transactional(readOnly = true)
-public class TossService {
+public class PaymentService {
 
     private final PgOrderIdGenerator pgOrderIdGenerator;
     private final JwtProvider jwtProvider;
@@ -64,7 +66,7 @@ public class TossService {
     private final PaymentCancelMapper paymentCancelMappers;
 
     @Transactional
-    public String createTemporaryDeliveryPayment(String accessToken, TemporaryDeliveryPaymentSaveRequest request) {
+    public TemporaryPaymentResponse createTemporaryDeliveryPayment(String accessToken, TemporaryDeliveryPaymentSaveRequest request) {
         Integer userId = jwtProvider.getUserId(accessToken);
         User user = userRepository.getById(userId);
 
@@ -103,11 +105,11 @@ public class TossService {
         );
 
         temporaryPaymentRedisRepository.save(deliveryEntity);
-        return pgOrderId;
+        return TemporaryPaymentResponse.of(pgOrderId);
     }
 
     @Transactional
-    public String createTemporaryTakeoutPayment(String accessToken, TemporaryTakeoutPaymentSaveRequest request) {
+    public TemporaryPaymentResponse createTemporaryTakeoutPayment(String accessToken, TemporaryTakeoutPaymentSaveRequest request) {
         Integer userId = jwtProvider.getUserId(accessToken);
         User user = userRepository.getById(userId);
 
@@ -140,7 +142,7 @@ public class TossService {
         );
 
         temporaryPaymentRedisRepository.save(deliveryEntity);
-        return pgOrderId;
+        return TemporaryPaymentResponse.of(pgOrderId);
     }
 
     @Transactional
@@ -177,7 +179,7 @@ public class TossService {
     }
 
     @Transactional
-    public List<PaymentCancel> cancelPayment(String accessToken, Integer paymentId, String cancelReason) {
+    public PaymentCancelResponse cancelPayment(String accessToken, Integer paymentId, String cancelReason) {
         Integer userId = jwtProvider.getUserId(accessToken);
         User user = userRepository.getById(userId);
         Payment payment = paymentRepository.getById(paymentId);
@@ -191,12 +193,12 @@ public class TossService {
         if (!PaymentStatus.valueOf(pgPaymentCancelResponse.status()).isCanceled()) {
             throw PaymentCancelException.withDetail("paymentStatus : " + pgPaymentCancelResponse.status());
         }
-        
+
         payment.cancel();
 
         List<PaymentCancel> paymentCancels = paymentCancelMappers.toEntity(payment, pgPaymentCancelResponse);
         paymentCancelRepository.saveAll(paymentCancels);
-        return paymentCancels;
+        return PaymentCancelResponse.from(paymentCancels);
     }
 
     public PaymentResponse getPayment(String accessToken, Integer paymentId) {

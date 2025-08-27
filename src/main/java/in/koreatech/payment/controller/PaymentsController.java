@@ -1,7 +1,5 @@
 package in.koreatech.payment.controller;
 
-import java.util.List;
-
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -10,7 +8,6 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import in.koreatech.koin.domain.order.model.PaymentCancel;
 import in.koreatech.payment.common.auth.AccessToken;
 import in.koreatech.payment.dto.request.PaymentCancelRequest;
 import in.koreatech.payment.dto.request.PaymentConfirmRequest;
@@ -20,6 +17,7 @@ import in.koreatech.payment.dto.response.PaymentCancelResponse;
 import in.koreatech.payment.dto.response.PaymentConfirmResponse;
 import in.koreatech.payment.dto.response.PaymentResponse;
 import in.koreatech.payment.dto.response.TemporaryPaymentResponse;
+import in.koreatech.payment.service.PaymentService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 
@@ -35,8 +33,7 @@ public class PaymentsController implements PaymentsApi {
         @RequestBody @Valid final TemporaryDeliveryPaymentSaveRequest request,
         @AccessToken final String accessToken
     ) {
-        String orderId = paymentService.createTemporaryDeliveryPayment(accessToken, request);
-        TemporaryPaymentResponse response = TemporaryPaymentResponse.of(orderId);
+        TemporaryPaymentResponse response = paymentService.createTemporaryDeliveryPayment(accessToken, request);
         return ResponseEntity.ok(response);
     }
 
@@ -45,8 +42,7 @@ public class PaymentsController implements PaymentsApi {
         @RequestBody @Valid final TemporaryTakeoutPaymentSaveRequest request,
         @AccessToken final String accessToken
     ) {
-        String orderId = paymentService.createTemporaryTakeoutPayment(accessToken, request);
-        TemporaryPaymentResponse response = TemporaryPaymentResponse.of(orderId);
+        TemporaryPaymentResponse response = paymentService.createTemporaryTakeoutPayment(accessToken, request);
         return ResponseEntity.ok(response);
     }
 
@@ -55,8 +51,8 @@ public class PaymentsController implements PaymentsApi {
         @RequestBody @Valid final PaymentConfirmRequest request,
         @AccessToken final String accessToken
     ) {
-        PaymentConfirmResponse response = paymentService.confirmPayment(accessToken, request.paymentKey(), request.orderId(),
-            request.amount());
+        PaymentConfirmResponse response = paymentService.confirmPayment(accessToken, request.paymentKey(),
+            request.orderId(), request.amount());
         return ResponseEntity.ok(response);
     }
 
@@ -66,9 +62,7 @@ public class PaymentsController implements PaymentsApi {
         @RequestBody @Valid final PaymentCancelRequest request,
         @AccessToken final String accessToken
     ) {
-        List<PaymentCancel> paymentCancels = paymentService.cancelPayment(accessToken, paymentId,
-            request.cancelReason());
-        PaymentCancelResponse response = PaymentCancelResponse.from(paymentCancels);
+        PaymentCancelResponse response = paymentService.cancelPayment(accessToken, paymentId, request.cancelReason());
         return ResponseEntity.ok(response);
     }
 
