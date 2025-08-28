@@ -49,7 +49,6 @@ import lombok.RequiredArgsConstructor;
 @Transactional(readOnly = true)
 public class PaymentService {
 
-    private final PgOrderIdGenerator pgOrderIdGenerator;
     private final JwtProvider jwtProvider;
     private final UserRepository userRepository;
     private final PaymentRepository paymentRepository;
@@ -64,85 +63,20 @@ public class PaymentService {
     private final PaymentGatewayService paymentGatewayService;
     private final PaymentMapper paymentMapper;
     private final PaymentCancelMapper paymentCancelMappers;
+    private final TemporaryPaymentService temporaryPaymentService;
 
     @Transactional
     public TemporaryPaymentResponse createTemporaryDeliveryPayment(String accessToken, TemporaryDeliveryPaymentSaveRequest request) {
         Integer userId = jwtProvider.getUserId(accessToken);
         User user = userRepository.getById(userId);
-
-        Cart cart = cartRepository.getCartByUserId(user.getId());
-
-        OrderableShop orderableShop = cart.getOrderableShop();
-        List<TemporaryMenuItems> temporaryMenuItems = TemporaryMenuItemConverter.fromCart(cart);
-        int totalProductPrice = cart.calculateItemsAmount();
-        int deliveryFee = orderableShop.calculateDeliveryFee(totalProductPrice);
-        int finalAmount = totalProductPrice + deliveryFee;
-
-        if (!request.totalMenuPrice().equals(totalProductPrice)
-            || !request.deliveryTip().equals(deliveryFee)
-            || !request.totalAmount().equals(finalAmount)
-        ) {
-            throw OrderPriceMismatchException.withDetail(
-                "totalProductPrice : " + totalProductPrice + "deliveryFee : " + deliveryFee + "totalAmount : "
-                    + totalProductPrice + "finalAmount : " + finalAmount);
-        }
-
-        String pgOrderId = pgOrderIdGenerator.generatePgOrderId();
-
-        TemporaryPayment deliveryEntity = TemporaryPayment.toDeliveryEntity(
-            pgOrderId,
-            user.getId(),
-            orderableShop.getId(),
-            request.phoneNumber(),
-            request.address(),
-            request.toOwner(),
-            request.toRider(),
-            request.provideCutlery(),
-            totalProductPrice,
-            deliveryFee,
-            finalAmount,
-            temporaryMenuItems
-        );
-
-        temporaryPaymentRedisRepository.save(deliveryEntity);
-        return TemporaryPaymentResponse.of(pgOrderId);
+        return temporaryPaymentService.createDeliveryPayment(user, request);
     }
 
     @Transactional
     public TemporaryPaymentResponse createTemporaryTakeoutPayment(String accessToken, TemporaryTakeoutPaymentSaveRequest request) {
         Integer userId = jwtProvider.getUserId(accessToken);
         User user = userRepository.getById(userId);
-
-        Cart cart = cartRepository.getCartByUserId(user.getId());
-
-        OrderableShop orderableShop = cart.getOrderableShop();
-        List<TemporaryMenuItems> temporaryMenuItems = TemporaryMenuItemConverter.fromCart(cart);
-        int totalProductPrice = cart.calculateItemsAmount();
-        int finalAmount = totalProductPrice;
-
-        if (!request.totalMenuPrice().equals(totalProductPrice)
-            || !request.totalAmount().equals(finalAmount)
-        ) {
-            throw OrderPriceMismatchException.withDetail(
-                "totalProductPrice : " + totalProductPrice + "finalAmount : " + finalAmount);
-        }
-
-        String pgOrderId = pgOrderIdGenerator.generatePgOrderId();
-
-        TemporaryPayment deliveryEntity = TemporaryPayment.toTakeOutEntity(
-            pgOrderId,
-            user.getId(),
-            orderableShop.getId(),
-            request.phoneNumber(),
-            request.toOwner(),
-            request.provideCutlery(),
-            totalProductPrice,
-            finalAmount,
-            temporaryMenuItems
-        );
-
-        temporaryPaymentRedisRepository.save(deliveryEntity);
-        return TemporaryPaymentResponse.of(pgOrderId);
+        return temporaryPaymentService.createTakeoutPayment(user, request);
     }
 
     @Transactional
