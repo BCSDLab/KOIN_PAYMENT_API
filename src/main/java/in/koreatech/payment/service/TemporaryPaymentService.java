@@ -13,6 +13,7 @@ import in.koreatech.payment.dto.request.TemporaryDeliveryPaymentSaveRequest;
 import in.koreatech.payment.dto.request.TemporaryTakeoutPaymentSaveRequest;
 import in.koreatech.payment.dto.response.TemporaryPaymentResponse;
 import in.koreatech.payment.exception.OrderPriceMismatchException;
+import in.koreatech.payment.gateway.pg.PaymentGatewayService;
 import in.koreatech.payment.model.domain.TemporaryMenuItems;
 import in.koreatech.payment.model.redis.TemporaryPayment;
 import in.koreatech.payment.repository.redis.TemporaryPaymentRedisRepository;
@@ -25,10 +26,11 @@ import lombok.RequiredArgsConstructor;
 public class TemporaryPaymentService {
 
     private final CartRepository cartRepository;
+    private final PaymentGatewayService paymentGatewayService;
     private final TemporaryPaymentRedisRepository temporaryPaymentRedisRepository;
 
     @Transactional
-    public TemporaryPaymentResponse createDeliveryPayment(User user, String pgOrderId, TemporaryDeliveryPaymentSaveRequest request) {
+    public TemporaryPaymentResponse createDeliveryPayment(User user, TemporaryDeliveryPaymentSaveRequest request) {
         Cart cart = cartRepository.getCartByUserId(user.getId());
         OrderableShop orderableShop = cart.getOrderableShop();
 
@@ -39,6 +41,7 @@ public class TemporaryPaymentService {
 
         validateDeliveryPrice(request, totalProductPrice, deliveryFee, finalAmount);
 
+        String pgOrderId = paymentGatewayService.generatePgOrderId();
         TemporaryPayment deliveryEntity = TemporaryPayment.toDeliveryEntity(
             pgOrderId,
             user.getId(),
@@ -59,7 +62,7 @@ public class TemporaryPaymentService {
     }
 
     @Transactional
-    public TemporaryPaymentResponse createTakeoutPayment(User user, String pgOrderId, TemporaryTakeoutPaymentSaveRequest request) {
+    public TemporaryPaymentResponse createTakeoutPayment(User user, TemporaryTakeoutPaymentSaveRequest request) {
         Cart cart = cartRepository.getCartByUserId(user.getId());
         OrderableShop orderableShop = cart.getOrderableShop();
 
@@ -69,6 +72,7 @@ public class TemporaryPaymentService {
 
         validateTakeoutPrice(request, totalProductPrice, finalAmount);
 
+        String pgOrderId = paymentGatewayService.generatePgOrderId();
         TemporaryPayment takeoutEntity = TemporaryPayment.toTakeOutEntity(
             pgOrderId,
             user.getId(),

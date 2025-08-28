@@ -5,6 +5,7 @@ import static in.koreatech.payment.gateway.pg.dto.PgPaymentCancelResponse.Cancel
 import org.springframework.stereotype.Service;
 
 import in.koreatech.payment.gateway.pg.PaymentGatewayService;
+import in.koreatech.payment.gateway.pg.PgOrderIdGenerator;
 import in.koreatech.payment.gateway.pg.dto.PgPaymentCancelResponse;
 import in.koreatech.payment.gateway.pg.dto.PgPaymentConfirmResponse;
 import in.koreatech.payment.gateway.toss.dto.response.TossPaymentCancelResponse;
@@ -16,6 +17,7 @@ import lombok.RequiredArgsConstructor;
 public class TossPaymentGatewayService implements PaymentGatewayService {
 
     private final TossPaymentClient tossPaymentClient;
+    private final PgOrderIdGenerator pgOrderIdGenerator;
 
     public PgPaymentConfirmResponse confirmPayment(String paymentKey, String pgOrderId, Integer amount) {
         TossPaymentConfirmResponse tossPaymentConfirmResponse = tossPaymentClient.requestConfirm(paymentKey, pgOrderId,
@@ -48,5 +50,9 @@ public class TossPaymentGatewayService implements PaymentGatewayService {
                 ))
                 .toList()
         );
+    }
+
+    public String generatePgOrderId() {
+        return pgOrderIdGenerator.generatePgOrderId();
     }
 }
