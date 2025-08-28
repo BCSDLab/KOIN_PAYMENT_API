@@ -6,6 +6,8 @@ import org.springframework.transaction.annotation.Transactional;
 import in.koreatech.koin.domain.user.model.User;
 import in.koreatech.koin.domain.user.repository.UserRepository;
 import in.koreatech.payment.common.auth.JwtProvider;
+import in.koreatech.payment.dto.request.PaymentCancelRequest;
+import in.koreatech.payment.dto.request.PaymentConfirmRequest;
 import in.koreatech.payment.dto.request.TemporaryDeliveryPaymentSaveRequest;
 import in.koreatech.payment.dto.request.TemporaryTakeoutPaymentSaveRequest;
 import in.koreatech.payment.dto.response.PaymentCancelResponse;
@@ -27,31 +29,35 @@ public class PaymentService {
     private final PaymentQueryService paymentQueryService;
 
     @Transactional
-    public TemporaryPaymentResponse createTemporaryDeliveryPayment(String accessToken, TemporaryDeliveryPaymentSaveRequest request) {
+    public TemporaryPaymentResponse createTemporaryDeliveryPayment(
+        String accessToken, TemporaryDeliveryPaymentSaveRequest request
+    ) {
         Integer userId = jwtProvider.getUserId(accessToken);
         User user = userRepository.getById(userId);
         return temporaryPaymentService.createDeliveryPayment(user, request);
     }
 
     @Transactional
-    public TemporaryPaymentResponse createTemporaryTakeoutPayment(String accessToken, TemporaryTakeoutPaymentSaveRequest request) {
+    public TemporaryPaymentResponse createTemporaryTakeoutPayment(
+        String accessToken, TemporaryTakeoutPaymentSaveRequest request
+    ) {
         Integer userId = jwtProvider.getUserId(accessToken);
         User user = userRepository.getById(userId);
         return temporaryPaymentService.createTakeoutPayment(user, request);
     }
 
     @Transactional
-    public PaymentConfirmResponse confirmPayment(String accessToken, String paymentKey, String orderId, Integer amount) {
+    public PaymentConfirmResponse confirmPayment(String accessToken, PaymentConfirmRequest request) {
         Integer userId = jwtProvider.getUserId(accessToken);
         User user = userRepository.getById(userId);
-        return paymentConfirmService.confirmPayment(user, paymentKey, orderId, amount);
+        return paymentConfirmService.confirmPayment(user, request.paymentKey(), request.orderId(), request.amount());
     }
 
     @Transactional
-    public PaymentCancelResponse cancelPayment(String accessToken, Integer paymentId, String cancelReason) {
+    public PaymentCancelResponse cancelPayment(String accessToken, Integer paymentId, PaymentCancelRequest request) {
         Integer userId = jwtProvider.getUserId(accessToken);
         User user = userRepository.getById(userId);
-        return paymentCancelService.cancelPayment(user, paymentId, cancelReason);
+        return paymentCancelService.cancelPayment(user, paymentId, request.cancelReason());
     }
 
     public PaymentResponse getPayment(String accessToken, Integer paymentId) {

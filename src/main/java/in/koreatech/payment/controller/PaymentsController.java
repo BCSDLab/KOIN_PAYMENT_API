@@ -51,8 +51,7 @@ public class PaymentsController implements PaymentsApi {
         @RequestBody @Valid final PaymentConfirmRequest request,
         @AccessToken final String accessToken
     ) {
-        PaymentConfirmResponse response = paymentService.confirmPayment(accessToken, request.paymentKey(),
-            request.orderId(), request.amount());
+        PaymentConfirmResponse response = paymentService.confirmPayment(accessToken, request);
         return ResponseEntity.ok(response);
     }
 
@@ -62,7 +61,7 @@ public class PaymentsController implements PaymentsApi {
         @RequestBody @Valid final PaymentCancelRequest request,
         @AccessToken final String accessToken
     ) {
-        PaymentCancelResponse response = paymentService.cancelPayment(accessToken, paymentId, request.cancelReason());
+        PaymentCancelResponse response = paymentService.cancelPayment(accessToken, paymentId, request);
         return ResponseEntity.ok(response);
     }
 
