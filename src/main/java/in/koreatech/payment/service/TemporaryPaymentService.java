@@ -9,11 +9,10 @@ import in.koreatech.koin.domain.order.cart.model.Cart;
 import in.koreatech.koin.domain.order.cart.repository.CartRepository;
 import in.koreatech.koin.domain.order.shop.model.entity.shop.OrderableShop;
 import in.koreatech.koin.domain.user.model.User;
-import in.koreatech.payment.dto.request.TemporaryDeliveryPaymentSaveRequest;
-import in.koreatech.payment.dto.request.TemporaryTakeoutPaymentSaveRequest;
 import in.koreatech.payment.dto.response.TemporaryPaymentResponse;
-import in.koreatech.payment.exception.OrderPriceMismatchException;
 import in.koreatech.payment.gateway.pg.PaymentGatewayService;
+import in.koreatech.payment.model.domain.DeliveryPaymentInfo;
+import in.koreatech.payment.model.domain.TakeoutPaymentInfo;
 import in.koreatech.payment.model.domain.TemporaryMenuItems;
 import in.koreatech.payment.model.redis.TemporaryPayment;
 import in.koreatech.payment.repository.redis.TemporaryPaymentRedisRepository;
@@ -30,7 +29,7 @@ public class TemporaryPaymentService {
     private final TemporaryPaymentRedisRepository temporaryPaymentRedisRepository;
 
     @Transactional
-    public TemporaryPaymentResponse createDeliveryPayment(User user, TemporaryDeliveryPaymentSaveRequest request) {
+    public TemporaryPaymentResponse createDeliveryPayment(User user, DeliveryPaymentInfo deliveryPaymentInfo) {
         Cart cart = cartRepository.getCartByUserId(user.getId());
         OrderableShop orderableShop = cart.getOrderableShop();
 
@@ -39,18 +38,18 @@ public class TemporaryPaymentService {
         int deliveryFee = orderableShop.calculateDeliveryFee(totalProductPrice);
         int finalAmount = totalProductPrice + deliveryFee;
 
-        validateDeliveryPrice(request, totalProductPrice, deliveryFee, finalAmount);
+        deliveryPaymentInfo.validatePrice(totalProductPrice, deliveryFee, finalAmount);
 
         String pgOrderId = paymentGatewayService.generatePgOrderId();
         TemporaryPayment deliveryEntity = TemporaryPayment.toDeliveryEntity(
             pgOrderId,
             user.getId(),
             orderableShop.getId(),
-            request.phoneNumber(),
-            request.address(),
-            request.toOwner(),
-            request.toRider(),
-            request.provideCutlery(),
+            deliveryPaymentInfo.phoneNumber(),
+            deliveryPaymentInfo.address(),
+            deliveryPaymentInfo.toOwner(),
+            deliveryPaymentInfo.toRider(),
+            deliveryPaymentInfo.provideCutlery(),
             totalProductPrice,
             deliveryFee,
             finalAmount,
@@ -62,7 +61,7 @@ public class TemporaryPaymentService {
     }
 
     @Transactional
-    public TemporaryPaymentResponse createTakeoutPayment(User user, TemporaryTakeoutPaymentSaveRequest request) {
+    public TemporaryPaymentResponse createTakeoutPayment(User user, TakeoutPaymentInfo takeoutPaymentInfo) {
         Cart cart = cartRepository.getCartByUserId(user.getId());
         OrderableShop orderableShop = cart.getOrderableShop();
 
@@ -70,16 +69,16 @@ public class TemporaryPaymentService {
         int totalProductPrice = cart.calculateItemsAmount();
         int finalAmount = totalProductPrice;
 
-        validateTakeoutPrice(request, totalProductPrice, finalAmount);
+        takeoutPaymentInfo.validatePrice(totalProductPrice, finalAmount);
 
         String pgOrderId = paymentGatewayService.generatePgOrderId();
         TemporaryPayment takeoutEntity = TemporaryPayment.toTakeOutEntity(
             pgOrderId,
             user.getId(),
             orderableShop.getId(),
-            request.phoneNumber(),
-            request.toOwner(),
-            request.provideCutlery(),
+            takeoutPaymentInfo.phoneNumber(),
+            takeoutPaymentInfo.toOwner(),
+            takeoutPaymentInfo.provideCutlery(),
             totalProductPrice,
             finalAmount,
             temporaryMenuItems
@@ -87,29 +86,5 @@ public class TemporaryPaymentService {
 
         temporaryPaymentRedisRepository.save(takeoutEntity);
         return TemporaryPaymentResponse.of(pgOrderId);
-    }
-
-    private void validateDeliveryPrice(
-        TemporaryDeliveryPaymentSaveRequest request, int totalProductPrice, int deliveryFee, int finalAmount
-    ) {
-        if (!request.totalMenuPrice().equals(totalProductPrice)
-            || !request.deliveryTip().equals(deliveryFee)
-            || !request.totalAmount().equals(finalAmount)
-        ) {
-            throw OrderPriceMismatchException.withDetail(
-                "totalProductPrice : " + totalProductPrice + "deliveryFee : " + deliveryFee + "totalAmount : "
-                    + totalProductPrice + "finalAmount : " + finalAmount);
-        }
-    }
-
-    private void validateTakeoutPrice(
-        TemporaryTakeoutPaymentSaveRequest request, int totalProductPrice, int finalAmount
-    ) {
-        if (!request.totalMenuPrice().equals(totalProductPrice)
-            || !request.totalAmount().equals(finalAmount)
-        ) {
-            throw OrderPriceMismatchException.withDetail(
-                "totalProductPrice : " + totalProductPrice + "finalAmount : " + finalAmount);
-        }
     }
 }

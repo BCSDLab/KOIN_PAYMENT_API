@@ -1,5 +1,10 @@
 package in.koreatech.payment.service;
 
+import java.util.List;
+
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
 import in.koreatech.koin.domain.order.model.Payment;
 import in.koreatech.koin.domain.order.model.PaymentCancel;
 import in.koreatech.koin.domain.order.model.PaymentStatus;
@@ -12,11 +17,8 @@ import in.koreatech.payment.exception.PaymentCancelException;
 import in.koreatech.payment.gateway.pg.PaymentGatewayService;
 import in.koreatech.payment.gateway.pg.dto.PgPaymentCancelResponse;
 import in.koreatech.payment.mapper.PaymentCancelMapper;
+import in.koreatech.payment.model.domain.PaymentCancelInfo;
 import lombok.RequiredArgsConstructor;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-
-import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -30,13 +32,13 @@ public class PaymentCancelService {
     private final PaymentCancelMapper paymentCancelMapper;
 
     @Transactional
-    public PaymentCancelResponse cancelPayment(User user, Integer paymentId, String cancelReason) {
+    public PaymentCancelResponse cancelPayment(User user, Integer paymentId, PaymentCancelInfo paymentCancelInfo) {
         Payment payment = paymentRepository.getById(paymentId);
         validatePaymentStatusIsNotCanceled(payment);
         payment.validateUserIdMatches(user.getId());
 
         String paymentIdempotencyKey = paymentIdempotencyKeyService.getOrCreate(user.getId());
-        PgPaymentCancelResponse pgResponse = paymentGatewayService.cancelPayment(payment.getPaymentKey(), cancelReason, paymentIdempotencyKey);
+        PgPaymentCancelResponse pgResponse = paymentGatewayService.cancelPayment(payment.getPaymentKey(), paymentCancelInfo.cancelReason(), paymentIdempotencyKey);
         validatePaymentIsCanceled(pgResponse.status());
 
         payment.cancel();

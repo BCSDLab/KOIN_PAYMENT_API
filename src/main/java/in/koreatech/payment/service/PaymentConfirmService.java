@@ -1,5 +1,10 @@
 package in.koreatech.payment.service;
 
+import java.util.List;
+
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
 import in.koreatech.koin.domain.order.cart.repository.CartRepository;
 import in.koreatech.koin.domain.order.model.Order;
 import in.koreatech.koin.domain.order.model.OrderMenu;
@@ -16,13 +21,10 @@ import in.koreatech.payment.exception.PaymentConfirmException;
 import in.koreatech.payment.gateway.pg.PaymentGatewayService;
 import in.koreatech.payment.gateway.pg.dto.PgPaymentConfirmResponse;
 import in.koreatech.payment.mapper.PaymentMapper;
+import in.koreatech.payment.model.domain.PaymentConfirmInfo;
 import in.koreatech.payment.model.redis.TemporaryPayment;
 import in.koreatech.payment.repository.redis.TemporaryPaymentRedisRepository;
 import lombok.RequiredArgsConstructor;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-
-import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -39,11 +41,12 @@ public class PaymentConfirmService {
     private final PaymentMapper paymentMapper;
 
     @Transactional
-    public PaymentConfirmResponse confirmPayment(User user, String paymentKey, String orderId, Integer amount) {
-        TemporaryPayment temporaryPayment = temporaryPaymentRedisRepository.getById(orderId);
-        temporaryPayment.validateMatches(orderId, user.getId(), amount);
+    public PaymentConfirmResponse confirmPayment(User user, PaymentConfirmInfo paymentConfirmInfo) {
+        TemporaryPayment temporaryPayment = temporaryPaymentRedisRepository.getById(paymentConfirmInfo.orderId());
+        temporaryPayment.validateMatches(paymentConfirmInfo.orderId(), user.getId(), paymentConfirmInfo.amount());
 
-        PgPaymentConfirmResponse pgResponse = paymentGatewayService.confirmPayment(paymentKey, orderId, amount);
+        PgPaymentConfirmResponse pgResponse = paymentGatewayService.confirmPayment(paymentConfirmInfo.paymentKey(),
+            paymentConfirmInfo.orderId(), paymentConfirmInfo.amount());
         validatePaymentStatus(pgResponse.status());
 
         OrderableShop orderableShop = orderableShopRepository.getById(temporaryPayment.getOrderableShopId());
@@ -56,7 +59,7 @@ public class PaymentConfirmService {
         Payment payment = paymentMapper.toEntity(order, pgResponse);
         paymentRepository.save(payment);
 
-        cleanupAfterPaymentConfirm(orderId, user.getId());
+        cleanupAfterPaymentConfirm(paymentConfirmInfo.orderId(), user.getId());
 
         return PaymentConfirmResponse.of(payment, order, orderMenus);
     }
