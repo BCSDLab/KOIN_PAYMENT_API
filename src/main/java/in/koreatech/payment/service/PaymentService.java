@@ -1,7 +1,6 @@
 package in.koreatech.payment.service;
 
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
 import in.koreatech.koin.domain.user.model.User;
 import in.koreatech.payment.dto.request.PaymentCancelRequest;
