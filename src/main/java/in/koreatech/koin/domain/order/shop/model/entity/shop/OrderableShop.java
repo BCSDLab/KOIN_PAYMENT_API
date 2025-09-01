@@ -29,7 +29,7 @@ import lombok.NoArgsConstructor;
 @Entity
 @Getter
 @NoArgsConstructor(access = PROTECTED)
-@Table(schema = "koin", name = "orderable_shop")
+@Table(name = "orderable_shop")
 @Where(clause = "is_deleted=0")
 public class OrderableShop extends BaseEntity {
 
