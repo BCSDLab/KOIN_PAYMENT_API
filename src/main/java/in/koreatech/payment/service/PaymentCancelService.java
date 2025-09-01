@@ -30,7 +30,7 @@ public class PaymentCancelService {
     private final PaymentIdempotencyKeyService paymentIdempotencyKeyService;
     private final PaymentCancelMapper paymentCancelMapper;
 
-    @Transactional
+    @Transactional(transactionManager = "koinPaymentTransactionManager")
     public PaymentCancelResponse cancelPayment(User user, Integer paymentId, PaymentCancelInfo paymentCancelInfo) {
         Payment payment = paymentRepository.getById(paymentId);
         validatePaymentStatusIsNotCanceled(payment);

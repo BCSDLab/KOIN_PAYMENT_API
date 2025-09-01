@@ -39,7 +39,7 @@ public class PaymentConfirmService {
     private final CartRepository cartRepository;
     private final PaymentMapper paymentMapper;
 
-    @Transactional
+    @Transactional(transactionManager = "koinPaymentTransactionManager")
     public PaymentConfirmResponse confirmPayment(User user, PaymentConfirmInfo paymentConfirmInfo) {
         TemporaryPayment temporaryPayment = temporaryPaymentRedisRepository.getById(paymentConfirmInfo.orderId());
         temporaryPayment.validateMatches(paymentConfirmInfo.orderId(), user.getId(), paymentConfirmInfo.amount());

@@ -1,13 +1,16 @@
 package in.koreatech.payment.service;
 
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
 import in.koreatech.koin.domain.user.model.User;
 import in.koreatech.koin.domain.user.repository.UserRepository;
 import in.koreatech.payment.common.auth.JwtProvider;
 import lombok.RequiredArgsConstructor;
-import org.springframework.stereotype.Service;
 
 @Service
 @RequiredArgsConstructor
+@Transactional(transactionManager = "koinTransactionManager", readOnly = true)
 public class UserAuthenticationService {
 
     private final JwtProvider jwtProvider;

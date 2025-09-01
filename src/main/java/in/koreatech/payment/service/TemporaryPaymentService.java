@@ -28,7 +28,6 @@ public class TemporaryPaymentService {
     private final TemporaryPaymentRedisRepository temporaryPaymentRedisRepository;
     private final TemporaryMenuItemsMapper temporaryMenuItemsMapper;
 
-    @Transactional
     public TemporaryPaymentResponse createDeliveryPayment(User user, DeliveryPaymentInfo deliveryPaymentInfo) {
         Cart cart = cartRepository.getCartByUserId(user.getId());
         OrderableShop orderableShop = cart.getOrderableShop();
@@ -60,7 +59,6 @@ public class TemporaryPaymentService {
         return TemporaryPaymentResponse.of(pgOrderId);
     }
 
-    @Transactional
     public TemporaryPaymentResponse createTakeoutPayment(User user, TakeoutPaymentInfo takeoutPaymentInfo) {
         Cart cart = cartRepository.getCartByUserId(user.getId());
         OrderableShop orderableShop = cart.getOrderableShop();

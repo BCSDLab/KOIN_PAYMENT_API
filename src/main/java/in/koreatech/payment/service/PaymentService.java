@@ -75,7 +75,6 @@ public class PaymentService {
         return paymentCancelService.cancelPayment(user, paymentId, paymentCancelInfo);
     }
 
-    @Transactional(readOnly = true)
     public PaymentResponse getPayment(String accessToken, Integer paymentId) {
         User user = userAuthenticationService.authenticateUser(accessToken);
         return paymentQueryService.getPayment(user, paymentId);

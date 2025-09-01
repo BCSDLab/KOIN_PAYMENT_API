@@ -15,7 +15,7 @@ import java.util.List;
 
 @Service
 @RequiredArgsConstructor
-@Transactional(readOnly = true)
+@Transactional(transactionManager = "koinPaymentTransactionManager", readOnly = true)
 public class PaymentQueryService {
 
     private final PaymentRepository paymentRepository;

@@ -3,6 +3,7 @@ package in.koreatech.payment.service;
 import java.util.UUID;
 
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import in.koreatech.payment.model.entity.PaymentIdempotencyKey;
 import in.koreatech.payment.repository.mysql.PaymentIdempotencyKeyRepository;
@@ -14,6 +15,7 @@ public class PaymentIdempotencyKeyService {
 
     private final PaymentIdempotencyKeyRepository paymentIdempotencyKeyRepository;
 
+    @Transactional(transactionManager = "koinPaymentTransactionManager")
     public String getOrCreate(Integer userId) {
         return paymentIdempotencyKeyRepository
             .findByUserId(userId)
