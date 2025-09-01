@@ -1,4 +1,4 @@
-package in.koreatech.koin.domain.order.model;
+package in.koreatech.payment.model.entity;
 
 import java.util.Arrays;
 

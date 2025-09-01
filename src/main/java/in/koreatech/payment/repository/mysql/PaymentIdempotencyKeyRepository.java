@@ -1,10 +1,10 @@
-package in.koreatech.koin.domain.order.repository;
+package in.koreatech.payment.repository.mysql;
 
 import java.util.Optional;
 
 import org.springframework.data.repository.Repository;
 
-import in.koreatech.koin.domain.order.model.PaymentIdempotencyKey;
+import in.koreatech.payment.model.entity.PaymentIdempotencyKey;
 
 public interface PaymentIdempotencyKeyRepository extends Repository<PaymentIdempotencyKey, Integer> {
 

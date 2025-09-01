@@ -1,4 +1,4 @@
-package in.koreatech.koin.domain.order.exception;
+package in.koreatech.payment.exception;
 
 import in.koreatech.payment.common.exception.custom.AuthorizationException;
 

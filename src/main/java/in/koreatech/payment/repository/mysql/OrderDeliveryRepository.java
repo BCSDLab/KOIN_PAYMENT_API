@@ -1,8 +1,8 @@
-package in.koreatech.koin.domain.order.repository;
+package in.koreatech.payment.repository.mysql;
 
 import org.springframework.data.repository.Repository;
 
-import in.koreatech.koin.domain.order.model.OrderDelivery;
+import in.koreatech.payment.model.entity.OrderDelivery;
 
 public interface OrderDeliveryRepository extends Repository<OrderDelivery, String> {
 

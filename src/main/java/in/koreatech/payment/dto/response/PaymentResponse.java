@@ -1,8 +1,8 @@
 package in.koreatech.payment.dto.response;
 
 import static com.fasterxml.jackson.databind.PropertyNamingStrategies.SnakeCaseStrategy;
-import static in.koreatech.koin.domain.order.model.OrderType.DELIVERY;
-import static in.koreatech.koin.domain.order.model.OrderType.TAKE_OUT;
+import static in.koreatech.payment.model.entity.OrderType.DELIVERY;
+import static in.koreatech.payment.model.entity.OrderType.TAKE_OUT;
 import static io.swagger.v3.oas.annotations.media.Schema.RequiredMode.NOT_REQUIRED;
 import static io.swagger.v3.oas.annotations.media.Schema.RequiredMode.REQUIRED;
 
@@ -13,12 +13,12 @@ import java.util.List;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.databind.annotation.JsonNaming;
 
-import in.koreatech.koin.domain.order.model.Order;
-import in.koreatech.koin.domain.order.model.OrderDelivery;
-import in.koreatech.koin.domain.order.model.OrderMenu;
-import in.koreatech.koin.domain.order.model.OrderMenuOption;
-import in.koreatech.koin.domain.order.model.OrderTakeout;
-import in.koreatech.koin.domain.order.model.Payment;
+import in.koreatech.payment.model.entity.Order;
+import in.koreatech.payment.model.entity.OrderDelivery;
+import in.koreatech.payment.model.entity.OrderMenu;
+import in.koreatech.payment.model.entity.OrderMenuOption;
+import in.koreatech.payment.model.entity.OrderTakeout;
+import in.koreatech.payment.model.entity.Payment;
 import in.koreatech.koin.domain.order.shop.model.entity.shop.OrderableShop;
 import in.koreatech.koin.domain.shop.model.shop.Shop;
 import io.swagger.v3.oas.annotations.media.Schema;

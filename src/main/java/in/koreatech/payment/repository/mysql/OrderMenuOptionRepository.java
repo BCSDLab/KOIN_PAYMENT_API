@@ -1,8 +1,8 @@
-package in.koreatech.koin.domain.order.repository;
+package in.koreatech.payment.repository.mysql;
 
 import org.springframework.data.repository.Repository;
 
-import in.koreatech.koin.domain.order.model.OrderMenuOption;
+import in.koreatech.payment.model.entity.OrderMenuOption;
 
 public interface OrderMenuOptionRepository extends Repository<OrderMenuOption, Integer> {
 

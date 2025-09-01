@@ -1,10 +1,10 @@
 package in.koreatech.payment.service;
 
-import in.koreatech.koin.domain.order.model.Order;
-import in.koreatech.koin.domain.order.model.OrderMenu;
-import in.koreatech.koin.domain.order.model.Payment;
-import in.koreatech.koin.domain.order.repository.OrderMenuRepository;
-import in.koreatech.koin.domain.order.repository.PaymentRepository;
+import in.koreatech.payment.model.entity.Order;
+import in.koreatech.payment.model.entity.OrderMenu;
+import in.koreatech.payment.model.entity.Payment;
+import in.koreatech.payment.repository.mysql.OrderMenuRepository;
+import in.koreatech.payment.repository.mysql.PaymentRepository;
 import in.koreatech.koin.domain.user.model.User;
 import in.koreatech.payment.dto.response.PaymentResponse;
 import lombok.RequiredArgsConstructor;

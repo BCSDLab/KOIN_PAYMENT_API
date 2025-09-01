@@ -1,7 +1,7 @@
 package in.koreatech.payment.model.domain;
 
-import in.koreatech.koin.domain.order.model.OrderMenu;
-import in.koreatech.koin.domain.order.model.OrderMenuOption;
+import in.koreatech.payment.model.entity.OrderMenu;
+import in.koreatech.payment.model.entity.OrderMenuOption;
 
 public record TemporaryMenuOption(
     String optionGroupName,

@@ -1,6 +1,6 @@
-package in.koreatech.koin.domain.order.model;
+package in.koreatech.payment.model.entity;
 
-import static in.koreatech.koin.domain.order.model.PaymentStatus.CANCELED;
+import static in.koreatech.payment.model.entity.PaymentStatus.CANCELED;
 import static jakarta.persistence.EnumType.STRING;
 import static jakarta.persistence.FetchType.LAZY;
 import static jakarta.persistence.GenerationType.IDENTITY;
@@ -8,7 +8,7 @@ import static lombok.AccessLevel.PROTECTED;
 
 import java.time.LocalDateTime;
 
-import in.koreatech.koin.domain.order.exception.PaymentAccessDeniedException;
+import in.koreatech.payment.exception.PaymentAccessDeniedException;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Enumerated;

@@ -2,9 +2,9 @@ package in.koreatech.payment.model.domain;
 
 import java.util.List;
 
-import in.koreatech.koin.domain.order.model.Order;
-import in.koreatech.koin.domain.order.model.OrderMenu;
-import in.koreatech.koin.domain.order.model.OrderMenuOption;
+import in.koreatech.payment.model.entity.Order;
+import in.koreatech.payment.model.entity.OrderMenu;
+import in.koreatech.payment.model.entity.OrderMenuOption;
 
 public record TemporaryMenuItems(
     String name,

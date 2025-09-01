@@ -2,8 +2,8 @@ package in.koreatech.payment.acceptance.fixture;
 
 import org.springframework.stereotype.Component;
 
-import in.koreatech.koin.domain.order.model.PaymentIdempotencyKey;
-import in.koreatech.koin.domain.order.repository.PaymentIdempotencyKeyRepository;
+import in.koreatech.payment.model.entity.PaymentIdempotencyKey;
+import in.koreatech.payment.repository.mysql.PaymentIdempotencyKeyRepository;
 import in.koreatech.koin.domain.user.model.User;
 
 @Component

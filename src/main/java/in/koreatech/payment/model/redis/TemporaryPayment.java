@@ -1,7 +1,7 @@
 package in.koreatech.payment.model.redis;
 
-import static in.koreatech.koin.domain.order.model.OrderType.DELIVERY;
-import static in.koreatech.koin.domain.order.model.OrderType.TAKE_OUT;
+import static in.koreatech.payment.model.entity.OrderType.DELIVERY;
+import static in.koreatech.payment.model.entity.OrderType.TAKE_OUT;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -10,10 +10,10 @@ import org.springframework.data.annotation.Id;
 import org.springframework.data.redis.core.RedisHash;
 import org.springframework.data.redis.core.TimeToLive;
 
-import in.koreatech.koin.domain.order.model.Order;
-import in.koreatech.koin.domain.order.model.OrderDelivery;
-import in.koreatech.koin.domain.order.model.OrderTakeout;
-import in.koreatech.koin.domain.order.model.OrderType;
+import in.koreatech.payment.model.entity.Order;
+import in.koreatech.payment.model.entity.OrderDelivery;
+import in.koreatech.payment.model.entity.OrderTakeout;
+import in.koreatech.payment.model.entity.OrderType;
 import in.koreatech.koin.domain.order.shop.model.entity.shop.OrderableShop;
 import in.koreatech.koin.domain.user.model.User;
 import in.koreatech.payment.exception.InvalidTemporaryPaymentException;
