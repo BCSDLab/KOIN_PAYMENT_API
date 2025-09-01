@@ -19,7 +19,7 @@ import in.koreatech.koin.domain.user.model.User;
 import in.koreatech.payment.dto.response.PaymentConfirmResponse;
 import in.koreatech.payment.exception.PaymentConfirmException;
 import in.koreatech.payment.gateway.pg.PaymentGatewayService;
-import in.koreatech.payment.gateway.pg.dto.PgPaymentConfirmResponse;
+import in.koreatech.payment.gateway.pg.dto.PaymentGatewayConfirmResponse;
 import in.koreatech.payment.mapper.PaymentMapper;
 import in.koreatech.payment.model.domain.PaymentConfirmInfo;
 import in.koreatech.payment.model.redis.TemporaryPayment;
@@ -45,7 +45,7 @@ public class PaymentConfirmService {
         TemporaryPayment temporaryPayment = temporaryPaymentRedisRepository.getById(paymentConfirmInfo.orderId());
         temporaryPayment.validateMatches(paymentConfirmInfo.orderId(), user.getId(), paymentConfirmInfo.amount());
 
-        PgPaymentConfirmResponse pgResponse = paymentGatewayService.confirmPayment(paymentConfirmInfo.paymentKey(),
+        PaymentGatewayConfirmResponse pgResponse = paymentGatewayService.confirmPayment(paymentConfirmInfo.paymentKey(),
             paymentConfirmInfo.orderId(), paymentConfirmInfo.amount());
         validatePaymentStatus(pgResponse.status());
 

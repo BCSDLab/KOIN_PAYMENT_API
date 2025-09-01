@@ -15,7 +15,7 @@ import in.koreatech.payment.dto.response.PaymentCancelResponse;
 import in.koreatech.payment.exception.PaymentAlreadyCanceledException;
 import in.koreatech.payment.exception.PaymentCancelException;
 import in.koreatech.payment.gateway.pg.PaymentGatewayService;
-import in.koreatech.payment.gateway.pg.dto.PgPaymentCancelResponse;
+import in.koreatech.payment.gateway.pg.dto.PaymentGatewayCancelResponse;
 import in.koreatech.payment.mapper.PaymentCancelMapper;
 import in.koreatech.payment.model.domain.PaymentCancelInfo;
 import lombok.RequiredArgsConstructor;
@@ -38,7 +38,7 @@ public class PaymentCancelService {
         payment.validateUserIdMatches(user.getId());
 
         String paymentIdempotencyKey = paymentIdempotencyKeyService.getOrCreate(user.getId());
-        PgPaymentCancelResponse pgResponse = paymentGatewayService.cancelPayment(payment.getPaymentKey(), paymentCancelInfo.cancelReason(), paymentIdempotencyKey);
+        PaymentGatewayCancelResponse pgResponse = paymentGatewayService.cancelPayment(payment.getPaymentKey(), paymentCancelInfo.cancelReason(), paymentIdempotencyKey);
         validatePaymentIsCanceled(pgResponse.status());
 
         payment.cancel();

@@ -9,12 +9,12 @@ import in.koreatech.koin.domain.order.model.Order;
 import in.koreatech.koin.domain.order.model.Payment;
 import in.koreatech.koin.domain.order.model.PaymentMethod;
 import in.koreatech.koin.domain.order.model.PaymentStatus;
-import in.koreatech.payment.gateway.pg.dto.PgPaymentConfirmResponse;
+import in.koreatech.payment.gateway.pg.dto.PaymentGatewayConfirmResponse;
 
 @Component
 public class PaymentMapper {
 
-    public Payment toEntity(Order order, PgPaymentConfirmResponse response) {
+    public Payment toEntity(Order order, PaymentGatewayConfirmResponse response) {
         OffsetDateTime requestedOffsetDateTime = OffsetDateTime.parse(response.requestedAt());
         OffsetDateTime approvedOffsetDateTime = OffsetDateTime.parse(response.approvedAt());
 

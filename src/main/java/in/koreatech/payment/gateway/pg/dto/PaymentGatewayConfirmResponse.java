@@ -1,6 +1,6 @@
 package in.koreatech.payment.gateway.pg.dto;
 
-public record PgPaymentConfirmResponse(
+public record PaymentGatewayConfirmResponse(
     String paymentKey,
     Integer totalAmount,
     String orderId,

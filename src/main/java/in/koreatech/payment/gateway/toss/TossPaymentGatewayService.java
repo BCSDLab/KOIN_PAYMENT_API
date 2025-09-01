@@ -1,13 +1,13 @@
 package in.koreatech.payment.gateway.toss;
 
-import static in.koreatech.payment.gateway.pg.dto.PgPaymentCancelResponse.CancelInfo;
+import static in.koreatech.payment.gateway.pg.dto.PaymentGatewayCancelResponse.CancelInfo;
 
 import org.springframework.stereotype.Service;
 
 import in.koreatech.payment.gateway.pg.PaymentGatewayService;
 import in.koreatech.payment.gateway.pg.PgOrderIdGenerator;
-import in.koreatech.payment.gateway.pg.dto.PgPaymentCancelResponse;
-import in.koreatech.payment.gateway.pg.dto.PgPaymentConfirmResponse;
+import in.koreatech.payment.gateway.pg.dto.PaymentGatewayCancelResponse;
+import in.koreatech.payment.gateway.pg.dto.PaymentGatewayConfirmResponse;
 import in.koreatech.payment.gateway.toss.dto.response.TossPaymentCancelResponse;
 import in.koreatech.payment.gateway.toss.dto.response.TossPaymentConfirmResponse;
 import lombok.RequiredArgsConstructor;
@@ -19,11 +19,11 @@ public class TossPaymentGatewayService implements PaymentGatewayService {
     private final TossPaymentClient tossPaymentClient;
     private final PgOrderIdGenerator pgOrderIdGenerator;
 
-    public PgPaymentConfirmResponse confirmPayment(String paymentKey, String pgOrderId, Integer amount) {
+    public PaymentGatewayConfirmResponse confirmPayment(String paymentKey, String pgOrderId, Integer amount) {
         TossPaymentConfirmResponse tossPaymentConfirmResponse = tossPaymentClient.requestConfirm(paymentKey, pgOrderId,
             amount);
 
-        return new PgPaymentConfirmResponse(
+        return new PaymentGatewayConfirmResponse(
             tossPaymentConfirmResponse.paymentKey(),
             tossPaymentConfirmResponse.totalAmount(),
             tossPaymentConfirmResponse.orderId(),
@@ -34,10 +34,10 @@ public class TossPaymentGatewayService implements PaymentGatewayService {
         );
     }
 
-    public PgPaymentCancelResponse cancelPayment(String paymentKey, String cancelReason, String idempotencyKey) {
+    public PaymentGatewayCancelResponse cancelPayment(String paymentKey, String cancelReason, String idempotencyKey) {
         TossPaymentCancelResponse tossPaymentCancelResponse = tossPaymentClient.requestCancel(paymentKey, cancelReason, idempotencyKey);
 
-        return new PgPaymentCancelResponse(
+        return new PaymentGatewayCancelResponse(
             tossPaymentCancelResponse.paymentKey(),
             tossPaymentCancelResponse.orderId(),
             tossPaymentCancelResponse.status(),
