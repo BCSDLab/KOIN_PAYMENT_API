@@ -7,20 +7,7 @@ import org.springframework.boot.context.properties.ConfigurationPropertiesScan;
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 
 @ConfigurationPropertiesScan
-@SpringBootApplication(
-	scanBasePackages = {
-		"in.koreatech.payment",
-		"in.koreatech.koin"
-	}
-)
-@EnableJpaRepositories(basePackages = {
-	"in.koreatech.payment",
-	"in.koreatech.koin"
-})
-@EntityScan(basePackages = {
-	"in.koreatech.payment",
-	"in.koreatech.koin"
-})
+@SpringBootApplication
 public class KoinPaymentApplication {
 
 	public static void main(String[] args) {

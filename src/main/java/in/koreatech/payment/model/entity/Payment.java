@@ -26,7 +26,7 @@ import lombok.NoArgsConstructor;
 
 @Entity
 @Getter
-@Table(schema = "koin", name = "payment")
+@Table(schema = "koin_payment", name = "payment")
 @NoArgsConstructor(access = PROTECTED)
 public class Payment {
 
@@ -86,7 +86,7 @@ public class Payment {
     }
 
     public void validateUserIdMatches(Integer userId) {
-        if (!userId.equals(this.order.getUser().getId())) {
+        if (!userId.equals(this.order.getUserId())) {
             throw PaymentAccessDeniedException.withDetail("userId : " + userId);
         }
     }

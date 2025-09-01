@@ -60,7 +60,7 @@ public class PaymentConfirmService {
 
         cleanupAfterPaymentConfirm(paymentConfirmInfo.orderId(), user.getId());
 
-        return PaymentConfirmResponse.of(payment, order, orderMenus);
+        return PaymentConfirmResponse.of(payment, order, orderableShop, orderMenus);
     }
 
     private void validatePaymentStatus(String status) {

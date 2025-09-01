@@ -21,7 +21,7 @@ import lombok.NoArgsConstructor;
 
 @Entity
 @Getter
-@Table(name = "payment_cancel")
+@Table(schema = "koin_payment", name = "payment_cancel")
 @NoArgsConstructor(access = PROTECTED)
 public class PaymentCancel {
 

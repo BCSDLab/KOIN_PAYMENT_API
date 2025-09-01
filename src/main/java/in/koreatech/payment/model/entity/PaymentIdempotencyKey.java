@@ -22,6 +22,7 @@ import lombok.NoArgsConstructor;
 @Getter
 @Entity
 @Table(
+    schema = "koin_payment",
     name = "payment_idempotency_key",
     uniqueConstraints = @UniqueConstraint(name = "uk_idempotency_key_user_id", columnNames = "user_id")
 )

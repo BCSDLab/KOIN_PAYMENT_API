@@ -30,7 +30,7 @@ import lombok.NoArgsConstructor;
 
 @Getter
 @Entity
-@Table(schema = "koin", name = "`order`")
+@Table(schema = "koin_payment", name = "`order`")
 @Where(clause = "is_deleted=0")
 @NoArgsConstructor(access = PROTECTED)
 public class Order extends BaseEntity {
@@ -66,13 +66,13 @@ public class Order extends BaseEntity {
     @Column(name = "is_deleted", nullable = false)
     private Boolean isDeleted = FALSE;
 
-    @JoinColumn(name = "orderable_shop_id", nullable = false, updatable = false)
-    @ManyToOne(fetch = LAZY)
-    private OrderableShop orderableShop;
+    @NotNull
+    @Column(name = "orderable_shop_id", nullable = false, updatable = false)
+    private Integer orderableShopId;
 
-    @JoinColumn(name = "user_id", nullable = false, updatable = false)
-    @ManyToOne(fetch = LAZY)
-    private User user;
+    @NotNull
+    @Column(name = "user_id", nullable = false, updatable = false)
+    private Integer userId;
 
     @OneToOne(mappedBy = "order", fetch = LAZY, cascade = ALL)
     private OrderDelivery orderDelivery;
@@ -89,8 +89,8 @@ public class Order extends BaseEntity {
         Integer totalProductPrice,
         Integer totalPrice,
         Boolean isDeleted,
-        OrderableShop orderableShop,
-        User user,
+        Integer orderableShopId,
+        Integer userId,
         OrderDelivery orderDelivery,
         OrderTakeout orderTakeout
     ) {
@@ -101,8 +101,8 @@ public class Order extends BaseEntity {
         this.totalProductPrice = totalProductPrice;
         this.totalPrice = totalPrice;
         this.isDeleted = isDeleted;
-        this.orderableShop = orderableShop;
-        this.user = user;
+        this.orderableShopId = orderableShopId;
+        this.userId = userId;
         this.orderDelivery = orderDelivery;
         this.orderTakeout = orderTakeout;
     }

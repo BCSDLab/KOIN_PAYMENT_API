@@ -1,5 +1,7 @@
 package in.koreatech.payment.service;
 
+import in.koreatech.koin.domain.order.shop.model.entity.shop.OrderableShop;
+import in.koreatech.koin.domain.order.shop.repository.OrderableShopRepository;
 import in.koreatech.payment.model.entity.Order;
 import in.koreatech.payment.model.entity.OrderMenu;
 import in.koreatech.payment.model.entity.Payment;
@@ -20,6 +22,7 @@ public class PaymentQueryService {
 
     private final PaymentRepository paymentRepository;
     private final OrderMenuRepository orderMenuRepository;
+    private final OrderableShopRepository orderableShopRepository;
 
     public PaymentResponse getPayment(User user, Integer paymentId) {
         Payment payment = paymentRepository.getById(paymentId);
@@ -27,7 +30,8 @@ public class PaymentQueryService {
 
         Order order = payment.getOrder();
         List<OrderMenu> orderMenus = orderMenuRepository.findAllByOrderId(order.getId());
+        OrderableShop orderableShop = orderableShopRepository.getById(order.getOrderableShopId());
 
-        return PaymentResponse.of(payment, order, orderMenus);
+        return PaymentResponse.of(payment, order, orderableShop, orderMenus);
     }
 }

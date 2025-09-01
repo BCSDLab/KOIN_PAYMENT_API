@@ -156,8 +156,8 @@ public class TemporaryPayment {
             .phoneNumber(phoneNumber)
             .totalProductPrice(totalProductPrice)
             .totalPrice(totalPrice)
-            .orderableShop(orderableShop)
-            .user(user)
+            .orderableShopId(orderableShop.getId())
+            .userId(user.getId())
             .isDeleted(false)
             .build();
 

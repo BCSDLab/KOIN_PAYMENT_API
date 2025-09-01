@@ -113,9 +113,9 @@ public record PaymentConfirmResponse(
     public static PaymentConfirmResponse of(
         Payment payment,
         Order order,
+        OrderableShop orderableShop,
         List<OrderMenu> orderMenus
     ) {
-        OrderableShop orderableShop = order.getOrderableShop();
         Shop shop = orderableShop.getShop();
 
         String deliveryAddress = null;

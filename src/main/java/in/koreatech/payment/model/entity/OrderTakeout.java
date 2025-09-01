@@ -17,7 +17,7 @@ import lombok.NoArgsConstructor;
 
 @Getter
 @Entity
-@Table(name = "order_takeout")
+@Table(schema = "koin_payment", name = "order_takeout")
 @NoArgsConstructor(access = PROTECTED)
 public class OrderTakeout {
 
