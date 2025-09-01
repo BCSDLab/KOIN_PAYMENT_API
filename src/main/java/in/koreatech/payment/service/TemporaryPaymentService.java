@@ -6,7 +6,11 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import in.koreatech.koin.domain.order.cart.model.Cart;
+import in.koreatech.koin.domain.order.cart.model.CartMenuItem;
+import in.koreatech.koin.domain.order.cart.model.CartMenuItemOption;
 import in.koreatech.koin.domain.order.cart.repository.CartRepository;
+import in.koreatech.koin.domain.order.shop.model.entity.menu.OrderableShopMenuOption;
+import in.koreatech.koin.domain.order.shop.model.entity.menu.OrderableShopMenuPrice;
 import in.koreatech.koin.domain.order.shop.model.entity.shop.OrderableShop;
 import in.koreatech.koin.domain.user.model.User;
 import in.koreatech.payment.dto.response.TemporaryPaymentResponse;
@@ -14,9 +18,10 @@ import in.koreatech.payment.gateway.pg.PaymentGatewayService;
 import in.koreatech.payment.model.domain.DeliveryPaymentInfo;
 import in.koreatech.payment.model.domain.TakeoutPaymentInfo;
 import in.koreatech.payment.model.domain.TemporaryMenuItems;
+import in.koreatech.payment.model.domain.TemporaryMenuOption;
+import in.koreatech.payment.model.domain.TemporaryMenuPrice;
 import in.koreatech.payment.model.redis.TemporaryPayment;
 import in.koreatech.payment.repository.redis.TemporaryPaymentRedisRepository;
-import in.koreatech.payment.util.TemporaryMenuItemConverter;
 import lombok.RequiredArgsConstructor;
 
 @Service
@@ -33,7 +38,7 @@ public class TemporaryPaymentService {
         Cart cart = cartRepository.getCartByUserId(user.getId());
         OrderableShop orderableShop = cart.getOrderableShop();
 
-        List<TemporaryMenuItems> temporaryMenuItems = TemporaryMenuItemConverter.fromCart(cart);
+        List<TemporaryMenuItems> temporaryMenuItems = createTemporaryMenuItemsFrom(cart);
         int totalProductPrice = cart.calculateItemsAmount();
         int deliveryFee = orderableShop.calculateDeliveryFee(totalProductPrice);
         int finalAmount = totalProductPrice + deliveryFee;
@@ -65,7 +70,7 @@ public class TemporaryPaymentService {
         Cart cart = cartRepository.getCartByUserId(user.getId());
         OrderableShop orderableShop = cart.getOrderableShop();
 
-        List<TemporaryMenuItems> temporaryMenuItems = TemporaryMenuItemConverter.fromCart(cart);
+        List<TemporaryMenuItems> temporaryMenuItems = createTemporaryMenuItemsFrom(cart);
         int totalProductPrice = cart.calculateItemsAmount();
         int finalAmount = totalProductPrice;
 
@@ -86,5 +91,39 @@ public class TemporaryPaymentService {
 
         temporaryPaymentRedisRepository.save(takeoutEntity);
         return TemporaryPaymentResponse.of(pgOrderId);
+    }
+
+    public List<TemporaryMenuItems> createTemporaryMenuItemsFrom(Cart cart) {
+        return cart.getCartMenuItems().stream()
+            .map(this::fromCartMenuItem)
+            .toList();
+    }
+
+    private TemporaryMenuItems fromCartMenuItem(CartMenuItem cartMenuItem) {
+        List<TemporaryMenuOption> options = cartMenuItem.getCartMenuItemOptions().stream()
+            .map(this::fromCartMenuItemOption)
+            .toList();
+
+        OrderableShopMenuPrice price = cartMenuItem.getOrderableShopMenuPrice();
+
+        return new TemporaryMenuItems(
+            cartMenuItem.getOrderableShopMenu().getName(),
+            cartMenuItem.getQuantity(),
+            cartMenuItem.calculateTotalAmount(),
+            new TemporaryMenuPrice(price.getName(), price.getPrice()),
+            options
+        );
+    }
+
+    private TemporaryMenuOption fromCartMenuItemOption(CartMenuItemOption option) {
+        OrderableShopMenuOption shopOption = option.getOrderableShopMenuOption();
+        String optionGroupName = shopOption.getOptionGroup().getName();
+
+        return new TemporaryMenuOption(
+            optionGroupName,
+            option.getOptionName(),
+            option.getQuantity(),
+            option.getOptionPrice()
+        );
     }
 }
