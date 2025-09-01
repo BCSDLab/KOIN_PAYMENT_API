@@ -21,7 +21,6 @@ import lombok.RequiredArgsConstructor;
 
 @Service
 @RequiredArgsConstructor
-@Transactional(readOnly = true)
 public class TemporaryPaymentService {
 
     private final CartRepository cartRepository;

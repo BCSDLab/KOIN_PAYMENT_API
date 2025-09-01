@@ -20,7 +20,6 @@ import lombok.RequiredArgsConstructor;
 
 @Service
 @RequiredArgsConstructor
-@Transactional(readOnly = true)
 public class PaymentService {
 
     private final UserAuthenticationService userAuthenticationService;
@@ -29,7 +28,6 @@ public class PaymentService {
     private final PaymentCancelService paymentCancelService;
     private final PaymentQueryService paymentQueryService;
 
-    @Transactional
     public TemporaryPaymentResponse createTemporaryDeliveryPayment(
         String accessToken, TemporaryDeliveryPaymentSaveRequest request
     ) {
@@ -47,7 +45,6 @@ public class PaymentService {
         return temporaryPaymentService.createDeliveryPayment(user, deliveryPaymentInfo);
     }
 
-    @Transactional
     public TemporaryPaymentResponse createTemporaryTakeoutPayment(
         String accessToken, TemporaryTakeoutPaymentSaveRequest request
     ) {
@@ -62,7 +59,6 @@ public class PaymentService {
         return temporaryPaymentService.createTakeoutPayment(user, takeoutPaymentInfo);
     }
 
-    @Transactional
     public PaymentConfirmResponse confirmPayment(String accessToken, PaymentConfirmRequest request) {
         User user = userAuthenticationService.authenticateUser(accessToken);
         PaymentConfirmInfo paymentConfirmInfo = PaymentConfirmInfo.of(
@@ -73,13 +69,13 @@ public class PaymentService {
         return paymentConfirmService.confirmPayment(user, paymentConfirmInfo);
     }
 
-    @Transactional
     public PaymentCancelResponse cancelPayment(String accessToken, Integer paymentId, PaymentCancelRequest request) {
         User user = userAuthenticationService.authenticateUser(accessToken);
         PaymentCancelInfo paymentCancelInfo = PaymentCancelInfo.of(request.cancelReason());
         return paymentCancelService.cancelPayment(user, paymentId, paymentCancelInfo);
     }
 
+    @Transactional(readOnly = true)
     public PaymentResponse getPayment(String accessToken, Integer paymentId) {
         User user = userAuthenticationService.authenticateUser(accessToken);
         return paymentQueryService.getPayment(user, paymentId);

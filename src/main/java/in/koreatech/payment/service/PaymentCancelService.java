@@ -22,7 +22,6 @@ import lombok.RequiredArgsConstructor;
 
 @Service
 @RequiredArgsConstructor
-@Transactional(readOnly = true)
 public class PaymentCancelService {
 
     private final PaymentRepository paymentRepository;
