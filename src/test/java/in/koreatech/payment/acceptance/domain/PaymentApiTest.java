@@ -54,7 +54,6 @@ import in.koreatech.payment.common.auth.JwtProvider;
 import in.koreatech.payment.model.redis.TemporaryPayment;
 import in.koreatech.payment.repository.redis.TemporaryPaymentRedisRepository;
 import in.koreatech.payment.gateway.pg.PgOrderIdGenerator;
-import in.koreatech.payment.service.PaymentRollBackService;
 
 public class PaymentApiTest extends AcceptanceTest {
 
@@ -96,9 +95,6 @@ public class PaymentApiTest extends AcceptanceTest {
 
     @MockBean
     private TossPaymentClient tossPaymentClient;
-
-    @MockBean
-    private PaymentRollBackService paymentRollBackService;
 
     @MockBean
     private PgOrderIdGenerator pgOrderIdGenerator;
